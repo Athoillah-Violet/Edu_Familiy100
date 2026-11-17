@@ -1,5 +1,6 @@
 import { supabase, isDemoMode } from './supabase.js';
 import demoData from '../data/demo.json' with { type: 'json' };
+import { validateCategory } from './validators.js';
 
 const DEMO_MODE_ERROR = 'Mode demo: fitur ini butuh koneksi database';
 
@@ -10,7 +11,6 @@ function getDemoCategories(publishedOnly = true) {
 
 function getDemoQuestionsWithAnswers(categoryId) {
   const allQuestions = Array.isArray(demoData.questions) ? demoData.questions : [];
-  // If specific category is matched, filter; otherwise if demo category, return all demo questions
   const filtered = allQuestions.filter(
     (q) => q.category_id === categoryId || !categoryId || categoryId === 'demo-cat-bullying'
   );
@@ -32,8 +32,10 @@ function getDemoQuestionsWithAnswers(categoryId) {
    ========================================================================== */
 
 /**
- * Retrieves published categories. Falls back to demo.json on demo mode or network error.
- * @returns {Promise<{ data: Array|null, error: string|null }>}
+ * Retrieves published categories.
+ * Fallback ke demo.json HANYA jika isDemoMode true (env kosong).
+ * Jika Supabase terkonfigurasi tetapi error, mengembalikan { data: null, error, error_detail }.
+ * @returns {Promise<{ data: Array|null, error: string|null, error_detail?: string }>}
  */
 export async function getCategories() {
   if (isDemoMode || !supabase) {
@@ -48,22 +50,28 @@ export async function getCategories() {
       .order('created_at', { ascending: true });
 
     if (error) {
-      console.warn('Gagal mengambil kategori dari Supabase, beralih ke data demo:', error.message);
-      return { data: getDemoCategories(true), error: null };
+      return {
+        data: null,
+        error: 'Gagal mengambil daftar kategori dari database.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data: data || [], error: null };
   } catch (err) {
-    console.warn('Network error saat getCategories, beralih ke data demo:', err);
-    return { data: getDemoCategories(true), error: null };
+    return {
+      data: null,
+      error: 'Terjadi gangguan jaringan saat mengambil kategori.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Retrieves questions for a category, including sorted answers.
- * Falls back to demo.json on demo mode or network error.
+ * Fallback ke demo.json HANYA jika isDemoMode true.
  * @param {string} categoryId
- * @returns {Promise<{ data: Array|null, error: string|null }>}
+ * @returns {Promise<{ data: Array|null, error: string|null, error_detail?: string }>}
  */
 export async function getQuestions(categoryId) {
   if (!categoryId) {
@@ -85,8 +93,11 @@ export async function getQuestions(categoryId) {
       .order('sort_order', { ascending: true });
 
     if (error) {
-      console.warn('Gagal mengambil soal dari Supabase, beralih ke data demo:', error.message);
-      return { data: getDemoQuestionsWithAnswers(categoryId), error: null };
+      return {
+        data: null,
+        error: 'Gagal mengambil soal dari database.',
+        error_detail: error.message || String(error),
+      };
     }
 
     const formatted = (data || []).map((q) => {
@@ -100,8 +111,11 @@ export async function getQuestions(categoryId) {
 
     return { data: formatted, error: null };
   } catch (err) {
-    console.warn('Network error saat getQuestions, beralih ke data demo:', err);
-    return { data: getDemoQuestionsWithAnswers(categoryId), error: null };
+    return {
+      data: null,
+      error: 'Terjadi gangguan jaringan saat mengambil soal.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
@@ -109,7 +123,7 @@ export async function getQuestions(categoryId) {
  * Saves a completed or active game session.
  * @param {string} categoryId
  * @param {Array|object} teams
- * @returns {Promise<{ data: object|null, error: string|null }>}
+ * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
  */
 export async function saveSession(categoryId, teams) {
   if (!categoryId) {
@@ -137,12 +151,20 @@ export async function saveSession(categoryId, teams) {
       .single();
 
     if (error) {
-      return { data: null, error: 'Gagal menyimpan sesi permainan. Silakan periksa koneksi Anda.' };
+      return {
+        data: null,
+        error: 'Gagal menyimpan sesi permainan. Silakan periksa koneksi Anda.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data, error: null };
   } catch (err) {
-    return { data: null, error: 'Terjadi gangguan jaringan saat menyimpan sesi permainan.' };
+    return {
+      data: null,
+      error: 'Terjadi gangguan jaringan saat menyimpan sesi permainan.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
@@ -154,7 +176,7 @@ export async function saveSession(categoryId, teams) {
  * Sign in with email and password.
  * @param {string} email
  * @param {string} password
- * @returns {Promise<{ data: object|null, error: string|null }>}
+ * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
  */
 export async function login(email, password) {
   if (!email || !email.trim()) {
@@ -175,18 +197,26 @@ export async function login(email, password) {
     });
 
     if (error) {
-      return { data: null, error: 'Email atau kata sandi tidak sesuai. Silakan periksa kembali.' };
+      return {
+        data: null,
+        error: 'Email atau kata sandi tidak sesuai. Silakan periksa kembali.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data, error: null };
   } catch (err) {
-    return { data: null, error: 'Terjadi gangguan jaringan saat mencoba masuk.' };
+    return {
+      data: null,
+      error: 'Terjadi gangguan jaringan saat mencoba masuk.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Sign out current session.
- * @returns {Promise<{ data: boolean|null, error: string|null }>}
+ * @returns {Promise<{ data: boolean|null, error: string|null, error_detail?: string }>}
  */
 export async function logout() {
   if (isDemoMode || !supabase) {
@@ -196,17 +226,25 @@ export async function logout() {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      return { data: null, error: 'Gagal keluar dari sesi. Silakan coba lagi.' };
+      return {
+        data: null,
+        error: 'Gagal keluar dari sesi. Silakan coba lagi.',
+        error_detail: error.message || String(error),
+      };
     }
     return { data: true, error: null };
   } catch (err) {
-    return { data: null, error: 'Terjadi gangguan jaringan saat keluar sesi.' };
+    return {
+      data: null,
+      error: 'Terjadi gangguan jaringan saat keluar sesi.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Gets the current active session.
- * @returns {Promise<{ data: object|null, error: string|null }>}
+ * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
  */
 export async function getSession() {
   if (isDemoMode || !supabase) {
@@ -216,17 +254,25 @@ export async function getSession() {
   try {
     const { data, error } = await supabase.auth.getSession();
     if (error) {
-      return { data: null, error: 'Gagal memeriksa sesi pengguna.' };
+      return {
+        data: null,
+        error: 'Gagal memeriksa sesi pengguna.',
+        error_detail: error.message || String(error),
+      };
     }
     return { data: data?.session || null, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat memeriksa sesi pengguna.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat memeriksa sesi pengguna.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Checks if current logged-in user is an admin by querying the admins table.
- * @returns {Promise<{ data: boolean, error: string|null }>}
+ * @returns {Promise<{ data: boolean, error: string|null, error_detail?: string }>}
  */
 export async function isAdmin() {
   if (isDemoMode || !supabase) {
@@ -235,7 +281,15 @@ export async function isAdmin() {
 
   try {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !sessionData?.session?.user) {
+    if (sessionError) {
+      return {
+        data: false,
+        error: 'Gagal memeriksa sesi pengguna.',
+        error_detail: sessionError.message || String(sessionError),
+      };
+    }
+
+    if (!sessionData?.session?.user) {
       return { data: false, error: null };
     }
 
@@ -247,13 +301,20 @@ export async function isAdmin() {
       .maybeSingle();
 
     if (error) {
-      console.warn('Error checking admin status:', error.message);
-      return { data: false, error: 'Gagal memverifikasi hak akses admin.' };
+      return {
+        data: false,
+        error: 'Gagal memverifikasi hak akses admin.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data: Boolean(data && data.user_id), error: null };
   } catch (err) {
-    return { data: false, error: 'Gangguan koneksi saat verifikasi admin.' };
+    return {
+      data: false,
+      error: 'Gangguan koneksi saat verifikasi admin.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
@@ -282,18 +343,12 @@ export function onAuthChange(callback) {
 
 /**
  * Retrieves all categories including drafts, along with question counts.
- * @returns {Promise<{ data: Array|null, error: string|null }>}
+ * Di mode demo mengembalikan error ramah: 'Mode demo: fitur ini butuh koneksi database'.
+ * @returns {Promise<{ data: Array|null, error: string|null, error_detail?: string }>}
  */
 export async function getAllCategories() {
   if (isDemoMode || !supabase) {
-    const demoCats = getDemoCategories(false).map((cat) => {
-      const qCount = (demoData.questions || []).filter((q) => q.category_id === cat.id).length;
-      return {
-        ...cat,
-        questions_count: qCount,
-      };
-    });
-    return { data: demoCats, error: null };
+    return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
@@ -306,7 +361,11 @@ export async function getAllCategories() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      return { data: null, error: 'Gagal memuat daftar kategori admin.' };
+      return {
+        data: null,
+        error: 'Gagal memuat daftar kategori admin.',
+        error_detail: error.message || String(error),
+      };
     }
 
     const formatted = (data || []).map((cat) => ({
@@ -320,18 +379,23 @@ export async function getAllCategories() {
 
     return { data: formatted, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat memuat daftar kategori.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat memuat daftar kategori.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Creates or updates a category.
  * @param {object} category - { id?, title, description, is_published }
- * @returns {Promise<{ data: object|null, error: string|null }>}
+ * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
  */
 export async function upsertCategory(category) {
-  if (!category?.title || !category.title.trim()) {
-    return { data: null, error: 'Judul kategori tidak boleh kosong.' };
+  const validation = validateCategory(category);
+  if (!validation.ok) {
+    return { data: null, error: validation.errors.join(' ') };
   }
 
   if (isDemoMode || !supabase) {
@@ -341,7 +405,7 @@ export async function upsertCategory(category) {
   try {
     const payload = {
       title: category.title.trim(),
-      description: category.description?.trim() || '',
+      description: category.description ? category.description.trim() : '',
       is_published: Boolean(category.is_published),
     };
     if (category.id) {
@@ -355,19 +419,27 @@ export async function upsertCategory(category) {
       .single();
 
     if (error) {
-      return { data: null, error: 'Gagal menyimpan kategori. Pastikan Anda memiliki izin admin.' };
+      return {
+        data: null,
+        error: 'Gagal menyimpan kategori. Pastikan Anda memiliki izin admin.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat menyimpan kategori.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat menyimpan kategori.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Deletes a category by ID.
  * @param {string} id
- * @returns {Promise<{ data: boolean|null, error: string|null }>}
+ * @returns {Promise<{ data: boolean|null, error: string|null, error_detail?: string }>}
  */
 export async function deleteCategory(id) {
   if (!id) {
@@ -385,19 +457,27 @@ export async function deleteCategory(id) {
       .eq('id', id);
 
     if (error) {
-      return { data: null, error: 'Gagal menghapus kategori. Pastikan tidak ada dependensi yang menghalangi.' };
+      return {
+        data: null,
+        error: 'Gagal menghapus kategori. Pastikan tidak ada dependensi yang menghalangi.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data: true, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat menghapus kategori.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat menghapus kategori.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Creates or updates a question.
  * @param {object} question - { id?, category_id, question_text, reflection_note, discussion_prompts, multiplier, sort_order }
- * @returns {Promise<{ data: object|null, error: string|null }>}
+ * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
  */
 export async function upsertQuestion(question) {
   if (!question?.question_text || !question.question_text.trim()) {
@@ -420,7 +500,7 @@ export async function upsertQuestion(question) {
     const payload = {
       category_id: question.category_id,
       question_text: question.question_text.trim(),
-      reflection_note: question.reflection_note?.trim() || '',
+      reflection_note: question.reflection_note ? question.reflection_note.trim() : '',
       discussion_prompts: Array.isArray(question.discussion_prompts)
         ? question.discussion_prompts.map((p) => String(p).trim()).filter(Boolean)
         : [],
@@ -438,19 +518,27 @@ export async function upsertQuestion(question) {
       .single();
 
     if (error) {
-      return { data: null, error: 'Gagal menyimpan soal. Pastikan data sudah sesuai.' };
+      return {
+        data: null,
+        error: 'Gagal menyimpan soal. Pastikan data sudah sesuai.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat menyimpan soal.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat menyimpan soal.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
 /**
  * Deletes a question by ID.
  * @param {string} id
- * @returns {Promise<{ data: boolean|null, error: string|null }>}
+ * @returns {Promise<{ data: boolean|null, error: string|null, error_detail?: string }>}
  */
 export async function deleteQuestion(id) {
   if (!id) {
@@ -468,12 +556,20 @@ export async function deleteQuestion(id) {
       .eq('id', id);
 
     if (error) {
-      return { data: null, error: 'Gagal menghapus soal.' };
+      return {
+        data: null,
+        error: 'Gagal menghapus soal.',
+        error_detail: error.message || String(error),
+      };
     }
 
     return { data: true, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat menghapus soal.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat menghapus soal.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
@@ -481,7 +577,7 @@ export async function deleteQuestion(id) {
  * Replaces all answers for a specific question (validates 3-8 answers, points >= 0).
  * @param {string} questionId
  * @param {Array<{ answer_text: string, points: number, keywords?: Array<string>, sort_order?: number }>} answers
- * @returns {Promise<{ data: Array|null, error: string|null }>}
+ * @returns {Promise<{ data: Array|null, error: string|null, error_detail?: string }>}
  */
 export async function replaceAnswers(questionId, answers) {
   if (!questionId) {
@@ -514,7 +610,11 @@ export async function replaceAnswers(questionId, answers) {
       .eq('question_id', questionId);
 
     if (delError) {
-      return { data: null, error: 'Gagal membersihkan data jawaban lama.' };
+      return {
+        data: null,
+        error: 'Gagal membersihkan data jawaban lama.',
+        error_detail: delError.message || String(delError),
+      };
     }
 
     // 2. Insert new answers
@@ -534,12 +634,20 @@ export async function replaceAnswers(questionId, answers) {
       .select();
 
     if (insError) {
-      return { data: null, error: 'Gagal memasukkan daftar jawaban baru.' };
+      return {
+        data: null,
+        error: 'Gagal memasukkan daftar jawaban baru.',
+        error_detail: insError.message || String(insError),
+      };
     }
 
     return { data, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat memperbarui jawaban.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat memperbarui jawaban.',
+      error_detail: err.message || String(err),
+    };
   }
 }
 
@@ -547,7 +655,7 @@ export async function replaceAnswers(questionId, answers) {
  * Reorders questions within a category by updating sort_order for each ID in order.
  * @param {string} categoryId
  * @param {Array<string>} orderedIds
- * @returns {Promise<{ data: boolean|null, error: string|null }>}
+ * @returns {Promise<{ data: boolean|null, error: string|null, error_detail?: string }>}
  */
 export async function reorderQuestions(categoryId, orderedIds) {
   if (!categoryId) {
@@ -571,14 +679,22 @@ export async function reorderQuestions(categoryId, orderedIds) {
     );
 
     const results = await Promise.all(updates);
-    const hasError = results.some((r) => r.error);
+    const failed = results.find((r) => r.error);
 
-    if (hasError) {
-      return { data: null, error: 'Gagal memperbarui beberapa urutan soal.' };
+    if (failed) {
+      return {
+        data: null,
+        error: 'Gagal memperbarui beberapa urutan soal.',
+        error_detail: failed.error?.message || String(failed.error),
+      };
     }
 
     return { data: true, error: null };
   } catch (err) {
-    return { data: null, error: 'Gangguan jaringan saat menyusun ulang urutan soal.' };
+    return {
+      data: null,
+      error: 'Gangguan jaringan saat menyusun ulang urutan soal.',
+      error_detail: err.message || String(err),
+    };
   }
 }

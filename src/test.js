@@ -14,6 +14,25 @@ import { renderDemoBadge, showToast } from './lib/ui.js';
 const outputEl = document.getElementById('output');
 const demoIndicatorContainer = document.getElementById('demo-indicator-container');
 
+// Tampilkan status mode dan konfigurasi env di atas halaman tanpa membocorkan isi key
+const displayModeEl = document.getElementById('display-mode');
+const displayUrlEl = document.getElementById('display-url');
+const displayKeyEl = document.getElementById('display-key');
+
+if (displayModeEl) {
+  displayModeEl.textContent = isDemoMode ? 'DEMO' : 'SUPABASE';
+  displayModeEl.style.fontWeight = 'bold';
+  displayModeEl.style.color = isDemoMode ? '#d97706' : '#16a34a';
+}
+if (displayUrlEl) {
+  displayUrlEl.textContent = import.meta.env?.VITE_SUPABASE_URL || '(tidak diatur)';
+}
+if (displayKeyEl) {
+  const hasKey = Boolean(import.meta.env?.VITE_SUPABASE_PUBLISHABLE_KEY?.trim());
+  displayKeyEl.textContent = hasKey ? 'Ya (Terdeteksi)' : 'Tidak (Kosong)';
+  displayKeyEl.style.color = hasKey ? '#16a34a' : '#dc2626';
+}
+
 function logOutput(title, data) {
   const timestamp = new Date().toLocaleTimeString();
   const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
