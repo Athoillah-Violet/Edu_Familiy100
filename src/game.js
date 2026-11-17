@@ -100,8 +100,34 @@ function handleEvents(events) {
         showStrikeAnimation();
         break;
 
-      case 'CONTROL_WON':
+      case 'CONTROL_WON': {
+        const winner = state.config.teams.find((t) => t.id === ev.teamId);
         audio.play('correct');
+        showToast(`${winner?.name || 'Tim'} memenangkan rebutan!`, 'success');
+        break;
+      }
+
+      case 'TURN_SWITCHED': {
+        const nextTeam = state.config.teams.find((t) => t.id === ev.teamId);
+        const firstAns = state.roundData?.faceOff?.firstAnswer;
+        if (firstAns && firstAns.valid) {
+          showToast(
+            `Bukan peringkat #1! Giliran ${nextTeam?.name || 'lawan'} menebak lebih tinggi.`,
+            'info'
+          );
+        } else {
+          showToast(`Giliran ${nextTeam?.name || 'lawan'} menjawab.`, 'info');
+        }
+        break;
+      }
+
+      case 'FACEOFF_RESET':
+        audio.play('wrong');
+        showToast('Kedua tim salah menjawab. Rebutan diulang!', 'warning');
+        break;
+
+      case 'WRONG_ANSWER':
+        audio.play('wrong');
         break;
 
       case 'ROUND_ENDED':
@@ -299,10 +325,10 @@ function renderNowWhatBanner() {
           </div>
         `;
         bannerAction.querySelector('#btn-choice-play')?.addEventListener('click', () => {
-          dispatch({ type: 'CHOOSE_CONTROL', choice: 'PLAY' });
+          dispatch({ type: 'CHOOSE_CONTROL', choice: 'play' });
         });
         bannerAction.querySelector('#btn-choice-pass')?.addEventListener('click', () => {
-          dispatch({ type: 'CHOOSE_CONTROL', choice: 'PASS' });
+          dispatch({ type: 'CHOOSE_CONTROL', choice: 'pass' });
         });
       } else if (!faceOff.buzzTeamId) {
         bannerText.innerHTML = `⚔️ <strong>Rebutan!</strong> Siapa paling cepat antara <strong>${escapeHtml(
@@ -312,9 +338,28 @@ function renderNowWhatBanner() {
         )}</strong>? Tekan tombol tim (atau tombol A / L / S / K), lalu klik jawaban yang ditebak.`;
       } else if (faceOff.turnTeamId) {
         const turnTeam = state.config.teams.find((t) => t.id === faceOff.turnTeamId);
-        bannerText.innerHTML = `🎤 Giliran <strong>${escapeHtml(
-          turnTeam?.name || 'Tim'
-        )}</strong> menjawab! Klik kartu atau saran jawaban. Jika salah, tekan "Jawaban Salah".`;
+        const firstAns = faceOff.firstAnswer;
+
+        if (firstAns) {
+          const firstTeam = state.config.teams.find((t) => t.id === firstAns.teamId);
+          if (firstAns.valid) {
+            bannerText.innerHTML = `🔄 Jawaban <strong>${escapeHtml(
+              firstTeam?.name || 'Tim'
+            )}</strong> peringkat #${firstAns.rank} (${firstAns.points} Poin, bukan #1 teratas). <strong>${escapeHtml(
+              turnTeam?.name || 'Lawan'
+            )}</strong> mendapat 1 kesempatan menebak jawaban lebih tinggi! Klik kartu atau tekan "Jawaban Salah".`;
+          } else {
+            bannerText.innerHTML = `❌ Jawaban <strong>${escapeHtml(
+              firstTeam?.name || 'Tim'
+            )}</strong> salah! Giliran <strong>${escapeHtml(
+              turnTeam?.name || 'Lawan'
+            )}</strong> menjawab untuk merebut kontrol. Klik kartu atau tekan "Jawaban Salah".`;
+          }
+        } else {
+          bannerText.innerHTML = `🎤 Giliran <strong>${escapeHtml(
+            turnTeam?.name || 'Tim'
+          )}</strong> menjawab (bel tercepat)! Klik kartu atau saran jawaban. Jika salah, tekan "Jawaban Salah".`;
+        }
       }
       break;
     }
@@ -551,8 +596,16 @@ function renderTeamsScoreboard() {
         statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500 text-white">Kesempatan Merebut</span>';
         borderHighlight = 'border-amber-500 ring-2 ring-amber-400/30';
       } else if (isTurn) {
-        statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white">Menjawab</span>';
-        borderHighlight = 'border-emerald-600 ring-2 ring-emerald-500/30';
+        if (faceOff.firstAnswer) {
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-600 text-white animate-pulse">Kesempatan Rebut</span>';
+          borderHighlight = 'border-amber-600 ring-2 ring-amber-500/30';
+        } else {
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white animate-pulse">Menjawab Bel</span>';
+          borderHighlight = 'border-emerald-600 ring-2 ring-emerald-500/30';
+        }
+      } else if (state.phase === 'FACE_OFF' && faceOff.firstAnswer && team.id === faceOff.firstAnswer.teamId) {
+        const rankText = faceOff.firstAnswer.valid ? `#${faceOff.firstAnswer.rank} (${faceOff.firstAnswer.points} Poin)` : 'Salah';
+        statusBadge = `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-300">Tebakan: ${rankText}</span>`;
       }
 
       const isActiveFaceOffTeam =
