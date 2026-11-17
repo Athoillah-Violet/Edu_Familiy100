@@ -209,12 +209,14 @@ export function createGame(config, questions) {
     };
   });
 
-  const timerSeconds = [0, 15, 20, 30].includes(Number(config.timerSeconds))
-    ? Number(config.timerSeconds)
+  const rawTimer = Number(config.timerSeconds);
+  const timerSeconds = Number.isInteger(rawTimer) && rawTimer >= 0
+    ? rawTimer
     : 0;
 
-  const maxStrikes = Number.isInteger(Number(config.maxStrikes)) && Number(config.maxStrikes) > 0
-    ? Number(config.maxStrikes)
+  const rawStrikes = Number(config.maxStrikes);
+  const maxStrikes = Number.isInteger(rawStrikes) && rawStrikes > 0
+    ? rawStrikes
     : 3;
 
   const multiplierEnabled =

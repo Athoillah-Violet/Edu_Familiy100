@@ -413,16 +413,76 @@ function setupEventListeners() {
   });
 
   // Step 3: Timer & Strike radios/checkboxes
+  const customTimerInput = document.getElementById('custom-timer-input');
   document.querySelectorAll('input[name="timer-option"]').forEach((radio) => {
     radio.addEventListener('change', (e) => {
-      state.timerSeconds = Number(e.target.value);
+      if (e.target.value === 'custom') {
+        if (customTimerInput) {
+          customTimerInput.disabled = false;
+          customTimerInput.focus();
+          const val = Number(customTimerInput.value) || 20;
+          state.timerSeconds = Math.max(1, Math.min(300, val));
+        }
+      } else {
+        if (customTimerInput) {
+          customTimerInput.disabled = true;
+        }
+        state.timerSeconds = Number(e.target.value);
+      }
     });
   });
 
+  customTimerInput?.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    if (val > 0) {
+      state.timerSeconds = Math.max(1, Math.min(300, val));
+    }
+  });
+
+  customTimerInput?.addEventListener('focus', () => {
+    const customRadio = document.querySelector('input[name="timer-option"][value="custom"]');
+    if (customRadio && !customRadio.checked) {
+      customRadio.checked = true;
+      customTimerInput.disabled = false;
+      const val = Number(customTimerInput.value) || 20;
+      state.timerSeconds = Math.max(1, Math.min(300, val));
+    }
+  });
+
+  const customStrikesInput = document.getElementById('custom-strikes-input');
   document.querySelectorAll('input[name="max-strikes"]').forEach((radio) => {
     radio.addEventListener('change', (e) => {
-      state.maxStrikes = Number(e.target.value);
+      if (e.target.value === 'custom') {
+        if (customStrikesInput) {
+          customStrikesInput.disabled = false;
+          customStrikesInput.focus();
+          const val = Number(customStrikesInput.value) || 3;
+          state.maxStrikes = Math.max(1, Math.min(10, val));
+        }
+      } else {
+        if (customStrikesInput) {
+          customStrikesInput.disabled = true;
+        }
+        state.maxStrikes = Number(e.target.value);
+      }
     });
+  });
+
+  customStrikesInput?.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    if (val > 0) {
+      state.maxStrikes = Math.max(1, Math.min(10, val));
+    }
+  });
+
+  customStrikesInput?.addEventListener('focus', () => {
+    const customRadio = document.querySelector('input[name="max-strikes"][value="custom"]');
+    if (customRadio && !customRadio.checked) {
+      customRadio.checked = true;
+      customStrikesInput.disabled = false;
+      const val = Number(customStrikesInput.value) || 3;
+      state.maxStrikes = Math.max(1, Math.min(10, val));
+    }
   });
 
   const multiplierToggle = document.getElementById('multiplier-toggle');

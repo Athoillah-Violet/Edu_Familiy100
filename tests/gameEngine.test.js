@@ -571,3 +571,21 @@ test('21. Mode Hunting Poin: Tim bergiliran berburu poin, skor langsung bertamba
   // Karena Tim A dan Tim B sudah bermain semua, ronde selesai -> REFLECTION
   assert.equal(s.phase, 'REFLECTION');
 });
+
+test('22. Custom timerSeconds dan custom maxStrikes dapat diatur bebas di kedua mode', () => {
+  // Test Family 100 dengan 45s timer dan 5 strikes
+  let s1 = createGame(
+    { teams: basicTeams, gameMode: 'family100', timerSeconds: 45, maxStrikes: 5 },
+    sampleQuestions
+  );
+  assert.equal(s1.config.timerSeconds, 45);
+  assert.equal(s1.config.maxStrikes, 5);
+
+  // Test Hunting Mode dengan 60s timer dan 2 strikes
+  let s2 = createGame(
+    { teams: basicTeams, gameMode: 'hunting', timerSeconds: 60, maxStrikes: 2 },
+    sampleQuestions
+  );
+  assert.equal(s2.config.timerSeconds, 60);
+  assert.equal(s2.config.maxStrikes, 2);
+});
