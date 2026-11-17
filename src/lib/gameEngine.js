@@ -682,9 +682,10 @@ export function reduce(state, action) {
     const events = [{ type: 'STRIKE', count: strikes }];
 
     const isHunting = nextState.config.gameMode === 'hunting';
+    const maxStrikes = nextState.config.maxStrikes !== undefined ? Number(nextState.config.maxStrikes) : 3;
 
     if (isHunting) {
-      if (strikes >= nextState.config.maxStrikes) {
+      if (maxStrikes > 0 && strikes >= maxStrikes) {
         const curId = nextState.roundData.currentHuntingTeamId;
         if (curId && !nextState.roundData.huntingTurnsPlayed.includes(curId)) {
           nextState.roundData.huntingTurnsPlayed.push(curId);
@@ -707,7 +708,7 @@ export function reduce(state, action) {
         }
       }
     } else {
-      if (strikes >= nextState.config.maxStrikes) {
+      if (maxStrikes > 0 && strikes >= maxStrikes) {
         nextState.phase = 'STEAL';
         events.push({ type: 'STEAL_STARTED', teamId: nextState.roundData.stealTeamId });
       }

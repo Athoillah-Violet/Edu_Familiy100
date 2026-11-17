@@ -393,10 +393,11 @@ function renderNowWhatBanner() {
     case 'PLAYING': {
       const controlTeam = state.config.teams.find((t) => t.id === roundData.controlTeamId);
       const strikes = roundData.strikes || 0;
-      const maxStrikes = state.config.maxStrikes || 3;
+      const maxStrikes = Number(state.config?.maxStrikes ?? 3);
+      const strikeLabel = maxStrikes > 0 ? `${strikes}/${maxStrikes}` : `${strikes} (Tanpa Batas)`;
       bannerText.innerHTML = `🎯 Giliran <strong>${escapeHtml(
         controlTeam?.name || 'Tim'
-      )}</strong>. Klik kartu bila jawaban siswa benar, atau tekan Strike bila salah. <span class="ml-2 font-bold text-red-600">Strike: ${strikes}/${maxStrikes}</span>`;
+      )}</strong>. Klik kartu bila jawaban siswa benar, atau tekan Strike bila salah. <span class="ml-2 font-bold text-red-600">Strike: ${strikeLabel}</span>`;
       break;
     }
 
@@ -438,11 +439,12 @@ function renderNowWhatBanner() {
         (t) => t.id === roundData.currentHuntingTeamId
       );
       const strikes = roundData.strikes || 0;
-      const maxStrikes = state.config.maxStrikes || 3;
+      const maxStrikes = Number(state.config?.maxStrikes ?? 3);
+      const strikeLabel = maxStrikes > 0 ? `${strikes}/${maxStrikes}` : `${strikes} (Tanpa Batas)`;
 
       bannerText.innerHTML = `🏹 <strong>Mode Hunting:</strong> Giliran <strong>${escapeHtml(
         activeTeam?.name || 'Tim'
-      )}</strong>! Sebutkan jawaban, klik kartu atau ketik di depan. Poin langsung masuk. <span class="ml-2 font-bold text-red-600">Strike: ${strikes}/${maxStrikes}</span>`;
+      )}</strong>! Sebutkan jawaban, klik kartu atau ketik di depan. Poin langsung masuk. <span class="ml-2 font-bold text-red-600">Strike: ${strikeLabel}</span>`;
 
       bannerAction.innerHTML = `
         <button id="btn-hunting-pass" type="button" class="px-3 py-1 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 shadow-sm transition-colors">
@@ -881,6 +883,33 @@ function renderPauseState() {
 }
 
 // Event Listeners Setup
+function handleWrongAnswer() {
+  if (state.paused) return;
+
+  switch (state.phase) {
+    case 'FACE_OFF': {
+      const faceOff = state.roundData?.faceOff || {};
+      if (faceOff.turnTeamId) {
+        dispatch({ type: 'FACEOFF_ANSWER', teamId: faceOff.turnTeamId, answerId: null });
+      } else {
+        showToast('Tekan tombol bel (buzz) tim terlebih dahulu!', 'warning');
+      }
+      break;
+    }
+    case 'PLAYING':
+    case 'HUNTING_PLAY': {
+      dispatch({ type: 'STRIKE' });
+      break;
+    }
+    case 'STEAL': {
+      dispatch({ type: 'STEAL_ANSWER', answerId: null });
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 function setupEventListeners() {
   // Pause / Resume
   document.getElementById('btn-pause')?.addEventListener('click', () => {
@@ -958,6 +987,11 @@ function setupEventListeners() {
   // Front Guess Form (Input tebakan siswa di depan kelas, tanpa bocoran kunci jawaban)
   const frontGuessForm = document.getElementById('front-guess-form');
   const frontGuessInput = document.getElementById('front-guess-input');
+  const frontWrongBtn = document.getElementById('btn-front-wrong');
+
+  frontWrongBtn?.addEventListener('click', () => {
+    handleWrongAnswer();
+  });
 
   frontGuessForm?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -978,8 +1012,9 @@ function setupEventListeners() {
       showToast(`Jawaban cocok! "${matchedAns.answer_text}" (${matches[0].score}%)`, 'success');
       handleCardClick(matchedAns.id);
     } else {
-      audio.play('wrong');
-      showToast(`Tebakan "${val}" tidak cocok di papan survei.`, 'warning');
+      frontGuessInput.value = '';
+      showToast(`Tebakan "${val}" tidak cocok di papan survei (Salah)!`, 'warning');
+      handleWrongAnswer();
     }
   });
 
