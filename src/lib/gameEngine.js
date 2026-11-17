@@ -220,6 +220,8 @@ export function createGame(config, questions) {
   const multiplierEnabled =
     config.multiplierEnabled !== undefined ? Boolean(config.multiplierEnabled) : true;
 
+  const gameMode = config.gameMode === 'hunting' ? 'hunting' : 'family100';
+
   const normalizedConfig = {
     categoryId: String(config.categoryId || ''),
     teams: validatedTeams,
@@ -227,6 +229,7 @@ export function createGame(config, questions) {
     timerSeconds,
     maxStrikes,
     multiplierEnabled,
+    gameMode,
   };
 
   const scores = {};
@@ -235,6 +238,8 @@ export function createGame(config, questions) {
   });
 
   const pair0 = getFaceOffTeams(normalizedConfig, 0);
+  const isHunting = gameMode === 'hunting';
+  const initialPhase = isHunting ? 'HUNTING_SELECT' : 'FACE_OFF';
 
   const initialRoundData = {
     revealedIds: [],
@@ -243,8 +248,10 @@ export function createGame(config, questions) {
     strikes: 0,
     controlTeamId: null,
     stealTeamId: null,
+    currentHuntingTeamId: null,
+    huntingTurnsPlayed: [],
     faceOff: {
-      activeTeams: [pair0.teamA.id, pair0.teamB.id],
+      activeTeams: pair0.teamA && pair0.teamB ? [pair0.teamA.id, pair0.teamB.id] : [],
       buzzTeamId: null,
       turnTeamId: null,
       firstAnswer: null,
@@ -261,7 +268,7 @@ export function createGame(config, questions) {
     config: normalizedConfig,
     questions: selectedQuestions,
     roundIndex: 0,
-    phase: 'FACE_OFF',
+    phase: initialPhase,
     paused: false,
     scores,
     roundData: initialRoundData,
@@ -362,6 +369,55 @@ export function reduce(state, action) {
     return commit(nextState, [
       { type: 'SCORE_ADJUSTED', teamId, score: newScore, delta: change },
     ]);
+  }
+
+  // 3b. SELECT_HUNTING_TEAM { teamId } (Mode Hunting Poin)
+  if (action.type === 'SELECT_HUNTING_TEAM') {
+    if (state.phase !== 'HUNTING_SELECT') {
+      return { state, events: [{ type: 'IGNORED', reason: 'Bukan fase pemilihan tim Hunting.' }] };
+    }
+    const teamId = action.teamId;
+    const teamExists = state.config.teams.some((t) => t.id === teamId);
+    if (!teamExists) {
+      return { state, events: [{ type: 'IGNORED', reason: 'Tim tidak ditemukan.' }] };
+    }
+
+    const nextState = deepClone(state);
+    nextState.phase = 'HUNTING_PLAY';
+    nextState.roundData.currentHuntingTeamId = teamId;
+    nextState.roundData.strikes = 0;
+
+    return commit(nextState, [{ type: 'HUNTING_TEAM_SELECTED', teamId }]);
+  }
+
+  // 3c. PASS_HUNTING_TURN (Mode Hunting Poin - Oper giliran ke tim lain)
+  if (action.type === 'PASS_HUNTING_TURN') {
+    if (state.phase !== 'HUNTING_PLAY') {
+      return { state, events: [{ type: 'IGNORED', reason: 'Aksi oper hanya untuk fase Hunting Play.' }] };
+    }
+    const nextState = deepClone(state);
+    const curId = nextState.roundData.currentHuntingTeamId;
+    if (curId && !nextState.roundData.huntingTurnsPlayed.includes(curId)) {
+      nextState.roundData.huntingTurnsPlayed.push(curId);
+    }
+    const remaining = nextState.config.teams.filter(
+      (t) => !nextState.roundData.huntingTurnsPlayed.includes(t.id)
+    );
+    const events = [];
+
+    if (remaining.length > 0) {
+      nextState.phase = 'HUNTING_SELECT';
+      nextState.roundData.currentHuntingTeamId = null;
+      events.push({
+        type: 'HUNTING_TURN_ENDED',
+        reason: 'passed',
+        teamId: curId,
+        remainingTeams: remaining.map((t) => t.id),
+      });
+    } else {
+      finalizeRound(nextState, null, events);
+    }
+    return commit(nextState, events);
   }
 
   // 4. BUZZ { teamId } (Only in FACE_OFF)
@@ -553,10 +609,10 @@ export function reduce(state, action) {
     ]);
   }
 
-  // 7. REVEAL { answerId } (Only in PLAYING)
+  // 7. REVEAL { answerId } (PLAYING & HUNTING_PLAY)
   if (action.type === 'REVEAL') {
-    if (state.phase !== 'PLAYING') {
-      return { state, events: [{ type: 'IGNORED', reason: 'Aksi REVEAL hanya untuk fase PLAYING.' }] };
+    if (state.phase !== 'PLAYING' && state.phase !== 'HUNTING_PLAY') {
+      return { state, events: [{ type: 'IGNORED', reason: 'Aksi REVEAL hanya untuk fase bermain.' }] };
     }
     const answerId = action.answerId;
     if (state.roundData.revealedIds.includes(answerId)) {
@@ -574,14 +630,29 @@ export function reduce(state, action) {
 
     const nextState = deepClone(state);
     nextState.roundData.revealedIds.push(answer.id);
-    nextState.roundData.pot += answer.points;
+
+    const isHunting = nextState.config.gameMode === 'hunting';
+    const mult = nextState.config.multiplierEnabled ? (currentQ?.multiplier || 1) : 1;
+    const earnedPoints = answer.points * mult;
+
+    let targetTeamId;
+    if (isHunting) {
+      targetTeamId = nextState.roundData.currentHuntingTeamId;
+      if (targetTeamId && nextState.scores[targetTeamId] !== undefined) {
+        nextState.scores[targetTeamId] += earnedPoints;
+      }
+      nextState.roundData.pot += earnedPoints;
+    } else {
+      targetTeamId = nextState.roundData.controlTeamId;
+      nextState.roundData.pot += answer.points;
+    }
 
     const events = [
       {
         type: 'ANSWER_REVEALED',
         answerId: answer.id,
-        points: answer.points,
-        teamId: nextState.roundData.controlTeamId,
+        points: isHunting ? earnedPoints : answer.points,
+        teamId: targetTeamId,
       },
     ];
 
@@ -592,25 +663,52 @@ export function reduce(state, action) {
     );
 
     if (isAllRevealed) {
-      finalizeRound(nextState, nextState.roundData.controlTeamId, events);
+      finalizeRound(nextState, targetTeamId, events);
     }
 
     return commit(nextState, events);
   }
 
-  // 8. STRIKE (Only in PLAYING)
+  // 8. STRIKE (PLAYING & HUNTING_PLAY)
   if (action.type === 'STRIKE') {
-    if (state.phase !== 'PLAYING') {
-      return { state, events: [{ type: 'IGNORED', reason: 'Strike hanya berlaku pada fase PLAYING.' }] };
+    if (state.phase !== 'PLAYING' && state.phase !== 'HUNTING_PLAY') {
+      return { state, events: [{ type: 'IGNORED', reason: 'Strike hanya berlaku pada fase bermain.' }] };
     }
     const nextState = deepClone(state);
     nextState.roundData.strikes += 1;
     const strikes = nextState.roundData.strikes;
     const events = [{ type: 'STRIKE', count: strikes }];
 
-    if (strikes >= nextState.config.maxStrikes) {
-      nextState.phase = 'STEAL';
-      events.push({ type: 'STEAL_STARTED', teamId: nextState.roundData.stealTeamId });
+    const isHunting = nextState.config.gameMode === 'hunting';
+
+    if (isHunting) {
+      if (strikes >= nextState.config.maxStrikes) {
+        const curId = nextState.roundData.currentHuntingTeamId;
+        if (curId && !nextState.roundData.huntingTurnsPlayed.includes(curId)) {
+          nextState.roundData.huntingTurnsPlayed.push(curId);
+        }
+        const remaining = nextState.config.teams.filter(
+          (t) => !nextState.roundData.huntingTurnsPlayed.includes(t.id)
+        );
+
+        if (remaining.length > 0) {
+          nextState.phase = 'HUNTING_SELECT';
+          nextState.roundData.currentHuntingTeamId = null;
+          events.push({
+            type: 'HUNTING_TURN_ENDED',
+            reason: 'max_strikes',
+            teamId: curId,
+            remainingTeams: remaining.map((t) => t.id),
+          });
+        } else {
+          finalizeRound(nextState, null, events);
+        }
+      }
+    } else {
+      if (strikes >= nextState.config.maxStrikes) {
+        nextState.phase = 'STEAL';
+        events.push({ type: 'STEAL_STARTED', teamId: nextState.roundData.stealTeamId });
+      }
     }
 
     return commit(nextState, events);
@@ -670,6 +768,30 @@ export function reduce(state, action) {
       return reduce(state, { type: 'STRIKE' });
     } else if (state.phase === 'STEAL') {
       return reduce(state, { type: 'STEAL_ANSWER', answerId: null });
+    } else if (state.phase === 'HUNTING_PLAY') {
+      const nextState = deepClone(state);
+      const curId = nextState.roundData.currentHuntingTeamId;
+      if (curId && !nextState.roundData.huntingTurnsPlayed.includes(curId)) {
+        nextState.roundData.huntingTurnsPlayed.push(curId);
+      }
+      const remaining = nextState.config.teams.filter(
+        (t) => !nextState.roundData.huntingTurnsPlayed.includes(t.id)
+      );
+      const events = [{ type: 'TIMER_EXPIRED' }];
+
+      if (remaining.length > 0) {
+        nextState.phase = 'HUNTING_SELECT';
+        nextState.roundData.currentHuntingTeamId = null;
+        events.push({
+          type: 'HUNTING_TURN_ENDED',
+          reason: 'timer_expired',
+          teamId: curId,
+          remainingTeams: remaining.map((t) => t.id),
+        });
+      } else {
+        finalizeRound(nextState, null, events);
+      }
+      return commit(nextState, events);
     } else {
       return {
         state,
@@ -700,7 +822,7 @@ export function reduce(state, action) {
       return { state, events: [{ type: 'IGNORED', reason: 'Ronde saat ini sudah selesai.' }] };
     }
     const nextState = deepClone(state);
-    const winnerId = nextState.roundData.controlTeamId || null;
+    const winnerId = nextState.roundData.controlTeamId || nextState.roundData.currentHuntingTeamId || null;
     const events = [{ type: 'ROUND_FORCE_FINISHED' }];
     finalizeRound(nextState, winnerId, events);
     return commit(nextState, events);
@@ -717,7 +839,8 @@ export function reduce(state, action) {
     if (nextRoundIndex < nextState.questions.length) {
       // Start next round
       nextState.roundIndex = nextRoundIndex;
-      nextState.phase = 'FACE_OFF';
+      const isHunting = nextState.config.gameMode === 'hunting';
+      nextState.phase = isHunting ? 'HUNTING_SELECT' : 'FACE_OFF';
 
       const nextPair = getFaceOffTeams(nextState.config, nextRoundIndex);
       nextState.roundData = {
@@ -727,8 +850,10 @@ export function reduce(state, action) {
         strikes: 0,
         controlTeamId: null,
         stealTeamId: null,
+        currentHuntingTeamId: null,
+        huntingTurnsPlayed: [],
         faceOff: {
-          activeTeams: [nextPair.teamA.id, nextPair.teamB.id],
+          activeTeams: nextPair.teamA && nextPair.teamB ? [nextPair.teamA.id, nextPair.teamB.id] : [],
           buzzTeamId: null,
           turnTeamId: null,
           firstAnswer: null,
@@ -774,11 +899,12 @@ function finalizeRound(nextState, winnerTeamId, events) {
     .map((a) => a.id);
   nextState.roundData.autoRevealedIds = autoRevealed;
 
+  const isHunting = nextState.config.gameMode === 'hunting';
   const pot = nextState.roundData.pot;
   const mult = nextState.config.multiplierEnabled ? (currentQ?.multiplier || 1) : 1;
-  const awarded = winnerTeamId ? pot * mult : 0;
+  const awarded = isHunting ? 0 : (winnerTeamId ? pot * mult : 0);
 
-  if (winnerTeamId && nextState.scores[winnerTeamId] !== undefined) {
+  if (!isHunting && winnerTeamId && nextState.scores[winnerTeamId] !== undefined) {
     nextState.scores[winnerTeamId] += awarded;
   }
 

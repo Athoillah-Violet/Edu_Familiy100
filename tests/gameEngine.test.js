@@ -523,3 +523,51 @@ test('20. Simulasi satu permainan penuh 3 ronde dengan data demo.json sampai FIN
   const summaries = getRoundSummaries(s);
   assert.equal(summaries.length, 3);
 });
+
+test('21. Mode Hunting Poin: Tim bergiliran berburu poin, skor langsung bertambah, 3 strike/timer oper ke tim berikutnya', () => {
+  let s = createGame(
+    { teams: basicTeams, gameMode: 'hunting', maxStrikes: 3 },
+    sampleQuestions
+  );
+
+  assert.equal(s.phase, 'HUNTING_SELECT');
+  assert.equal(s.config.gameMode, 'hunting');
+
+  // Guru memilih Tim A untuk mulai
+  let res = reduce(s, { type: 'SELECT_HUNTING_TEAM', teamId: 'team-a' });
+  s = res.state;
+  assert.equal(s.phase, 'HUNTING_PLAY');
+  assert.equal(s.roundData.currentHuntingTeamId, 'team-a');
+
+  // Tim A jawab kartu ans-1 (100 pt)
+  res = reduce(s, { type: 'REVEAL', answerId: 'ans-1' });
+  s = res.state;
+  assert.equal(s.scores['team-a'], 100);
+  assert.equal(s.scores['team-b'], 0);
+
+  // Tim A kena 3 strike -> giliran berakhir
+  s = reduce(s, { type: 'STRIKE' }).state;
+  s = reduce(s, { type: 'STRIKE' }).state;
+  res = reduce(s, { type: 'STRIKE' });
+  s = res.state;
+
+  // Fase kembali ke HUNTING_SELECT untuk memilih tim berikutnya (Tim B)
+  assert.equal(s.phase, 'HUNTING_SELECT');
+  assert.ok(s.roundData.huntingTurnsPlayed.includes('team-a'));
+
+  // Pilih Tim B
+  s = reduce(s, { type: 'SELECT_HUNTING_TEAM', teamId: 'team-b' }).state;
+  assert.equal(s.phase, 'HUNTING_PLAY');
+  assert.equal(s.roundData.currentHuntingTeamId, 'team-b');
+
+  // Tim B jawab ans-2 (80 pt)
+  s = reduce(s, { type: 'REVEAL', answerId: 'ans-2' }).state;
+  assert.equal(s.scores['team-b'], 80);
+
+  // Tim B kehabisan waktu -> giliran berakhir
+  res = reduce(s, { type: 'TIMER_EXPIRED' });
+  s = res.state;
+
+  // Karena Tim A dan Tim B sudah bermain semua, ronde selesai -> REFLECTION
+  assert.equal(s.phase, 'REFLECTION');
+});

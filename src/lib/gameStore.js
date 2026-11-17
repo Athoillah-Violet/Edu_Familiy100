@@ -12,6 +12,8 @@ const VALID_PHASES = new Set([
   'ROUND_END',
   'REFLECTION',
   'FINAL_RESULT',
+  'HUNTING_SELECT',
+  'HUNTING_PLAY',
 ]);
 
 function getStorage() {

@@ -117,9 +117,11 @@ function renderRoundSummaries(state) {
             </span>
             <div>
               <h4 class="font-bold text-sm text-slate-900 leading-snug">${escapeHtml(sum.question_text)}</h4>
-              <span class="text-xs text-slate-500">Pemenang: <strong>${
-                winner ? escapeHtml(winner.name) : 'Tidak ada'
-              }</strong> (${sum.awardedPoints} Pts)</span>
+              <span class="text-xs text-slate-500">${
+                state.config?.gameMode === 'hunting'
+                  ? 'Mode: <strong>Hunting Poin</strong> (Skor Akumulatif Langsung)'
+                  : `Pemenang: <strong>${winner ? escapeHtml(winner.name) : 'Tidak ada'}</strong> (${sum.awardedPoints} Pts)`
+              }</span>
             </div>
           </div>
           <span class="text-xs text-slate-400 group-open:rotate-180 transition-transform">&darr;</span>

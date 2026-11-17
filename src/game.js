@@ -100,6 +100,24 @@ function handleEvents(events) {
         showStrikeAnimation();
         break;
 
+      case 'HUNTING_TEAM_SELECTED': {
+        const team = state.config.teams.find((t) => t.id === ev.teamId);
+        showToast(`Giliran ${team?.name || 'Tim'} berburu poin!`, 'info');
+        break;
+      }
+
+      case 'HUNTING_TURN_ENDED': {
+        const team = state.config.teams.find((t) => t.id === ev.teamId);
+        if (ev.reason === 'max_strikes') {
+          showToast(`Batas strike tercapai! Giliran ${team?.name || 'Tim'} selesai.`, 'warning');
+        } else if (ev.reason === 'time_expired') {
+          showToast(`Waktu habis! Giliran ${team?.name || 'Tim'} selesai.`, 'warning');
+        } else {
+          showToast(`Giliran ${team?.name || 'Tim'} selesai.`, 'info');
+        }
+        break;
+      }
+
       case 'CONTROL_WON': {
         const winner = state.config.teams.find((t) => t.id === ev.teamId);
         audio.play('correct');
@@ -177,11 +195,12 @@ function startTimerForPhase() {
     return;
   }
 
-  // Timer is active during FACE_OFF (after buzz) or PLAYING or STEAL
+  // Timer is active during FACE_OFF (after buzz) or PLAYING or STEAL or HUNTING_PLAY
   const isTurnActive =
     !state.paused &&
     (state.phase === 'PLAYING' ||
       state.phase === 'STEAL' ||
+      state.phase === 'HUNTING_PLAY' ||
       (state.phase === 'FACE_OFF' && state.roundData?.faceOff?.turnTeamId));
 
   if (!isTurnActive) {
@@ -253,16 +272,19 @@ function renderAll() {
 
 function renderHeader() {
   const roundEl = document.getElementById('header-round');
-  const topicEl = document.getElementById('header-topic');
+  const modeBadge = document.getElementById('header-mode-badge');
   const multBadge = document.getElementById('header-multiplier');
   const potEl = document.getElementById('header-pot');
 
   if (roundEl) {
     roundEl.textContent = `Ronde ${state.roundIndex + 1} dari ${state.questions.length}`;
   }
-  if (topicEl) {
-    const q = getCurrentQuestion(state);
-    topicEl.textContent = q ? q.category_id || 'Materi BK' : 'Family 100 BK';
+  if (modeBadge) {
+    const isHunting = state.config?.gameMode === 'hunting';
+    modeBadge.textContent = isHunting ? 'Mode Hunting Poin' : 'Mode Family 100';
+    modeBadge.className = isHunting
+      ? 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200'
+      : 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200';
   }
   if (multBadge) {
     const q = getCurrentQuestion(state);
@@ -274,7 +296,11 @@ function renderHeader() {
         : 'inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200';
   }
   if (potEl) {
-    potEl.textContent = `${state.roundData?.pot || 0} Poin`;
+    if (state.config?.gameMode === 'hunting') {
+      potEl.textContent = 'Langsung Masuk';
+    } else {
+      potEl.textContent = `${state.roundData?.pot || 0} Poin`;
+    }
   }
 
   // Update Mute Button icon
@@ -371,6 +397,62 @@ function renderNowWhatBanner() {
       bannerText.innerHTML = `🎯 Giliran <strong>${escapeHtml(
         controlTeam?.name || 'Tim'
       )}</strong>. Klik kartu bila jawaban siswa benar, atau tekan Strike bila salah. <span class="ml-2 font-bold text-red-600">Strike: ${strikes}/${maxStrikes}</span>`;
+      break;
+    }
+
+    case 'HUNTING_SELECT': {
+      const huntingTurnsPlayed = roundData.huntingTurnsPlayed || [];
+      const remainingTeams = (state.config?.teams || []).filter(
+        (t) => !huntingTurnsPlayed.includes(t.id)
+      );
+
+      bannerText.innerHTML = `🎯 <strong>Mode Hunting Poin:</strong> Silakan pilih tim yang akan berburu poin di ronde ini:`;
+
+      bannerAction.innerHTML = `
+        <div class="flex items-center space-x-2 flex-wrap gap-1.5">
+          ${remainingTeams
+            .map(
+              (t) => `
+            <button type="button" class="btn-select-hunting px-3 py-1 text-white rounded-lg text-xs font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all" style="background-color: ${escapeHtml(
+              t.color || '#4f46e5'
+            )};" data-team-id="${escapeHtml(t.id)}">
+              Giliran ${escapeHtml(t.name)} &rarr;
+            </button>
+          `
+            )
+            .join('')}
+        </div>
+      `;
+
+      bannerAction.querySelectorAll('.btn-select-hunting').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const teamId = btn.dataset.teamId;
+          dispatch({ type: 'SELECT_HUNTING_TEAM', teamId });
+        });
+      });
+      break;
+    }
+
+    case 'HUNTING_PLAY': {
+      const activeTeam = state.config?.teams?.find(
+        (t) => t.id === roundData.currentHuntingTeamId
+      );
+      const strikes = roundData.strikes || 0;
+      const maxStrikes = state.config.maxStrikes || 3;
+
+      bannerText.innerHTML = `🏹 <strong>Mode Hunting:</strong> Giliran <strong>${escapeHtml(
+        activeTeam?.name || 'Tim'
+      )}</strong>! Sebutkan jawaban, klik kartu atau ketik di depan. Poin langsung masuk. <span class="ml-2 font-bold text-red-600">Strike: ${strikes}/${maxStrikes}</span>`;
+
+      bannerAction.innerHTML = `
+        <button id="btn-hunting-pass" type="button" class="px-3 py-1 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 shadow-sm transition-colors">
+          Oper ke Tim Lain &rarr;
+        </button>
+      `;
+
+      bannerAction.querySelector('#btn-hunting-pass')?.addEventListener('click', () => {
+        dispatch({ type: 'PASS_HUNTING_TURN' });
+      });
       break;
     }
 
@@ -558,8 +640,14 @@ function handleCardClick(answerId) {
       break;
     }
 
-    case 'PLAYING': {
+    case 'PLAYING':
+    case 'HUNTING_PLAY': {
       dispatch({ type: 'REVEAL', answerId });
+      break;
+    }
+
+    case 'HUNTING_SELECT': {
+      showToast('Pilih tim yang akan berburu poin terlebih dahulu di banner atas!', 'warning');
       break;
     }
 
@@ -583,46 +671,80 @@ function renderTeamsScoreboard() {
   const controlTeamId = roundData.controlTeamId;
   const stealTeamId = roundData.stealTeamId;
   const faceOff = roundData.faceOff || {};
+  const isHuntingMode = state.config?.gameMode === 'hunting';
+  const currentHuntingTeamId = roundData.currentHuntingTeamId;
+  const huntingTurnsPlayed = roundData.huntingTurnsPlayed || [];
 
   container.innerHTML = teams
     .map((team, idx) => {
-      const isControl = team.id === controlTeamId && state.phase === 'PLAYING';
-      const isSteal = team.id === stealTeamId && state.phase === 'STEAL';
-      const isBuzzing = team.id === faceOff.buzzTeamId && state.phase === 'FACE_OFF';
-      const isTurn = team.id === faceOff.turnTeamId && state.phase === 'FACE_OFF';
-
       const keyShortcuts = ['A', 'L', 'S', 'K'];
       const shortcutKey = keyShortcuts[idx] || '';
 
       let statusBadge = '';
       let borderHighlight = 'border-slate-200';
+      let buttonHtml = '';
 
-      if (isControl) {
-        statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-600 text-white">Giliran</span>';
-        borderHighlight = 'border-indigo-600 ring-2 ring-indigo-500/30';
-      } else if (isSteal) {
-        statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500 text-white">Kesempatan Merebut</span>';
-        borderHighlight = 'border-amber-500 ring-2 ring-amber-400/30';
-      } else if (isTurn) {
-        if (faceOff.firstAnswer) {
-          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-600 text-white animate-pulse">Kesempatan Rebut</span>';
-          borderHighlight = 'border-amber-600 ring-2 ring-amber-500/30';
-        } else {
-          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white animate-pulse">Menjawab Bel</span>';
+      if (isHuntingMode) {
+        const isHuntingActive = team.id === currentHuntingTeamId && state.phase === 'HUNTING_PLAY';
+        const hasPlayedThisRound = huntingTurnsPlayed.includes(team.id);
+
+        if (isHuntingActive) {
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white animate-pulse">Berburu Poin</span>';
           borderHighlight = 'border-emerald-600 ring-2 ring-emerald-500/30';
+          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-bold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">Sedang Menebak</div>`;
+        } else if (hasPlayedThisRound) {
+          statusBadge = '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">Selesai Giliran</span>';
+          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-slate-50 rounded border border-slate-100">Giliran Selesai</div>`;
+        } else if (state.phase === 'HUNTING_SELECT') {
+          statusBadge = '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">Menunggu</span>';
+          buttonHtml = `<button type="button" class="btn-select-hunting-card mt-2 w-full py-1.5 rounded-lg text-xs font-bold text-white shadow-sm hover:opacity-90 active:scale-95 transition-transform" style="background-color: ${escapeHtml(
+            team.color || '#4f46e5'
+          )};" data-team-id="${escapeHtml(team.id)}">Pilih Tim Ini</button>`;
         }
-      } else if (state.phase === 'FACE_OFF' && faceOff.firstAnswer && team.id === faceOff.firstAnswer.teamId) {
-        const rankText = faceOff.firstAnswer.valid ? `#${faceOff.firstAnswer.rank} (${faceOff.firstAnswer.points} Poin)` : 'Salah';
-        statusBadge = `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-300">Tebakan: ${rankText}</span>`;
-      }
+      } else {
+        const isControl = team.id === controlTeamId && state.phase === 'PLAYING';
+        const isSteal = team.id === stealTeamId && state.phase === 'STEAL';
+        const isTurn = team.id === faceOff.turnTeamId && state.phase === 'FACE_OFF';
 
-      const isActiveFaceOffTeam =
-        !faceOff.activeTeams || faceOff.activeTeams.includes(team.id);
-      const showBuzzBtn =
-        state.phase === 'FACE_OFF' &&
-        isActiveFaceOffTeam &&
-        !faceOff.turnTeamId &&
-        !faceOff.waitingForChoice;
+        if (isControl) {
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-600 text-white">Giliran</span>';
+          borderHighlight = 'border-indigo-600 ring-2 ring-indigo-500/30';
+        } else if (isSteal) {
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500 text-white">Kesempatan Merebut</span>';
+          borderHighlight = 'border-amber-500 ring-2 ring-amber-400/30';
+        } else if (isTurn) {
+          if (faceOff.firstAnswer) {
+            statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-600 text-white animate-pulse">Kesempatan Rebut</span>';
+            borderHighlight = 'border-amber-600 ring-2 ring-amber-500/30';
+          } else {
+            statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white animate-pulse">Menjawab Bel</span>';
+            borderHighlight = 'border-emerald-600 ring-2 ring-emerald-500/30';
+          }
+        } else if (state.phase === 'FACE_OFF' && faceOff.firstAnswer && team.id === faceOff.firstAnswer.teamId) {
+          const rankText = faceOff.firstAnswer.valid ? `#${faceOff.firstAnswer.rank} (${faceOff.firstAnswer.points} Poin)` : 'Salah';
+          statusBadge = `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-300">Tebakan: ${rankText}</span>`;
+        }
+
+        const isActiveFaceOffTeam =
+          !faceOff.activeTeams || faceOff.activeTeams.includes(team.id);
+        const showBuzzBtn =
+          state.phase === 'FACE_OFF' &&
+          isActiveFaceOffTeam &&
+          !faceOff.turnTeamId &&
+          !faceOff.waitingForChoice;
+
+        if (showBuzzBtn) {
+          buttonHtml = `<button type="button" class="btn-buzz mt-2 w-full py-1.5 rounded-lg text-xs font-bold text-white shadow-sm hover:opacity-90 active:scale-95 transition-transform" style="background-color: ${escapeHtml(
+            team.color
+          )};" data-team-id="${escapeHtml(team.id)}">
+            Bel [${shortcutKey}]
+          </button>`;
+        } else if (state.phase === 'FACE_OFF' && !isActiveFaceOffTeam && !faceOff.turnTeamId) {
+          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-slate-50 rounded border border-slate-100">
+            Menonton Rebutan
+          </div>`;
+        }
+      }
 
       return `
       <div class="bg-white rounded-xl border p-3 flex flex-col justify-between shadow-sm transition-all relative ${borderHighlight}">
@@ -639,19 +761,7 @@ function renderTeamsScoreboard() {
           <span class="text-[11px] text-slate-400 font-semibold">Poin</span>
         </div>
 
-        ${
-          showBuzzBtn
-            ? `<button type="button" class="btn-buzz mt-2 w-full py-1.5 rounded-lg text-xs font-bold text-white shadow-sm hover:opacity-90 active:scale-95 transition-transform" style="background-color: ${escapeHtml(
-                team.color
-              )};" data-team-id="${escapeHtml(team.id)}">
-                Bel [${shortcutKey}]
-              </button>`
-            : state.phase === 'FACE_OFF' && !isActiveFaceOffTeam && !faceOff.turnTeamId
-            ? `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-slate-50 rounded border border-slate-100">
-                Menonton Rebutan
-              </div>`
-            : ''
-        }
+        ${buttonHtml}
       </div>
     `;
     })
@@ -662,6 +772,14 @@ function renderTeamsScoreboard() {
     btn.addEventListener('click', () => {
       const teamId = btn.dataset.teamId;
       dispatch({ type: 'BUZZ', teamId });
+    });
+  });
+
+  // Attach Hunting card buttons
+  container.querySelectorAll('.btn-select-hunting-card').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const teamId = btn.dataset.teamId;
+      dispatch({ type: 'SELECT_HUNTING_TEAM', teamId });
     });
   });
 }
@@ -921,6 +1039,7 @@ function setupEventListeners() {
         break;
       }
       case 'PLAYING':
+      case 'HUNTING_PLAY':
         dispatch({ type: 'STRIKE' });
         break;
       case 'STEAL':

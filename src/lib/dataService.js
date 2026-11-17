@@ -6,7 +6,16 @@ const DEMO_MODE_ERROR = 'Mode demo: fitur ini butuh koneksi database';
 
 function getDemoCategories(publishedOnly = true) {
   const cats = Array.isArray(demoData.categories) ? demoData.categories : [];
-  return publishedOnly ? cats.filter((c) => c.is_published) : cats;
+  const allQ = Array.isArray(demoData.questions) ? demoData.questions : [];
+  const filtered = publishedOnly ? cats.filter((c) => c.is_published) : cats;
+  return filtered.map((c) => {
+    const count = allQ.filter((q) => q.category_id === c.id).length;
+    return {
+      ...c,
+      questions_count: count,
+      question_count: count,
+    };
+  });
 }
 
 function getDemoQuestionsWithAnswers(categoryId) {

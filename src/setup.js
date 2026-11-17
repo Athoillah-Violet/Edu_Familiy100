@@ -18,6 +18,7 @@ let state = {
   selectedCategoryId: null,
   selectedCategory: null,
   roundCount: 3,
+  gameMode: 'family100',
   teams: [
     { id: 'team-1', name: 'Tim 1', color: '#3b82f6' },
     { id: 'team-2', name: 'Tim 2', color: '#ef4444' },
@@ -341,6 +342,24 @@ function showError(el, msg) {
 }
 
 function setupEventListeners() {
+  // Step 1: Game Mode radio selector
+  const modeRadios = document.querySelectorAll('input[name="game-mode"]');
+  modeRadios.forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      state.gameMode = e.target.value;
+      document.querySelectorAll('.game-mode-card').forEach((card) => {
+        const isMatch = card.dataset.mode === state.gameMode;
+        if (isMatch) {
+          card.className =
+            'game-mode-card cursor-pointer p-4 rounded-xl border border-indigo-600 bg-indigo-50/30 flex items-start space-x-3 transition-all select-none';
+        } else {
+          card.className =
+            'game-mode-card cursor-pointer p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white flex items-start space-x-3 transition-all select-none';
+        }
+      });
+    });
+  });
+
   // Step 1: Round count select
   const roundSelect = document.getElementById('round-count-select');
   roundSelect?.addEventListener('change', (e) => {
@@ -504,6 +523,7 @@ async function startGame() {
       maxStrikes: state.maxStrikes,
       multiplierEnabled: state.multiplierEnabled,
       soundEnabled: state.soundEnabled,
+      gameMode: state.gameMode || 'family100',
     };
 
     // Initialize game state with pure deterministic engine
