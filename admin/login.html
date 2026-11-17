@@ -7,9 +7,33 @@
 </head>
 <body>
   <h1>Login Admin / Guru BK</h1>
-  <p>Halaman Autentikasi Admin (Placeholder)</p>
+  <p>Masukkan akun admin bimbingan konseling untuk mengelola paket soal.</p>
+
+  <div id="notice-area"></div>
+
+  <form id="login-form">
+    <div>
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email" required autocomplete="email" placeholder="admin@sekolah.sch.id">
+    </div>
+    <br>
+    <div>
+      <label for="password">Password:</label><br>
+      <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="******">
+    </div>
+    <br>
+    <div>
+      <button type="submit" id="submit-btn">Masuk</button>
+    </div>
+  </form>
+
+  <p id="status-message" style="margin-top: 16px; color: #b91c1c;"></p>
+
+  <hr>
   <nav>
-    <a href="/index.html">Kembali ke Beranda</a>
+    <a href="/index.html">&larr; Kembali ke Beranda</a>
   </nav>
+
+  <script type="module" src="/src/admin/login.js"></script>
 </body>
 </html>
