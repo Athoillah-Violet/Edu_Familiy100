@@ -5,6 +5,7 @@ import {
   deleteCategory,
   logout,
 } from '../lib/dataService.js';
+import { importCategory } from '../lib/portability.js';
 import { validateCategory } from '../lib/validators.js';
 import { escapeHtml, showToast } from '../lib/ui.js';
 
@@ -116,6 +117,60 @@ function initDashboard(user) {
       categoriesListEl.appendChild(card);
     });
   }
+
+  // Aksi: Impor paket JSON
+  const importFileInput = document.getElementById('import-file-input');
+  const btnDoImport = document.getElementById('btn-do-import');
+  const importStatusEl = document.getElementById('import-status');
+
+  btnDoImport?.addEventListener('click', async () => {
+    const file = importFileInput?.files?.[0];
+    if (!file) {
+      alert('Pilih berkas .json terlebih dahulu.');
+      return;
+    }
+
+    btnDoImport.disabled = true;
+    importStatusEl.textContent = 'Membaca dan memvalidasi berkas...';
+    importStatusEl.style.color = '#0284c7';
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const text = e.target.result;
+        importStatusEl.textContent = 'Menyimpan paket hasil impor ke database...';
+        const res = await importCategory(text);
+
+        btnDoImport.disabled = false;
+
+        if (res.error) {
+          importStatusEl.textContent = 'Gagal';
+          importStatusEl.style.color = '#dc2626';
+          alert(res.error);
+        } else {
+          importStatusEl.textContent = 'Berhasil diimpor!';
+          importStatusEl.style.color = '#16a34a';
+          showToast(`Paket "${res.data.category.title}" berhasil diimpor sebagai draft (${res.data.totalQuestions} soal).`, 'success');
+          importFileInput.value = '';
+          await loadCategories();
+        }
+      } catch (err) {
+        btnDoImport.disabled = false;
+        importStatusEl.textContent = 'Error';
+        importStatusEl.style.color = '#dc2626';
+        alert('Terjadi kesalahan saat memproses berkas impor.');
+      }
+    };
+
+    reader.onerror = () => {
+      btnDoImport.disabled = false;
+      importStatusEl.textContent = 'Gagal membaca berkas.';
+      importStatusEl.style.color = '#dc2626';
+      alert('Gagal membaca berkas file.');
+    };
+
+    reader.readAsText(file);
+  });
 
   // Aksi: Buat paket baru
   createForm?.addEventListener('submit', async (e) => {

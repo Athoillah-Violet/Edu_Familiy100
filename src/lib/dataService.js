@@ -1,6 +1,6 @@
 import { supabase, isDemoMode } from './supabase.js';
 import demoData from '../data/demo.json' with { type: 'json' };
-import { validateCategory } from './validators.js';
+import { validateCategory, validateQuestion, validateAnswers } from './validators.js';
 
 const DEMO_MODE_ERROR = 'Mode demo: fitur ini butuh koneksi database';
 
@@ -649,6 +649,104 @@ export async function replaceAnswers(questionId, answers) {
       error_detail: err.message || String(err),
     };
   }
+}
+
+/**
+ * Saves a question and its answers in one coordinated sequence.
+ * 1. Upsert soal
+ * 2. Ambil salinan jawaban lama
+ * 3. ReplaceAnswers dengan jawaban terurut dari poin terbesar
+ * 4. Jika replaceAnswers gagal, coba pulihkan jawaban lama dari salinan.
+ * Catatan: Ini bukan transaksi atomik pada level database engine.
+ *
+ * @param {object} question - { id?, category_id, question_text, reflection_note, discussion_prompts, multiplier, sort_order }
+ * @param {Array<{ answer_text: string, points: number, keywords?: Array<string> }>} answers
+ * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
+ */
+export async function saveQuestionWithAnswers(question, answers) {
+  const qVal = validateQuestion(question);
+  const ansVal = validateAnswers(answers);
+
+  if (!qVal.ok || !ansVal.ok) {
+    const errorList = [...qVal.errors, ...ansVal.errors];
+    return { data: null, error: errorList.join(' ') };
+  }
+
+  if (isDemoMode || !supabase) {
+    return { data: null, error: DEMO_MODE_ERROR };
+  }
+
+  // 1. Upsert question
+  const qRes = await upsertQuestion(question);
+  if (qRes.error || !qRes.data) {
+    return {
+      data: null,
+      error: qRes.error || 'Gagal menyimpan data soal.',
+      error_detail: qRes.error_detail,
+    };
+  }
+
+  const questionId = qRes.data.id;
+
+  // 2. Ambil salinan jawaban lama jika sebelumnya sudah ada
+  let oldAnswers = [];
+  try {
+    const { data: fetchedOld, error: fetchErr } = await supabase
+      .from('answers')
+      .select('answer_text, points, keywords, sort_order')
+      .eq('question_id', questionId);
+
+    if (!fetchErr && Array.isArray(fetchedOld)) {
+      oldAnswers = fetchedOld;
+    }
+  } catch (err) {
+    console.warn('Gagal mengambil backup jawaban lama:', err);
+  }
+
+  // 3. Urutkan jawaban otomatis dari poin terbesar dan hitung ulang sort_order
+  const sortedAnswers = [...answers]
+    .sort((a, b) => (Number(b.points) || 0) - (Number(a.points) || 0))
+    .map((ans, idx) => ({
+      ...ans,
+      sort_order: idx + 1,
+    }));
+
+  // 4. Replace answers
+  const replaceRes = await replaceAnswers(questionId, sortedAnswers);
+
+  // 5. Jika gagal, coba pulihkan dari salinan jawaban lama
+  if (replaceRes.error) {
+    if (oldAnswers.length > 0) {
+      try {
+        await supabase.from('answers').delete().eq('question_id', questionId);
+        await supabase.from('answers').insert(
+          oldAnswers.map((oa, idx) => ({
+            question_id: questionId,
+            answer_text: oa.answer_text,
+            points: oa.points,
+            keywords: oa.keywords,
+            sort_order: oa.sort_order || idx + 1,
+          }))
+        );
+      } catch (restoreErr) {
+        console.error('Gagal melakukan rollback pemulihan jawaban lama:', restoreErr);
+      }
+    }
+
+    return {
+      data: null,
+      error: `Gagal memperbarui jawaban (${replaceRes.error}). Sistem telah berusaha memulihkan jawaban sebelumnya.`,
+      error_detail: replaceRes.error_detail,
+    };
+  }
+
+  return {
+    data: {
+      ...qRes.data,
+      answers: replaceRes.data,
+    },
+    error: null,
+  };
 }
 
 /**

@@ -80,7 +80,25 @@ Target deploy aplikasi ini adalah static build:
 
 ---
 
-## 5. Catatan Keamanan Penting (Row Level Security / RLS)
+## 5. Panduan Manajemen Admin Supabase
+
+Untuk memberikan hak akses Admin / Guru BK kepada akun pengguna:
+1. **Buat Akun Pengguna:**
+   - Masuk ke **Supabase Dashboard** -> Proyek Anda -> **Authentication** -> **Users**.
+   - Klik **Add User** -> Masukkan email dan password admin (misal: `guru.bk@sekolah.sch.id`).
+   - Salin **User UID** pengguna tersebut.
+2. **Daftarkan UID ke Tabel `admins`:**
+   - Buka menu **Table Editor** atau **SQL Editor** di Supabase Dashboard.
+   - Jalankan query SQL berikut (ganti `<USER_UID>` dengan UID asli):
+     ```sql
+     INSERT INTO public.admins (user_id)
+     VALUES ('<USER_UID>');
+     ```
+3. Akun tersebut kini dapat masuk melalui `/admin/login.html` dan mengelola paket soal.
+
+---
+
+## 6. Catatan Keamanan & Keterbatasan Non-Atomik
 
 > [!IMPORTANT]
 > Keamanan data dan hak akses guru/admin diatur sepenuhnya oleh **Row Level Security (RLS)** pada database Supabase, **BUKAN** oleh pengecekan frontend / UI semata.
@@ -89,3 +107,9 @@ Target deploy aplikasi ini adalah static build:
 > - Kebijakan `SELECT` publik hanya diizinkan untuk kategori dengan status `is_published = true` dan soal-soal terkait.
 > - Operasi tulis (`INSERT`, `UPDATE`, `DELETE`) dan pembacaan draft soal hanya diizinkan melalui RLS policy bagi user yang terdaftar pada tabel `admins`.
 > - Frontend hanya memvalidasi input dasar dan menampilkan antarmuka berdasarkan status auth.
+
+> [!WARNING]
+> **Keterbatasan Non-Atomik pada Pengelolaan Jawaban:**
+> Fungsi `saveQuestionWithAnswers()` bekerja secara berurutan: menyimpan/memperbarui data soal, mencadangkan jawaban lama, membersihkan jawaban lama, lalu memasukkan jawaban baru yang telah diurutkan berdasarkan poin.
+> 
+> Karena klien Supabase JS publik tidak mendukung transaksi atomik multi-langkah (`BEGIN ... COMMIT`) tanpa database RPC function, sistem mengimplementasikan *software-level rollback* (jika penyimpanan jawaban baru gagal, sistem otomatis berupaya memulihkan jawaban lama). Jika terjadi kegagalan jaringan di tengah proses, disarankan memeriksa kembali daftar jawaban di halaman editor soal.
