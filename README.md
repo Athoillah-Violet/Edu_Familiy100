@@ -1,21 +1,29 @@
 # Edu Family 100 - Bimbingan Konseling (BK)
 
-Web game edukasi interaktif berbasis "Family 100" khusus pembelajaran Bimbingan Konseling (BK) untuk siswa SMP/SMA.
+Media kuis edukatif interaktif berbasis "Family 100" khusus pembelajaran Bimbingan Konseling (BK) untuk siswa SMP dan SMA. Aplikasi dirancang khusus untuk dipandu oleh guru BK di depan kelas menggunakan layar proyektor.
 
 ---
 
-## 1. Prasyarat & Instalasi
+## 1. Prasyarat & Instalasi Lokal
 
-Pastikan telah menginstal [Node.js](https://nodejs.org/) (versi LTS disarankan, >= 18).
+Pastikan telah menginstal [Node.js](https://nodejs.org/) (versi LTS disarankan, Node.js >= 18).
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/Athoillah-Violet/Edu_Familiy100.git
 cd Edu_Familiy100
 
-# Install dependensi
+# 2. Install dependensi
 npm install
+
+# 3. Jalankan pengujian unit test engine
+npm test
+
+# 4. Jalankan development server lokal
+npm run dev
 ```
+
+Server lokal akan berjalan di `http://localhost:5173`.
 
 ---
 
@@ -23,134 +31,110 @@ npm install
 
 Aplikasi menggunakan `@supabase/supabase-js` v2 dengan arsitektur *public client-side*.
 
-1. Duplikasi file `.env.example` menjadi `.env`:
+1. Salin berkas percontohan `.env.example` menjadi `.env`:
    ```bash
    cp .env.example .env
    ```
-2. Dapatkan nilai konfigurasi dari dashboard Supabase Anda:
-   - Buka **Supabase Dashboard** -> Proyek Anda -> **Project Settings** -> **API**.
-   - Salin **Project URL** ke `VITE_SUPABASE_URL`.
-   - Salin **anon / public key** ke `VITE_SUPABASE_PUBLISHABLE_KEY`.
+2. Isi variabel dari dashboard Supabase Anda (**Project Settings** -> **API**):
    ```env
-   VITE_SUPABASE_URL=https://xyzcompany.supabase.co
+   VITE_SUPABASE_URL=https://proyek-anda.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
    ```
+
 > [!NOTE]
-> Jika file `.env` tidak diisi atau variabel kosong, aplikasi secara otomatis berjalan dalam **Mode Demo** (mengambil paket materi dari `src/data/demo.json` secara offline). Jangan pernah memasukkan `service_role` key ke dalam project frontend ini.
+> Jika file `.env` dikosongkan, aplikasi secara otomatis berjalan dalam **Mode Demo (Offline)** menggunakan paket data lokal `src/data/demo.json`. Jangan pernah memasukkan `service_role` / `secret key` ke dalam aplikasi ini.
 
 ---
 
-## 3. Menjalankan Server Lokal (Development)
+## 3. Langkah Setup Supabase Database
 
-```bash
-# Jalankan development server Vite
-npm run dev
+Ikuti urutan langkah berikut di **Supabase Dashboard**:
 
-# Menjalankan pengujian logika matcher
-npm test
+### Langkah 1: Eksekusi `schema.sql`
+- Masuk ke **Supabase Dashboard** -> menu **SQL Editor**.
+- Buka dan salin seluruh isi berkas `schema.sql`.
+- Klik **Run** untuk membuat tabel (`categories`, `questions`, `answers`, `admins`, `game_sessions`) beserta seluruh kebijakan **Row Level Security (RLS)**.
 
-# Build untuk produksi
-npm run build
-```
+### Langkah 2: Eksekusi `seed.sql`
+- Di **SQL Editor**, buka dan salin berkas `seed.sql`.
+- Klik **Run** untuk memasukkan materi dan soal awal (Anti-Perundungan & Manajemen Waktu Belajar).
 
-Setelah server berjalan, Anda dapat membuka:
-- `http://localhost:5173/` : Halaman Utama
-- `http://localhost:5173/setup.html` : Setup Permainan
-- `http://localhost:5173/game.html` : Arena Game
-- `http://localhost:5173/result.html` : Ringkasan Hasil & Refleksi BK
-- `http://localhost:5173/admin/login.html` : Login Admin / Guru BK
-- `http://localhost:5173/admin/index.html` : Dashboard Kategori Soal
-- `http://localhost:5173/admin/editor.html` : Editor CRUD Soal & Jawaban
-- `http://localhost:5173/test.html` : Halaman Uji Backend (*hapus sebelum produksi*)
+### Langkah 3: Buat Akun Pengguna Admin Guru
+- Masuk ke menu **Authentication** -> **Users**.
+- Klik tombol **Add User** -> **Create User**.
+- Masukkan email dan password guru BK (contoh: `guru.bk@sekolah.sch.id`).
+- Salin nilai **User UID** dari akun yang baru dibuat.
+
+### Langkah 4: Matikan Pendaftaran Publik (Disable Public Sign-Up)
+- Masuk ke **Authentication** -> **Providers** -> **Email**.
+- Matikan opsi **"Allow new users to sign up"** (unchecked).
+- Simpan perubahan. Dengan ini, hanya admin yang dibuat manual oleh sekolah yang bisa memiliki akun.
+
+### Langkah 5: Daftarkan UID ke Tabel `admins`
+- Kembali ke **SQL Editor**, jalankan query berikut (ganti `<USER_UID>` dengan UID dari Langkah 3):
+  ```sql
+  INSERT INTO public.admins (user_id)
+  VALUES ('<USER_UID>');
+  ```
+- Akun guru BK kini telah aktif dan memiliki hak akses penuh untuk membuat/mengedit materi di `/admin/login.html`.
 
 ---
 
 ## 4. Panduan Deploy ke Vercel
 
-Target deploy aplikasi ini adalah static build:
-1. Hubungkan repository GitHub `Edu_Familiy100` ke Vercel.
-2. Konfigurasi project di Vercel:
+Aplikasi ini telah dikonfigurasi sebagai static multi-page application via `vercel.json`:
+
+1. Buka [Vercel Dashboard](https://vercel.com/) dan pilih **Add New...** -> **Project**.
+2. Hubungkan repository GitHub: `Athoillah-Violet/Edu_Familiy100`.
+3. Pada halaman konfigurasi build:
    - **Framework Preset**: Vite
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
-3. Tambahkan **Environment Variables** di dashboard Vercel (**Settings** -> **Environment Variables**):
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_PUBLISHABLE_KEY`
-4. Tekan tombol **Deploy**.
+4. Tambahkan **Environment Variables**:
+   - `VITE_SUPABASE_URL` = *(URL Proyek Supabase)*
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` = *(Anon Public Key Supabase)*
+5. Klik tombol **Deploy**.
 
 ---
 
-## 5. Panduan Manajemen Admin Supabase
+## 5. Struktur Halaman & Alur Penggunaan
 
-Untuk memberikan hak akses Admin / Guru BK kepada akun pengguna:
-1. **Buat Akun Pengguna:**
-   - Masuk ke **Supabase Dashboard** -> Proyek Anda -> **Authentication** -> **Users**.
-   - Klik **Add User** -> Masukkan email dan password admin (misal: `guru.bk@sekolah.sch.id`).
-   - Salin **User UID** pengguna tersebut.
-2. **Daftarkan UID ke Tabel `admins`:**
-   - Buka menu **Table Editor** atau **SQL Editor** di Supabase Dashboard.
-   - Jalankan query SQL berikut (ganti `<USER_UID>` dengan UID asli):
-     ```sql
-     INSERT INTO public.admins (user_id)
-     VALUES ('<USER_UID>');
-     ```
-3. Akun tersebut kini dapat masuk melalui `/admin/login.html` dan mengelola paket soal.
+- `/index.html` : **Beranda Aplikasi** (Pengenalan alur permainan 4 langkah, pilihan materi survei, dan tautan mulai).
+- `/setup.html` : **Wizard Pengaturan Sesi Permainan** (3 langkah: pilih topik & jumlah ronde, bagi 2-4 kelompok siswa dan warna, atur timer dan batas strike).
+- `/game.html` : **Arena Permainan Interaktif** (Tampilan layar proyektor kelas: pertanyaan besar, kartu survei dinamis, papan skor tim, banner panduan fase "Sekarang Apa?", dan panel kendali guru dengan tombol pintasan keyboard `H`).
+- `/result.html` : **Hasil Akhir & Refleksi** (Pengumuman pemenang, papan peringkat semua kelompok, ringkasan per ronde yang dapat dibuka-tutup, dan tombol cetak).
+- `/admin/login.html` : **Login Admin Guru BK** (Pintu masuk pengelola materi pembelajaran).
+- `/admin/index.html` : **Dashboard Kategori Materi** (Kelola status publikasi, buat paket topik, dan impor paket JSON).
+- `/admin/editor.html` : **Editor Soal & Jawaban** (Kelola pertanyaan, bobot poin 3-8 jawaban, reorder urutan soal, catatan refleksi karakter, dan ekspor paket JSON).
 
 ---
 
-## 6. Catatan Keamanan & Keterbatasan Non-Atomik
+## 6. Prinsip Engine & Kontrak Keamanan
 
-> [!IMPORTANT]
-> Keamanan data dan hak akses guru/admin diatur sepenuhnya oleh **Row Level Security (RLS)** pada database Supabase, **BUKAN** oleh pengecekan frontend / UI semata.
-> 
-> - Semua tabel (`categories`, `questions`, `answers`, `game_sessions`, `admins`) harus mengaktifkan RLS di Supabase.
-> - Kebijakan `SELECT` publik hanya diizinkan untuk kategori dengan status `is_published = true` dan soal-soal terkait.
-> - Operasi tulis (`INSERT`, `UPDATE`, `DELETE`) dan pembacaan draft soal hanya diizinkan melalui RLS policy bagi user yang terdaftar pada tabel `admins`.
-> - Frontend hanya memvalidasi input dasar dan menampilkan antarmuka berdasarkan status auth.
-
-> [!WARNING]
-> **Keterbatasan Non-Atomik pada Pengelolaan Jawaban:**
-> Fungsi `saveQuestionWithAnswers()` bekerja secara berurutan: menyimpan/memperbarui data soal, mencadangkan jawaban lama, membersihkan jawaban lama, lalu memasukkan jawaban baru yang telah diurutkan berdasarkan poin.
-> 
-> Karena klien Supabase JS publik tidak mendukung transaksi atomik multi-langkah (`BEGIN ... COMMIT`) tanpa database RPC function, sistem mengimplementasikan *software-level rollback* (jika penyimpanan jawaban baru gagal, sistem otomatis berupaya memulihkan jawaban lama). Jika terjadi kegagalan jaringan di tengah proses, disarankan memeriksa kembali daftar jawaban di halaman editor soal.
+1. **Pure Deterministic Engine (`src/lib/gameEngine.js`):**
+   - Seluruh aturan permainan (Face-Off, Play, Strike, Steal, Refleksi, Poin) diatur oleh fungsi murni `reduce(state, action)`.
+   - UI tidak memanipulasi skor atau fase secara sepihak; UI hanya mengirimkan aksi (`dispatch(action)`) dan merefleksikan perubahan `state`.
+2. **Offline-Safe Persistence (`src/lib/gameStore.js` & `src/lib/sessionReport.js`):**
+   - Setiap aksi tersimpan aman ke `localStorage`. Permainan yang tidak sengaja tertutup atau ter-refresh dapat langsung dilanjutkan tanpa kehilangan skor.
+   - Selesai permainan, laporan sesi dikirim ke Supabase. Jika terjadi kendala koneksi internet sekolah, laporan otomatis tersimpan di antrean perangkat (*pending sessions*) dan dapat dikirim ulang sewaktu-waktu.
+3. **Web Audio API (`src/lib/audio.js`):**
+   - Efek suara bel, strike buzzer, kartu terbuka, dan denting waktu disintesis langsung menggunakan Web Audio API tanpa memerlukan berkas audio eksternal.
+4. **Desain Ramah Sekolah:**
+   - Bersih, terang, menggunakan tema indigo dan warna tim lembut, tanpa neon, tanpa efek mencolok yang memicu kelelahan visual siswa, serta mendukung `prefers-reduced-motion`.
 
 ---
 
-## 7. Arsitektur Engine Game Murni & Alur Permainan
+## 7. Checklist Serah Terima ke Klien (Sekolah / Guru BK)
 
-Aplikasi game ini dipisahkan secara tegas antara logika game (*game engine*) dan antarmuka pengguna (*UI*):
+Gunakan daftar periksa ini saat serah terima aplikasi kepada pihak sekolah:
 
-### Alur Fase Permainan
-$$\text{FACE\_OFF} \longrightarrow \text{PLAYING} \longrightarrow \text{STEAL} \longrightarrow \text{ROUND\_END} \longrightarrow \text{REFLECTION} \longrightarrow \text{NEXT} \longrightarrow (\text{FINAL\_RESULT})$$
-
-1. **FACE_OFF:** Dua tim berhadapan menekan buzzer (`BUZZ`). Jawaban peringkat 1 langsung memenangkan kontrol. Jika non-top, tim lawan diberi kesempatan menjawab lebih tinggi. Pemenang memilih Main (`play`) atau Oper (`pass`).
-2. **PLAYING:** Tim berkontrol menebak sisa jawaban (`REVEAL`). Jika melakukan kesalahan atau waktu habis, tim menerima `STRIKE`. Tiga strike memicu fase `STEAL`.
-3. **STEAL:** Tim lawan memiliki 1 kesempatan mencuri pot (`STEAL_ANSWER`). Berhasil = seluruh pot direbut tim pencuri; Gagal = pot kembali ke tim berkontrol.
-4. **ROUND_END & REFLECTION:** Poin pemenang dikalikan multiplier soal dan ditambahkan ke skor. Guru memandu refleksi BK dan pertanyaan diskusi kelas.
-5. **FINAL_RESULT:** Rekapitulasi pemenang dan peringkat seluruh tim.
-
-### Prinsip Determinisme & Pemisahan UI
-- **Pure Reducer:** `reduce(state, action)` tidak pernah mengubah state lama secara in-place, tidak menggunakan `Math.random()`, dan tidak memanggil `Date.now()`.
-- **UI Hanya Mengirim Aksi:** UI tidak boleh mengubah skor atau memanipulasi variabel permainan secara langsung; UI hanya memanggil `dispatch(action)`.
-- **Timer Eksternal:** Timer dihitung oleh UI peramban; saat waktu habis, UI hanya memicu aksi `{ type: 'TIMER_EXPIRED' }`.
-- **Persistensi & Pemulihan:** Setiap perubahan state otomatis disimpan oleh `gameStore.js` ke `localStorage`. Saat halaman dimuat ulang, permainan dapat dilanjutkan persis dari titik terakhir.
-
----
-
-## 8. Kebijakan RLS untuk Tabel `game_sessions` (Rekomendasi)
-
-Tabel `game_sessions` menampung ringkasan hasil akhir permainan:
-- Struktur: `id (uuid)`, `category_id (uuid)`, `teams (jsonb)`, `played_at (timestamptz)`.
-- Jika sesi permainan dijalankan oleh fasilitator/guru yang tidak login admin, Supabase memerlukan kebijakan RLS `INSERT` agar sesi dapat disimpan. Jalankan query berikut di **SQL Editor** Supabase Dashboard:
-
-```sql
--- Izinkan penyimpanan sesi permainan publik / anonim
-CREATE POLICY "Allow insert game_sessions" ON public.game_sessions
-FOR INSERT WITH CHECK (true);
-
--- Izinkan pembacaan sesi oleh admin
-CREATE POLICY "Allow read game_sessions for admin" ON public.game_sessions
-FOR SELECT TO authenticated
-USING (EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid()));
-```
-Jika kebijakan di atas belum dipasang, sistem `sessionReport.js` secara otomatis mengamankan laporan ke dalam antrean offline (*pending sessions*) di `localStorage` tanpa mengganggu alur permainan.
+- [x] **Koneksi Database:** Tabel dan RLS Supabase terpasang via `schema.sql` dan `seed.sql`.
+- [x] **Akun Guru BK:** Akun admin telah didaftarkan pada tabel `admins` dan berhasil login di `/admin/login.html`.
+- [x] **Keamanan Auth:** Pendaftaran publik (*public sign-up*) pada Supabase Auth telah dinonaktifkan.
+- [x] **Mode Offline / Demo:** Aplikasi dapat berjalan normal menggunakan data percontohan jika jaringan internet kelas terputus.
+- [x] **Tampilan Proyektor:** Arena permainan (`game.html`) muat dalam satu layar tanpa scroll vertikal pada resolusi proyektor standar (1280x720 hingga 1920x1080).
+- [x] **Kerahasiaan Kunci Jawaban:** Kunci jawaban pada panel guru tampil ter-blur secara otomatis agar tidak bocor ke siswa saat proyektor menyala.
+- [x] **Pintasan Keyboard Guru:**
+  - Tombol `[H]` : Sembunyikan / Tampilkan Panel Kendali Guru.
+  - Tombol `[A]`, `[L]`, `[S]`, `[K]` : Pintasan bel tim saat fase Face-Off.
+- [x] **Pencetakan Hasil:** Halaman hasil akhir (`result.html`) dapat dicetak langsung (`window.print()`) secara bersih dan rapi untuk dokumentasi portofolio layanan BK.
