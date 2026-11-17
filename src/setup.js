@@ -357,6 +357,7 @@ function setupEventListeners() {
             'game-mode-card cursor-pointer p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white flex items-start space-x-3 transition-all select-none';
         }
       });
+      renderFlowSummary();
     });
   });
 
@@ -471,9 +472,72 @@ function renderStep() {
     if (stepGuidance)
       stepGuidance.textContent = 'Atur waktu menjawab, batas kesalahan (strike), dan tinjau aturan bermain.';
     if (progressBar) progressBar.style.width = '100%';
+    renderFlowSummary();
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderFlowSummary() {
+  const titleEl = document.getElementById('flow-summary-title');
+  const container = document.getElementById('flow-summary-container');
+  if (!container) return;
+
+  const isHunting = state.gameMode === 'hunting';
+
+  if (titleEl) {
+    titleEl.textContent = isHunting
+      ? 'Ringkasan Alur Permainan (Mode Hunting Poin)'
+      : 'Ringkasan Alur Permainan (Mode Family 100)';
+  }
+
+  if (isHunting) {
+    container.innerHTML = `
+      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
+        <span class="font-bold text-emerald-800 mb-1">1. Pilih Tim Mulai</span>
+        <p class="text-slate-600 leading-relaxed">Guru bebas memilih tim mana yang akan mulai berburu poin terlebih dahulu di setiap ronde.</p>
+      </div>
+      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
+        <span class="font-bold text-emerald-800 mb-1">2. Berburu Poin</span>
+        <p class="text-slate-600 leading-relaxed">Tim aktif menebak kartu di papan survei. Poin jawaban benar langsung masuk ke skor tim (tanpa sistem pot).</p>
+      </div>
+      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
+        <span class="font-bold text-emerald-800 mb-1">3. Batas Strike</span>
+        <p class="text-slate-600 leading-relaxed">Jawaban salah menghasilkan strike. Jika batas strike tercapai, giliran berburu tim tersebut berakhir.</p>
+      </div>
+      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
+        <span class="font-bold text-emerald-800 mb-1">4. Oper Giliran</span>
+        <p class="text-slate-600 leading-relaxed">Giliran berpindah ke tim berikutnya yang belum bermain, atau dapat dioper oleh guru hingga batas waktu.</p>
+      </div>
+      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
+        <span class="font-bold text-emerald-800 mb-1">5. Refleksi BK</span>
+        <p class="text-slate-600 leading-relaxed">Setelah semua kartu terbuka atau seluruh tim selesai bermain, guru memandu refleksi karakter materi BK.</p>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
+        <span class="font-bold text-indigo-700 mb-1">1. Face-Off</span>
+        <p class="text-slate-600 leading-relaxed">Dua tim merebut giliran pertama. Jawaban poin tertinggi memegang kontrol permainan.</p>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
+        <span class="font-bold text-indigo-700 mb-1">2. Giliran Tim</span>
+        <p class="text-slate-600 leading-relaxed">Tim berkontrol menebak jawaban survei lain secara bergiliran sebelum waktu habis.</p>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
+        <span class="font-bold text-indigo-700 mb-1">3. Strike</span>
+        <p class="text-slate-600 leading-relaxed">Jawaban salah menghasilkan strike. Jika mencapai batas strike, giliran berpindah untuk steal.</p>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
+        <span class="font-bold text-indigo-700 mb-1">4. Steal Poin</span>
+        <p class="text-slate-600 leading-relaxed">Tim lawan bermusyawarah 1 tebakan. Jika tepat, seluruh pot poin ronde menjadi milik mereka!</p>
+      </div>
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
+        <span class="font-bold text-indigo-700 mb-1">5. Refleksi BK</span>
+        <p class="text-slate-600 leading-relaxed">Setelah ronde selesai, guru memandu siswa mendiskusikan nilai edukatif dan karakter materi.</p>
+      </div>
+    `;
+  }
 }
 
 async function startGame() {
