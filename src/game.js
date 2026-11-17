@@ -529,8 +529,16 @@ function renderQuestionAndBoard() {
   });
 }
 
+let isProcessingCardClick = false;
+
 function handleCardClick(answerId) {
   if (state.paused) return;
+  if (isProcessingCardClick) return;
+
+  isProcessingCardClick = true;
+  setTimeout(() => {
+    isProcessingCardClick = false;
+  }, 350);
 
   const currentQ = getCurrentQuestion(state);
   const revealedSet = new Set(state.roundData?.revealedIds || []);
@@ -829,6 +837,34 @@ function setupEventListeners() {
     peekBtn.addEventListener('touchend', hidePeek);
   }
 
+  // Front Guess Form (Input tebakan siswa di depan kelas, tanpa bocoran kunci jawaban)
+  const frontGuessForm = document.getElementById('front-guess-form');
+  const frontGuessInput = document.getElementById('front-guess-input');
+
+  frontGuessForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (state.paused) return;
+
+    const val = frontGuessInput?.value.trim();
+    if (!val || !state) return;
+
+    const currentQ = getCurrentQuestion(state);
+    if (!currentQ) return;
+
+    // Cari kecocokan menggunakan matcher (ambang batas >= 60 untuk toleransi typo/kemiripan)
+    const matches = suggestMatches(val, currentQ.answers || [], state.roundData?.revealedIds || []);
+
+    if (matches.length > 0 && matches[0].score >= 60) {
+      const matchedAns = matches[0].answer;
+      frontGuessInput.value = '';
+      showToast(`Jawaban cocok! "${matchedAns.answer_text}" (${matches[0].score}%)`, 'success');
+      handleCardClick(matchedAns.id);
+    } else {
+      audio.play('wrong');
+      showToast(`Tebakan "${val}" tidak cocok di papan survei.`, 'warning');
+    }
+  });
+
   // Teacher Panel: Search suggestions
   const searchInput = document.getElementById('tp-search-input');
   const suggestionsBox = document.getElementById('tp-suggestions-box');
@@ -921,8 +957,14 @@ function setupEventListeners() {
     openManualScoreModal();
   });
 
-  // Reflection Overlay "Next" button
+  // Reflection Overlay "Next" button with debounce
+  let isNextProcessing = false;
   document.getElementById('btn-reflection-next')?.addEventListener('click', () => {
+    if (isNextProcessing) return;
+    isNextProcessing = true;
+    setTimeout(() => {
+      isNextProcessing = false;
+    }, 1000);
     dispatch({ type: 'NEXT' });
   });
 }

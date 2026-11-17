@@ -46,8 +46,19 @@ export function renderNavbar(target, options = {}) {
        </div>`
     : showAdminLink
     ? `<a href="/admin/login.html" class="text-xs sm:text-sm font-medium ${
-        active === 'admin' ? 'text-indigo-600' : 'text-slate-600 hover:text-slate-900'
+        active === 'admin' ? 'text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-900'
       } transition-colors">Login Admin</a>`
+    : '';
+
+  const adminSectionMobile = currentAdmin
+    ? `<div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+         <span class="text-xs text-slate-600">Admin: <strong class="text-slate-800">${escapeHtml(currentAdmin)}</strong></span>
+         <button id="nav-logout-btn-mobile" type="button" class="${styles.btnSecondary} !py-1 !px-2.5 text-xs">Keluar</button>
+       </div>`
+    : showAdminLink
+    ? `<a href="/admin/login.html" class="block py-2 text-sm font-medium ${
+        active === 'admin' ? 'text-indigo-600 font-bold' : 'text-slate-700 hover:text-slate-900'
+      } transition-colors">Login Admin Guru</a>`
     : '';
 
   el.innerHTML = `
@@ -70,7 +81,8 @@ export function renderNavbar(target, options = {}) {
           ${demoNotice}
         </div>
 
-        <nav class="flex items-center space-x-4 sm:space-x-6">
+        <!-- Desktop Navigation -->
+        <nav class="hidden sm:flex items-center space-x-6">
           <a href="/index.html" class="text-xs sm:text-sm font-medium ${
             active === 'home' ? 'text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-900'
           } transition-colors">Beranda</a>
@@ -79,13 +91,52 @@ export function renderNavbar(target, options = {}) {
           } transition-colors">Main</a>
           ${adminSection}
         </nav>
+
+        <!-- Mobile Hamburger Button -->
+        <div class="flex items-center sm:hidden">
+          <button id="nav-hamburger-btn" type="button" class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Buka Menu">
+            <svg id="hamburger-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg id="hamburger-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div id="nav-mobile-menu" class="hidden sm:hidden border-t border-slate-100 bg-white px-4 pt-2 pb-4 space-y-1 shadow-md">
+        <a href="/index.html" class="block py-2 text-sm font-medium ${
+          active === 'home' ? 'text-indigo-600 font-bold' : 'text-slate-700 hover:text-slate-900'
+        } transition-colors">Beranda</a>
+        <a href="/setup.html" class="block py-2 text-sm font-medium ${
+          active === 'setup' ? 'text-indigo-600 font-bold' : 'text-slate-700 hover:text-slate-900'
+        } transition-colors">Main Permainan</a>
+        ${adminSectionMobile}
       </div>
     </header>
   `;
 
+  // Hamburger toggle logic
+  const hamburgerBtn = el.querySelector('#nav-hamburger-btn');
+  const mobileMenu = el.querySelector('#nav-mobile-menu');
+  const iconOpen = el.querySelector('#hamburger-icon-open');
+  const iconClose = el.querySelector('#hamburger-icon-close');
+
+  if (hamburgerBtn && mobileMenu) {
+    hamburgerBtn.addEventListener('click', () => {
+      const isHidden = mobileMenu.classList.toggle('hidden');
+      iconOpen?.classList.toggle('hidden', !isHidden);
+      iconClose?.classList.toggle('hidden', isHidden);
+    });
+  }
+
   if (currentAdmin && onLogout) {
     const logoutBtn = el.querySelector('#nav-logout-btn');
+    const logoutBtnMobile = el.querySelector('#nav-logout-btn-mobile');
     logoutBtn?.addEventListener('click', onLogout);
+    logoutBtnMobile?.addEventListener('click', onLogout);
   }
 }
 

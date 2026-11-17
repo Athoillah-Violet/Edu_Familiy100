@@ -8,7 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/style.css">
 </head>
-<body class="h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 flex flex-col justify-between select-none">
+<body class="min-h-screen w-full bg-slate-50 text-slate-900 flex flex-col justify-between select-none overflow-x-hidden md:h-screen md:overflow-hidden">
 
   <!-- No Saved Game Overlay (Conditional Fallback) -->
   <div id="no-game-overlay" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -104,40 +104,40 @@
   </div>
 
   <!-- HEADER TIPIS -->
-  <header class="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between h-14 z-30 shrink-0">
-    <div class="flex items-center space-x-3">
+  <header class="bg-white border-b border-slate-200 px-3 sm:px-4 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 min-h-14 z-30 shrink-0">
+    <div class="flex items-center space-x-2 sm:space-x-3">
       <a href="/index.html" class="flex items-center space-x-1.5 font-bold text-slate-900 text-sm">
         <span class="w-6 h-6 rounded bg-indigo-600 text-white flex items-center justify-center text-xs">F</span>
         <span class="hidden sm:inline">Family 100 <span class="text-indigo-600">BK</span></span>
       </a>
       <span class="text-slate-300">|</span>
       <span id="header-round" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">Ronde 1</span>
-      <span id="header-topic" class="text-xs font-medium text-slate-600 truncate max-w-[140px] sm:max-w-[260px]">Materi BK</span>
+      <span id="header-topic" class="text-xs font-medium text-slate-600 truncate max-w-[110px] sm:max-w-[240px]">Materi BK</span>
       <span id="header-multiplier">x1</span>
     </div>
 
     <!-- Center Round Pot -->
-    <div class="flex items-center space-x-2 bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
-      <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Pot Ronde:</span>
-      <span id="header-pot" class="text-sm font-extrabold text-amber-900">0 Poin</span>
+    <div class="flex items-center space-x-1.5 sm:space-x-2 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-lg border border-amber-200">
+      <span class="text-[10px] sm:text-[11px] font-bold text-amber-800 uppercase tracking-wider">Pot:</span>
+      <span id="header-pot" class="text-xs sm:text-sm font-extrabold text-amber-900">0 Poin</span>
     </div>
 
     <!-- Action Tools -->
-    <div class="flex items-center space-x-1.5">
-      <button id="btn-pause" type="button" class="p-1.5 px-2.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Jeda Permainan">
-        ⏸ Jeda
+    <div class="flex items-center space-x-1 sm:space-x-1.5">
+      <button id="btn-pause" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Jeda Permainan">
+        ⏸ <span class="hidden sm:inline">Jeda</span>
       </button>
-      <button id="btn-mute" type="button" class="p-1.5 px-2.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Bisu / Bunyi Suara">
-        🔊 Suara
+      <button id="btn-mute" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Bisu / Bunyi Suara">
+        🔊 <span class="hidden sm:inline">Suara</span>
       </button>
-      <button id="btn-fullscreen" type="button" class="p-1.5 px-2 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Layar Penuh">
+      <button id="btn-fullscreen" type="button" class="p-1.5 px-2 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors hidden sm:flex" title="Layar Penuh">
         ⛶
       </button>
       <button id="btn-help" type="button" class="w-7 h-7 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-600" title="Cara Bermain">
         ?
       </button>
-      <button id="btn-toggle-teacher" type="button" class="p-1.5 px-2.5 text-xs font-bold bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-sm" title="Buka Panel Guru (H)">
-        ⚙ Guru [H]
+      <button id="btn-toggle-teacher" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-bold bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-sm" title="Buka Panel Guru (H)">
+        ⚙ <span class="hidden sm:inline">Guru [H]</span>
       </button>
       <button id="btn-exit" type="button" class="p-1.5 px-2 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors" title="Keluar">
         Keluar
@@ -146,29 +146,52 @@
   </header>
 
   <!-- BANNER "SEKARANG APA?" -->
-  <div id="now-what-banner" class="bg-indigo-50/90 border-b border-indigo-100 px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm text-indigo-950 shadow-sm shrink-0">
+  <div id="now-what-banner" class="bg-indigo-50/90 border-b border-indigo-100 px-3 sm:px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm text-indigo-950 shadow-sm shrink-0">
     <div id="now-what-text" class="flex-1 font-medium leading-normal pr-4">
       Menyiapkan arena permainan...
     </div>
     <div id="now-what-action" class="shrink-0 flex items-center space-x-2"></div>
   </div>
 
-  <!-- ARENA TENGAH (PERTANYAAN + PAPAN JAWABAN) -->
-  <main class="flex-1 flex flex-col justify-center max-w-5xl w-full mx-auto px-4 sm:px-6 py-2 overflow-hidden">
+  <!-- ARENA TENGAH (PERTANYAAN + INPUT TEBAKAN + PAPAN JAWABAN) -->
+  <main class="flex-1 flex flex-col justify-center max-w-5xl w-full mx-auto px-3 sm:px-6 py-2 overflow-y-auto md:overflow-hidden">
     <!-- Pertanyaan Besar -->
-    <div class="text-center mb-3 shrink-0">
-      <h1 id="question-text" class="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug line-clamp-3">
+    <div class="text-center mb-2 sm:mb-3 shrink-0">
+      <h1 id="question-text" class="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug line-clamp-3">
         Memuat pertanyaan...
       </h1>
     </div>
 
     <!-- Timer Bar -->
-    <div id="timer-container" class="w-full max-w-md mx-auto flex items-center space-x-2 mb-3 shrink-0">
+    <div id="timer-container" class="w-full max-w-md mx-auto flex items-center space-x-2 mb-2 shrink-0">
       <div class="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
         <div id="timer-bar" class="h-full bg-indigo-600 transition-all duration-300 w-full"></div>
       </div>
       <span id="timer-text" class="text-xs font-bold text-slate-700 w-8 text-right">20s</span>
     </div>
+
+    <!-- Input Tebakan Siswa di Depan (Tanpa Menampilkan Bocoran Kunci Jawaban) -->
+    <form id="front-guess-form" class="w-full max-w-lg mx-auto mb-2.5 flex items-center space-x-2 px-1 shrink-0" onsubmit="return false;">
+      <div class="relative flex-1">
+        <input
+          type="text"
+          id="front-guess-input"
+          class="w-full pl-8 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-slate-900 placeholder:text-slate-400 transition-all"
+          placeholder="Ketik tebakan siswa lalu tekan Enter..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <span class="absolute left-2.5 top-1.5 sm:top-2 text-slate-400 text-xs">💬</span>
+      </div>
+      <button
+        type="submit"
+        id="btn-front-guess-submit"
+        class="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors shrink-0 flex items-center space-x-1"
+      >
+        <span>Cek Tebakan</span>
+        <span class="text-xs opacity-75 hidden sm:inline">&crarr;</span>
+      </button>
+    </form>
 
     <!-- Papan Jawaban (Grid 2 Kolom) -->
     <div id="answer-board" class="grid grid-cols-2 gap-2 sm:gap-3 w-full"></div>
