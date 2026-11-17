@@ -386,8 +386,16 @@ function renderQuestionAndBoard() {
 
   // Update or render cards in grid
   let existingCards = boardEl.querySelectorAll('.answer-card');
-  if (existingCards.length !== answers.length) {
-    // Generate board structure
+  const needsRebuild =
+    boardEl.dataset.questionId !== String(currentQ.id) ||
+    boardEl.dataset.roundIndex !== String(state.roundIndex) ||
+    existingCards.length !== answers.length;
+
+  if (needsRebuild) {
+    boardEl.dataset.questionId = String(currentQ.id);
+    boardEl.dataset.roundIndex = String(state.roundIndex);
+
+    // Generate board structure for this question
     boardEl.innerHTML = answers
       .map((ans, idx) => {
         return `
@@ -429,6 +437,9 @@ function renderQuestionAndBoard() {
   answers.forEach((ans, idx) => {
     const card = existingCards[idx];
     if (!card) return;
+
+    // Always ensure current answer ID is bound to the element
+    card.dataset.answerId = ans.id;
 
     const isRevealed = revealedSet.has(ans.id);
     const isAutoRevealed = autoRevealedSet.has(ans.id);
@@ -544,7 +555,13 @@ function renderTeamsScoreboard() {
         borderHighlight = 'border-emerald-600 ring-2 ring-emerald-500/30';
       }
 
-      const showBuzzBtn = state.phase === 'FACE_OFF' && !faceOff.turnTeamId && !faceOff.waitingForChoice;
+      const isActiveFaceOffTeam =
+        !faceOff.activeTeams || faceOff.activeTeams.includes(team.id);
+      const showBuzzBtn =
+        state.phase === 'FACE_OFF' &&
+        isActiveFaceOffTeam &&
+        !faceOff.turnTeamId &&
+        !faceOff.waitingForChoice;
 
       return `
       <div class="bg-white rounded-xl border p-3 flex flex-col justify-between shadow-sm transition-all relative ${borderHighlight}">
@@ -568,6 +585,10 @@ function renderTeamsScoreboard() {
               )};" data-team-id="${escapeHtml(team.id)}">
                 Bel [${shortcutKey}]
               </button>`
+            : state.phase === 'FACE_OFF' && !isActiveFaceOffTeam && !faceOff.turnTeamId
+            ? `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-slate-50 rounded border border-slate-100">
+                Menonton Rebutan
+              </div>`
             : ''
         }
       </div>
