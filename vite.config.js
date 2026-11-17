@@ -13,6 +13,7 @@ export default defineConfig({
         adminIndex: resolve(__dirname, 'admin/index.html'),
         adminEditor: resolve(__dirname, 'admin/editor.html'),
         test: resolve(__dirname, 'test.html'),
+        engineTest: resolve(__dirname, 'engine-test.html'),
       },
     },
   },

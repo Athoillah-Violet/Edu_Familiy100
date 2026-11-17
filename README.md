@@ -113,3 +113,44 @@ Untuk memberikan hak akses Admin / Guru BK kepada akun pengguna:
 > Fungsi `saveQuestionWithAnswers()` bekerja secara berurutan: menyimpan/memperbarui data soal, mencadangkan jawaban lama, membersihkan jawaban lama, lalu memasukkan jawaban baru yang telah diurutkan berdasarkan poin.
 > 
 > Karena klien Supabase JS publik tidak mendukung transaksi atomik multi-langkah (`BEGIN ... COMMIT`) tanpa database RPC function, sistem mengimplementasikan *software-level rollback* (jika penyimpanan jawaban baru gagal, sistem otomatis berupaya memulihkan jawaban lama). Jika terjadi kegagalan jaringan di tengah proses, disarankan memeriksa kembali daftar jawaban di halaman editor soal.
+
+---
+
+## 7. Arsitektur Engine Game Murni & Alur Permainan
+
+Aplikasi game ini dipisahkan secara tegas antara logika game (*game engine*) dan antarmuka pengguna (*UI*):
+
+### Alur Fase Permainan
+$$\text{FACE\_OFF} \longrightarrow \text{PLAYING} \longrightarrow \text{STEAL} \longrightarrow \text{ROUND\_END} \longrightarrow \text{REFLECTION} \longrightarrow \text{NEXT} \longrightarrow (\text{FINAL\_RESULT})$$
+
+1. **FACE_OFF:** Dua tim berhadapan menekan buzzer (`BUZZ`). Jawaban peringkat 1 langsung memenangkan kontrol. Jika non-top, tim lawan diberi kesempatan menjawab lebih tinggi. Pemenang memilih Main (`play`) atau Oper (`pass`).
+2. **PLAYING:** Tim berkontrol menebak sisa jawaban (`REVEAL`). Jika melakukan kesalahan atau waktu habis, tim menerima `STRIKE`. Tiga strike memicu fase `STEAL`.
+3. **STEAL:** Tim lawan memiliki 1 kesempatan mencuri pot (`STEAL_ANSWER`). Berhasil = seluruh pot direbut tim pencuri; Gagal = pot kembali ke tim berkontrol.
+4. **ROUND_END & REFLECTION:** Poin pemenang dikalikan multiplier soal dan ditambahkan ke skor. Guru memandu refleksi BK dan pertanyaan diskusi kelas.
+5. **FINAL_RESULT:** Rekapitulasi pemenang dan peringkat seluruh tim.
+
+### Prinsip Determinisme & Pemisahan UI
+- **Pure Reducer:** `reduce(state, action)` tidak pernah mengubah state lama secara in-place, tidak menggunakan `Math.random()`, dan tidak memanggil `Date.now()`.
+- **UI Hanya Mengirim Aksi:** UI tidak boleh mengubah skor atau memanipulasi variabel permainan secara langsung; UI hanya memanggil `dispatch(action)`.
+- **Timer Eksternal:** Timer dihitung oleh UI peramban; saat waktu habis, UI hanya memicu aksi `{ type: 'TIMER_EXPIRED' }`.
+- **Persistensi & Pemulihan:** Setiap perubahan state otomatis disimpan oleh `gameStore.js` ke `localStorage`. Saat halaman dimuat ulang, permainan dapat dilanjutkan persis dari titik terakhir.
+
+---
+
+## 8. Kebijakan RLS untuk Tabel `game_sessions` (Rekomendasi)
+
+Tabel `game_sessions` menampung ringkasan hasil akhir permainan:
+- Struktur: `id (uuid)`, `category_id (uuid)`, `teams (jsonb)`, `played_at (timestamptz)`.
+- Jika sesi permainan dijalankan oleh fasilitator/guru yang tidak login admin, Supabase memerlukan kebijakan RLS `INSERT` agar sesi dapat disimpan. Jalankan query berikut di **SQL Editor** Supabase Dashboard:
+
+```sql
+-- Izinkan penyimpanan sesi permainan publik / anonim
+CREATE POLICY "Allow insert game_sessions" ON public.game_sessions
+FOR INSERT WITH CHECK (true);
+
+-- Izinkan pembacaan sesi oleh admin
+CREATE POLICY "Allow read game_sessions for admin" ON public.game_sessions
+FOR SELECT TO authenticated
+USING (EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid()));
+```
+Jika kebijakan di atas belum dipasang, sistem `sessionReport.js` secara otomatis mengamankan laporan ke dalam antrean offline (*pending sessions*) di `localStorage` tanpa mengganggu alur permainan.

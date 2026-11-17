@@ -1,0 +1,156 @@
+<!-- 
+  PERHATIAN: 
+  Halaman uji engine-test.html ini HANYA untuk pengujian fungsional engine game, persistensi, dan penyimpanan sesi.
+  Halaman ini HARUS DIHAPUS sebelum rilis ke tahap produksi.
+-->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engine Test Page - Edu Family 100</title>
+</head>
+<body>
+  <h1>Halaman Uji Engine Family 100 (Dev Only)</h1>
+  <p><em>Pengujian logika game murni, persistensi localStorage, dan sinkronisasi sesi.</em></p>
+
+  <!-- Banner Restore Game Tersimpan -->
+  <div id="resume-banner" style="display: none; background: #fef3c7; border: 1px solid #f59e0b; padding: 12px; margin-bottom: 16px;">
+    <strong>Pemberitahuan:</strong> Ditemukan data permainan yang tersimpan sebelumnya di peramban ini.
+    <br><br>
+    <button type="button" id="btn-resume">Lanjutkan Permainan Tersimpan</button>
+    <button type="button" id="btn-discard">Buang & Mulai Baru</button>
+  </div>
+
+  <!-- Section 1: Konfigurasi & Mulai Permainan -->
+  <section id="setup-section" style="border: 1px solid #ccc; padding: 14px; margin-bottom: 16px;">
+    <h2>1. Setup Permainan Baru</h2>
+    <form id="setup-form">
+      <div>
+        <label for="select-category"><strong>Pilih Paket Soal:</strong></label><br>
+        <select id="select-category" required style="min-width: 300px; padding: 4px;"></select>
+      </div>
+      <br>
+
+      <div>
+        <strong>Daftar Tim (2 - 4 Tim):</strong><br>
+        <div id="teams-container">
+          <div><label>Tim 1: <input type="text" class="team-name" value="Tim Mawar" required></label></div>
+          <div style="margin-top: 4px;"><label>Tim 2: <input type="text" class="team-name" value="Tim Melati" required></label></div>
+          <div style="margin-top: 4px;"><label>Tim 3 (opsional): <input type="text" class="team-name" value="Tim Anggrek"></label></div>
+          <div style="margin-top: 4px;"><label>Tim 4 (opsional): <input type="text" class="team-name" value=""></label></div>
+        </div>
+      </div>
+      <br>
+
+      <div>
+        <label for="select-rounds"><strong>Jumlah Ronde:</strong></label>
+        <input type="number" id="select-rounds" min="1" max="10" value="3" style="width: 60px;">
+      </div>
+      <br>
+
+      <div>
+        <label for="select-timer"><strong>Timer Giliran:</strong></label>
+        <select id="select-timer">
+          <option value="0">Tanpa Timer (0 detik)</option>
+          <option value="15">15 Detik</option>
+          <option value="20" selected>20 Detik</option>
+          <option value="30">30 Detik</option>
+        </select>
+      </div>
+      <br>
+
+      <div>
+        <label for="input-strikes"><strong>Maksimal Strike:</strong></label>
+        <input type="number" id="input-strikes" min="1" max="5" value="3" style="width: 60px;">
+      </div>
+      <br>
+
+      <div>
+        <label>
+          <input type="checkbox" id="check-multiplier" checked>
+          Aktifkan Pengali Poin Soal (Multiplier)
+        </label>
+      </div>
+      <br>
+
+      <button type="submit" id="btn-start-game">Mulai Permainan</button>
+    </form>
+  </section>
+
+  <!-- Section 2: Arena Game (State & Aksi) -->
+  <section id="game-section" style="display: none; border: 1px solid #2563eb; padding: 14px; margin-bottom: 16px;">
+    <h2>2. Arena Permainan (Status Realtime)</h2>
+
+    <div style="background: #f3f4f6; padding: 10px; margin-bottom: 12px; font-family: monospace;">
+      <div><strong>FASE:</strong> <span id="disp-phase" style="color: #2563eb; font-weight: bold;">-</span> | <strong>PAUSED:</strong> <span id="disp-paused">Tidak</span></div>
+      <div><strong>RONDE:</strong> <span id="disp-round">-</span> | <strong>MULTIPLIER:</strong> <span id="disp-multiplier">1x</span></div>
+      <div><strong>SOAL AKTIF:</strong> <span id="disp-question" style="font-weight: bold;">-</span></div>
+      <div><strong>POT AKUMULASI:</strong> <span id="disp-pot" style="color: #16a34a; font-weight: bold;">0 Poin</span> | <strong>STRIKES:</strong> <span id="disp-strikes" style="color: #dc2626; font-weight: bold;">0</span></div>
+      <div><strong>TIM BERKONTROL:</strong> <span id="disp-control">-</span> | <strong>TIM STEAL:</strong> <span id="disp-steal">-</span></div>
+      <div id="disp-scores" style="margin-top: 6px;"></div>
+    </div>
+
+    <!-- Papan Jawaban -->
+    <div>
+      <h3>Papan Jawaban:</h3>
+      <div id="disp-answers-board" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;"></div>
+    </div>
+
+    <hr>
+
+    <!-- Matcher / Saran Pencocokan Jawaban Guru -->
+    <div style="background: #fefce8; border: 1px solid #fde047; padding: 10px; margin-bottom: 14px;">
+      <h4>Pencocokan Jawaban Siswa (Matcher Saran):</h4>
+      <label>Ketikkan jawaban yang diucapkan siswa:
+        <input type="text" id="matcher-input" placeholder="contoh: lapor guru..." style="width: 250px;">
+      </label>
+      <div id="matcher-suggestions" style="margin-top: 8px;"></div>
+    </div>
+
+    <hr>
+
+    <!-- Aksi Interaktif Sesuai Fase -->
+    <div>
+      <h3>Panel Aksi Fase Aktif:</h3>
+      <div id="dynamic-actions" style="min-height: 40px; margin-bottom: 12px;"></div>
+    </div>
+
+    <hr>
+
+    <!-- Kontrol Utilitas Guru -->
+    <div style="background: #e5e7eb; padding: 10px;">
+      <h4>Utilitas Guru / Fasilitator:</h4>
+      <button type="button" id="btn-pause">Jeda (PAUSE)</button>
+      <button type="button" id="btn-resume-game">Lanjutkan (RESUME)</button>
+      <button type="button" id="btn-undo">Batalkan Langkah (UNDO)</button>
+      <button type="button" id="btn-timer-expire">Simulasi Waktu Habis (TIMER_EXPIRED)</button>
+      <button type="button" id="btn-force-finish">Selesaikan Ronde Paksa (FINISH_ROUND)</button>
+      <br><br>
+      <div>
+        <label>Koreksi Skor:
+          <select id="adjust-team-select"></select>
+          <input type="number" id="adjust-delta" value="10" style="width: 60px;">
+          <button type="button" id="btn-adjust-score">Ubah Skor</button>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Log Events & Sesi -->
+  <section id="log-section">
+    <h3>Log Events Terakhir & Status Sesi:</h3>
+    <div id="session-status" style="margin-bottom: 8px; font-weight: bold;"></div>
+    <pre id="disp-log" style="background: #1e293b; color: #f8fafc; padding: 10px; max-height: 250px; overflow: auto; font-family: monospace;"></pre>
+  </section>
+
+  <hr>
+  <nav>
+    <a href="/index.html">&larr; Kembali ke Beranda</a> |
+    <a href="/test.html">Halaman Test Backend</a> |
+    <a href="/admin/index.html">Dashboard Admin</a>
+  </nav>
+
+  <script type="module" src="/src/engine-test.js"></script>
+</body>
+</html>
