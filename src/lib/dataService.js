@@ -54,7 +54,10 @@ export async function getCategories() {
   try {
     const { data, error } = await supabase
       .from('categories')
-      .select('id, title, description, is_published, created_at')
+      .select(`
+        id, title, description, is_published, created_at,
+        questions (id)
+      `)
       .eq('is_published', true)
       .order('created_at', { ascending: true });
 
@@ -66,7 +69,13 @@ export async function getCategories() {
       };
     }
 
-    return { data: data || [], error: null };
+    const formatted = (data || []).map((cat) => ({
+      ...cat,
+      question_count: Array.isArray(cat.questions) ? cat.questions.length : 0,
+      questions_count: Array.isArray(cat.questions) ? cat.questions.length : 0,
+    }));
+
+    return { data: formatted, error: null };
   } catch (err) {
     return {
       data: null,

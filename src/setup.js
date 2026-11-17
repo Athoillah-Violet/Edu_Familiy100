@@ -138,14 +138,13 @@ function renderCategoryCards() {
       return `
         <div data-cat-id="${escapeHtml(cat.id)}" class="category-card cursor-pointer rounded-xl border p-5 transition-all flex flex-col justify-between ${borderClass}">
           <div>
-            <div class="flex items-center justify-between gap-2 mb-2">
-              <span class="${isSelected ? styles.badgeAmber : styles.badgeSlate}">${qCount} Soal</span>
-              ${
-                isSelected
-                  ? '<span class="text-xs font-bold text-indigo-600 flex items-center">&check; Terpilih</span>'
-                  : ''
-              }
-            </div>
+            ${
+              isSelected
+                ? `<div class="flex items-center justify-end mb-2">
+                     <span class="text-xs font-bold text-indigo-600 flex items-center">&check; Terpilih</span>
+                   </div>`
+                : ''
+            }
             <h3 class="font-bold text-base text-slate-900 mb-1 leading-snug">${escapeHtml(cat.title)}</h3>
             <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-3">
               ${escapeHtml(cat.description || 'Paket pembelajaran bimbingan konseling.')}
@@ -176,8 +175,9 @@ function updateRoundOptions() {
   const select = document.getElementById('round-count-select');
   if (!select) return;
 
-  const totalQuestions = state.selectedCategory?.question_count ?? (Array.isArray(state.selectedCategory?.questions) ? state.selectedCategory.questions.length : 5);
-  const maxRounds = Math.max(1, totalQuestions || 1);
+  const count = Number(state.selectedCategory?.question_count || state.selectedCategory?.questions_count);
+  const totalQuestions = count > 0 ? count : (Array.isArray(state.selectedCategory?.questions) && state.selectedCategory.questions.length > 0 ? state.selectedCategory.questions.length : 5);
+  const maxRounds = Math.max(1, totalQuestions || 5);
 
   const options = [];
   const standardChoices = [1, 2, 3, 4, 5, 8, 10];
