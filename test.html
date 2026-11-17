@@ -1,0 +1,70 @@
+<!-- 
+  PERHATIAN: 
+  Halaman test.html ini hanya ditujukan untuk verifikasi fondasi backend (Supabase / demo data, auth, dataService, matcher).
+  Halaman ini HARUS DIHAPUS sebelum rilis ke tahap produksi.
+-->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Test Page - Edu Family 100</title>
+</head>
+<body>
+  <h1>Halaman Uji Fondasi Backend (Dev Only)</h1>
+  <p><em>Perhatian: Halaman ini hanya untuk menguji fungsi Supabase, fallback demo, auth, dan matcher. Hapus sebelum produksi.</em></p>
+
+  <div id="demo-indicator-container"></div>
+
+  <hr>
+
+  <section>
+    <h2>1. Status Mode & Koneksi</h2>
+    <button id="btn-status">Cek Status Mode</button>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>2. Pengambilan Data Publik</h2>
+    <button id="btn-categories">Test getCategories()</button>
+    <button id="btn-questions">Test getQuestions() (Kategori Pertama)</button>
+    <button id="btn-all-categories">Test getAllCategories() (Admin Read)</button>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>3. Autentikasi & Admin Check</h2>
+    <button id="btn-session">Test getSession()</button>
+    <button id="btn-is-admin">Test isAdmin()</button>
+    <br><br>
+    <div>
+      <label>Email: <input type="email" id="login-email" placeholder="admin@sekolah.sch.id"></label>
+      <label>Password: <input type="password" id="login-password" placeholder="******"></label>
+      <button id="btn-login">Login & Cek isAdmin</button>
+      <button id="btn-logout">Logout</button>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>4. Uji Matcher Jawaban (Saran Guru)</h2>
+    <div>
+      <label>Input Jawaban Siswa: <input type="text" id="matcher-input" placeholder="contoh: lapor guru"></label>
+      <button id="btn-matcher">Uji suggestMatches()</button>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2>Hasil Output Mentah (JSON / Log):</h2>
+    <button id="btn-clear">Bersihkan Layar</button>
+    <pre id="output" style="background: #f4f4f4; border: 1px solid #ccc; padding: 12px; min-height: 180px; max-height: 450px; overflow: auto; white-space: pre-wrap; font-family: monospace;"></pre>
+  </section>
+
+  <script type="module" src="/src/test.js"></script>
+</body>
+</html>

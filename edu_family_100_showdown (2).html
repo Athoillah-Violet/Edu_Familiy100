@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDU Family 100 Showdown - Prakarya Kelas 8 SMP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        quiz: {
+                            dark: '#0f172a',
+                            panel: '#1e293b',
+                            gold: '#fbbf24',
+                            goldDark: '#d97706',
+                            crimson: '#ef4444',
+                            emerald: '#10b981',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Impact', 'Trebuchet MS', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'neon-gold': '0 0 20px rgba(251, 191, 36, 0.4)',
+                        'neon-blue': '0 0 20px rgba(56, 189, 248, 0.4)',
+                        'neon-red': '0 0 25px rgba(239, 68, 68, 0.6)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 70%, #020617 100%);
+            min-height: 100vh;
+        }
+
+        /* 3D Flip Card Effect */
+        .card-perspective {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .card-inner.is-flipped {
+            transform: rotateX(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            border-radius: 0.75rem;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #3b82f6;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 2px solid #fbbf24;
+            transform: rotateX(180deg);
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Custom pulsing for strikes */
+        @keyframes strikePulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-strike {
+            animation: strikePulse 0.4s ease-out forwards;
+        }
+
+        /* Subtle glowing text */
+        .text-glow-gold {
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+        .text-glow-blue {
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between select-none text-slate-100 overflow-x-hidden">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <header class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="confirmReturnHome()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center font-extrabold text-slate-950 text-xl shadow-neon-gold">
+                    F
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-black tracking-wide text-amber-400 leading-tight">EDU FAMILY 100</h1>
+                    <p class="text-xs text-slate-400 font-medium hidden sm:block">Prakarya SMP Kelas 8 • Serealia, Kacang-kacangan & Umbi</p>
+                </div>
+            </div>
+
+            <!-- Top Header Controls -->
+            <div class="flex items-center gap-2">
+                <button id="mute-btn" onclick="toggleMute()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center gap-2 text-xs md:text-sm font-semibold" aria-label="Toggle Sound">
+                    <span id="mute-icon">🔊</span>
+                    <span id="mute-text" class="hidden sm:inline">Suara: On</span>
+                </button>
+                <button onclick="showInstructionsModal()" class="px-3 py-2 bg-indigo-600/80 hover:bg-indigo-600 text-white rounded-lg border border-indigo-500 transition text-xs md:text-sm font-semibold flex items-center gap-1.5">
+                    <span>❓</span>
+                    <span>Petunjuk</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-3 sm:p-6 w-full max-w-7xl mx-auto">
+
+        <!-- ================= WELCOME / SETUP SCREEN ================= -->
+        <section id="screen-welcome" class="w-full max-w-3xl bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-lg">
+            <div class="text-center mb-8">
+                <span class="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold rounded-full mb-3 uppercase tracking-wider">Kuis Interaktif Pembelajaran</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 mb-3 text-glow-gold">
+                    EDU FAMILY 100 SHOWDOWN
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                    Uji pemahaman dan adu ketangkasan antartim mengenai pengolahan bahan pangan <span class="text-amber-300 font-semibold">Serealia, Kacang-kacangan, dan Umbi</span> untuk kelas 8 SMP!
+                </p>
+            </div>
+
+            <div class="space-y-6 bg-slate-950/60 p-5 rounded-xl border border-slate-800/80 mb-8">
+                <h3 class="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 flex items-center gap-2">
+                    <span>⚔️</span> Pengaturan Tim Bertanding
+                </h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="team1-input" class="block text-xs font-bold uppercase text-sky-400 mb-2">Nama Tim 1 (Biru)</label>
+                        <input type="text" id="team1-input" value="Tim Alpha" maxlength="20" class="w-full bg-slate-900 border border-sky-500/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-sky-400 font-bold transition">
+                    </div>
+                    <div>
+                        <label for="team2-input" class="block text-xs font-bold uppercase text-pink-400 mb-2">Nama Tim 2 (Merah)</label>
+                        <input type="text" id="team2-input" value="Tim Beta" maxlength="20" class="w-full bg-slate-900 border border-pink-500/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-pink-400 font-bold transition">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center mb-8 text-xs text-slate-300">
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                    <div class="text-lg font-bold text-amber-400 mb-1">10 Ronde</div>
+                    <div>Soal Survei Varian</div>
+                </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                    <div class="text-lg font-bold text-sky-400 mb-1">Smart Check</div>
+                    <div>Variasi & Sinonym</div>
+                </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                    <div class="text-lg font-bold text-red-400 mb-1">3 Strike</div>
+                    <div>Sistem Kesempatan Steal</div>
+                </div>
+                <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                    <div class="text-lg font-bold text-emerald-400 mb-1">Kurikulum</div>
+                    <div>Prakarya Kelas 8</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="startGame()" class="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black py-4 px-6 rounded-xl shadow-neon-gold transform hover:-translate-y-0.5 active:translate-y-0 transition text-lg uppercase tracking-wider text-center">
+                    🚀 Mulai Permainan
+                </button>
+                <button onclick="showInstructionsModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-4 px-6 rounded-xl border border-slate-700 transition text-base">
+                    📖 Petunjuk
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= GAME ARENA SCREEN ================= -->
+        <section id="screen-game" class="w-full flex flex-col gap-4 hidden">
+            
+            <!-- Top Game Info & Scoreboard -->
+            <div class="grid grid-cols-12 gap-3 items-stretch">
+                <!-- Team 1 Score Card -->
+                <div id="card-team1" class="col-span-4 sm:col-span-3 bg-slate-900/90 border-2 border-sky-500 rounded-xl p-3 flex flex-col justify-between transition-all duration-300">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span id="label-team1" class="font-black text-sky-400 text-xs sm:text-base truncate">Tim 1</span>
+                        <span id="turn-badge-1" class="text-[10px] bg-sky-500 text-slate-950 px-2 py-0.5 rounded-full font-black uppercase tracking-wider hidden sm:inline">Giliran</span>
+                    </div>
+                    <div class="text-2xl sm:text-4xl font-black text-white text-glow-blue" id="score-team1">0</div>
+                    <div class="text-[10px] text-slate-400 font-medium">Total Poin</div>
+                </div>
+
+                <!-- Center Round & Pot Info -->
+                <div class="col-span-4 sm:col-span-6 bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs sm:text-sm font-bold text-amber-400 uppercase tracking-widest" id="round-indicator">Ronde 1 dari 10</span>
+                        <button onclick="showPedagogyModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded border border-slate-700" title="Detail Capaian Pembelajaran">ℹ️ Info</button>
+                    </div>
+                    <div class="text-xs text-slate-400 mb-1 font-semibold hidden sm:block" id="round-topic-badge">Serealia & Produk Olahan</div>
+                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1 flex items-center gap-2">
+                        <span class="text-xs uppercase text-amber-300 font-bold">Poin Ronde Ini:</span>
+                        <span id="round-pot-score" class="text-xl sm:text-2xl font-black text-amber-400 text-glow-gold">0</span>
+                    </div>
+                </div>
+
+                <!-- Team 2 Score Card -->
+                <div id="card-team2" class="col-span-4 sm:col-span-3 bg-slate-900/90 border-2 border-pink-500 rounded-xl p-3 flex flex-col justify-between transition-all duration-300">
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                        <span id="label-team2" class="font-black text-pink-400 text-xs sm:text-base truncate">Tim 2</span>
+                        <span id="turn-badge-2" class="text-[10px] bg-pink-500 text-slate-950 px-2 py-0.5 rounded-full font-black uppercase tracking-wider hidden sm:inline">Giliran</span>
+                    </div>
+                    <div class="text-2xl sm:text-4xl font-black text-white" id="score-team2">0</div>
+                    <div class="text-[10px] text-slate-400 font-medium">Total Poin</div>
+                </div>
+            </div>
+
+            <!-- Question Box & Turn Indicator Banner -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
+                <div id="active-turn-banner" class="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                    <span id="active-team-icon">🎯</span>
+                    <span>Giliran Memilih: <strong id="active-team-name-text">Tim Alpha</strong></span>
+                    <span id="steal-status-tag" class="hidden bg-red-600 text-white px-2 py-0.5 rounded text-[10px] animate-pulse">KESEMPATAN STEAL!</span>
+                </div>
+                
+                <h3 id="question-text" class="text-base sm:text-xl font-extrabold text-slate-100 leading-snug">
+                    Sebutkan contoh bahan pangan serealia yang sering digunakan untuk membuat makanan atau minuman!
+                </h3>
+
+                <!-- Strikes Display -->
+                <div class="mt-3 flex items-center justify-between border-t border-slate-800/80 pt-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Strikes:</span>
+                        <div id="strikes-container" class="flex items-center gap-1.5">
+                            <!-- Strikes X icons rendered dynamically -->
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-400 font-semibold" id="remaining-answers-count">
+                        Sisa Jawaban: 5/5
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Board (5 Cards) -->
+            <div id="answer-board" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-1">
+                <!-- Answer cards 1-5 generated dynamically -->
+            </div>
+
+            <!-- Answer Input & Controls Bar -->
+            <div id="input-section" class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 shadow-lg">
+                <form id="answer-form" onsubmit="handleAnswerSubmit(event)" class="flex flex-col sm:flex-row gap-3">
+                    <div class="flex-grow relative">
+                        <input type="text" id="user-answer-input" placeholder="Ketikkan jawaban tim kamu di sini..." autocomplete="off" class="w-full bg-slate-950 border-2 border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 font-bold text-base focus:outline-none focus:border-amber-400 transition">
+                    </div>
+                    <button type="submit" id="submit-btn" class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black px-6 py-3 rounded-xl transition shadow-neon-gold text-base uppercase tracking-wider flex items-center justify-center gap-2">
+                        <span>Kirim Jawaban</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+
+                <!-- Feedback Message -->
+                <div id="feedback-msg" class="mt-2 text-xs sm:text-sm font-semibold min-h-[20px] text-center hidden"></div>
+
+                <!-- Host Manual Controls Toggle (Teacher Override) -->
+                <div class="mt-3 pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+                    <div class="flex items-center gap-2">
+                        <span>🛠️ Panel Guru:</span>
+                        <button type="button" onclick="manualTriggerStrike()" class="px-2.5 py-1 bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 rounded font-semibold transition">
+                            + Tambah Strike
+                        </button>
+                        <button type="button" onclick="switchActiveTeamManual()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded font-semibold transition">
+                            🔄 Tukar Giliran
+                        </button>
+                    </div>
+                    <button type="button" onclick="forceRevealAllAndFinish()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded font-semibold transition">
+                        👁️ Buka Semua & Akhiri Ronde
+                    </button>
+                </div>
+            </div>
+
+            <!-- Next Round / Finish Round Modal Overlay -->
+            <div id="round-complete-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+                <div class="bg-slate-900 border-2 border-amber-500 rounded-2xl p-6 sm:p-8 max-w-lg w-full text-center shadow-2xl">
+                    <div class="text-4xl mb-2">🎉</div>
+                    <h3 class="text-2xl font-black text-amber-400 mb-1">RONDE SELESAI!</h3>
+                    <p id="round-winner-text" class="text-slate-200 font-bold mb-4 text-lg">Tim Alpha memenangkan ronde ini!</p>
+                    
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-6 text-left space-y-2">
+                        <div class="text-xs uppercase tracking-wider text-slate-400 font-bold">Ringkasan Pembelajaran Ronde Ini:</div>
+                        <p id="round-summary-text" class="text-sm text-slate-300 leading-relaxed">
+                            Serealia merupakan kelompok tanaman berbiji yang dapat diolah menjadi berbagai produk pangan utama seperti beras, jagung, gandum, oat, dan sorgum.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="proceedToNextRound()" class="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black py-3 px-4 rounded-xl shadow-neon-gold uppercase text-sm tracking-wider">
+                            Ronde Berikutnya ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= FINAL SCORE SCREEN ================= -->
+        <section id="screen-final" class="w-full max-w-3xl bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-lg hidden text-center">
+            <span class="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold rounded-full mb-3 uppercase tracking-wider">Hasil Akhir Pertandingan</span>
+            
+            <h2 class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 mb-2 text-glow-gold">
+                HASIL AKHIR
+            </h2>
+            <p class="text-slate-400 text-sm mb-6">Selamat kepada seluruh peserta! Kalian telah menyelesaikan 10 Ronde Tantangan Prakarya.</p>
+
+            <!-- Winner Announcement Box -->
+            <div id="winner-announcement-box" class="bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-amber-500/20 border-2 border-amber-400 rounded-2xl p-6 mb-8 relative overflow-hidden">
+                <div class="text-5xl mb-2" id="winner-icon">🏆</div>
+                <div class="text-xs font-extrabold uppercase tracking-widest text-amber-300 mb-1">PEMENANG UTAMA</div>
+                <h3 id="winner-team-name" class="text-3xl sm:text-4xl font-black text-white text-glow-gold">TIM ALPHA</h3>
+                <p id="winner-score-text" class="text-amber-400 font-bold text-lg mt-1">Total Skor: 1,450 Poin</p>
+            </div>
+
+            <!-- Score Comparison Cards -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-950/80 border border-sky-500/50 rounded-xl p-4 text-center">
+                    <div id="final-team1-name" class="text-sky-400 font-black text-lg mb-1 truncate">Tim Alpha</div>
+                    <div id="final-team1-score" class="text-3xl font-black text-white">0</div>
+                    <div class="text-xs text-slate-500 mt-1">Poin Terkumpul</div>
+                </div>
+                <div class="bg-slate-950/80 border border-pink-500/50 rounded-xl p-4 text-center">
+                    <div id="final-team2-name" class="text-pink-400 font-black text-lg mb-1 truncate">Tim Beta</div>
+                    <div id="final-team2-score" class="text-3xl font-black text-white">0</div>
+                    <div class="text-xs text-slate-500 mt-1">Poin Terkumpul</div>
+                </div>
+            </div>
+
+            <!-- Pedagogical Competency Summary -->
+            <div class="bg-slate-950/70 p-5 rounded-xl border border-slate-800 text-left mb-8 space-y-3">
+                <h4 class="text-amber-400 font-bold text-sm flex items-center gap-2 border-b border-slate-800 pb-2">
+                    <span>🎓</span> Ringkasan Penguasaan Kompetensi Materi (Prakarya Kelas 8)
+                </h4>
+                <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+                    <li><strong>Serealia, Kacang-kacangan & Umbi:</strong> Mengidentifikasi karakteristik, jenis, dan keunggulan gizi bahan lokal.</li>
+                    <li><strong>Pemilihan Bahan Berkualitas:</strong> Memahami kriteria fisik bahan segar, aman, higienis, dan tidak busuk.</li>
+                    <li><strong>Peralatan & Teknik Pengolahan:</strong> Menguasai fungsi alat serta teknik merebus, mengukus, menggoreng, dan memanggang.</li>
+                    <li><strong>Tahapan & Higiene:</strong> Mempraktikkan tahapan kerja sistematis, kebersihan alat, dan keselamatan kerja.</li>
+                    <li><strong>Penyajian, Kemasan & Inovasi:</strong> Mengembangkan kreativitas penyajian, estetika kemasan, dan nilai jual produk.</li>
+                </ul>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="resetGameToStart()" class="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-neon-gold uppercase tracking-wider text-sm">
+                    🔄 Main Lagi
+                </button>
+                <button onclick="confirmReturnHome()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3.5 px-6 rounded-xl border border-slate-700 text-sm">
+                    🏠 Kembali ke Beranda
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-slate-950 border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+        EDU Family 100 Showdown • Media Pembelajaran Interaktif Prakarya SMP • Berdasarkan Kurikulum Merdeka
+    </footer>
+
+    <!-- Modal Instructions -->
+    <div id="modal-instructions" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                <h3 class="text-xl font-black text-amber-400 flex items-center gap-2">
+                    <span>📖</span> Petunjuk Bermain EDU Family 100
+                </h3>
+                <button onclick="closeInstructionsModal()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+            </div>
+            
+            <div class="text-sm text-slate-300 space-y-4 leading-relaxed">
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                    <h4 class="font-bold text-amber-300 mb-1"> Aturan Dasar Permainan:</h4>
+                    <p>Permainan terdiri dari 10 ronde interaktif. Setiap ronde menyajikan pertanyaan terbuka dengan 5 jawaban teratas hasil survei siswa.</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-sky-400">1. Sistem Poin Jawaban:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-xs">
+                        <li>Peringkat 1 = 100 Poin</li>
+                        <li>Peringkat 2 = 80 Poin</li>
+                        <li>Peringkat 3 = 60 Poin</li>
+                        <li>Peringkat 4 = 40 Poin</li>
+                        <li>Peringkat 5 = 20 Poin</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-red-400">2. Strike & Kesempatan Steal (Merebut):</h4>
+                    <p class="text-xs">Jika tim yang aktif menebak salah 3 kali (3 Strike), giliran otomatis berpindah ke tim lawan untuk <strong>1 kali kesempatan merebut (STEAL)</strong>.</p>
+                    <p class="text-xs">Jika tim lawan berhasil menebak salah satu jawaban yang tersisa, seluruh akumulasi poin ronde tersebut direbut oleh tim lawan!</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="font-bold text-emerald-400">3. Fitur Smart Keyword Matching:</h4>
+                    <p class="text-xs">Sistem secara otomatis mengenali variasi penulisan, sinonim, kata tunggal/jamak, istilah harian siswa, dan kesalahan ketik ringan.</p>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800 text-right">
+                <button onclick="closeInstructionsModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm">
+                    Saya Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pedagogy & Learning Objectives Info -->
+    <div id="modal-pedagogy" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-xl w-full max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                <h3 class="text-lg font-black text-amber-400 flex items-center gap-2">
+                    <span>🎓</span> Informasi Akademik & Pedagogis Ronde
+                </h3>
+                <button onclick="closePedagogyModal()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+            </div>
+            
+            <div class="text-sm text-slate-300 space-y-3" id="pedagogy-details-content">
+                <!-- Dynamically populated pedagogy info -->
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800 text-right">
+                <button onclick="closePedagogyModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-5 py-2 rounded-xl text-sm border border-slate-700">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           QUESTION BANK DATA (10 ROUNDS - PRAKARYA KELAS 8 SMP)
+           ========================================================================== */
+        const QUESTION_BANK = [
+            {
+                id: 1,
+                cognitiveLevel: "C1-C2",
+                difficulty: "Mudah",
+                competencyFocus: "Identifikasi bahan pangan serealia",
+                learningObjectiveReference: ["8.1.1", "8.1.2"],
+                learningSummary: "Serealia merupakan kelompok tanaman berbiji dari suku rumput-rumputan yang kaya karbohidrat dan menjadi makanan pokok dunia.",
+                question: "Sebutkan contoh bahan pangan serealia yang sering digunakan untuk membuat makanan atau minuman!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Beras / Padi",
+                        points: 100,
+                        keywords: ["beras", "padi", "nasi", "rice", "beras putih", "beras merah", "beras cokelat", "beras ketan", "beras pulen", "ketan"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Jagung",
+                        points: 80,
+                        keywords: ["jagung", "tepung jagung", "maizena", "corn", "jagung manis", "popcorn", "jagung pipil"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Gandum / Terigu",
+                        points: 60,
+                        keywords: ["gandum", "tepung gandum", "terigu", "tepung terigu", "wheat", "biji gandum"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Oat / Havermut",
+                        points: 40,
+                        keywords: ["oat", "havermut", "gandum oat", "oatmeal", "oats"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Sorgum",
+                        points: 20,
+                        keywords: ["sorgum", "sorghum", "biji sorgum", "cantel"]
+                    }
+                ]
+            },
+            {
+                id: 2,
+                cognitiveLevel: "C1-C2",
+                difficulty: "Mudah",
+                competencyFocus: "Identifikasi bahan pangan kacang-kacangan",
+                learningObjectiveReference: ["8.1.1", "8.1.3"],
+                learningSummary: "Kacang-kacangan merupakan sumber protein nabati, serat, dan mineral tinggi yang penting untuk pertumbuhan tubuh.",
+                question: "Sebutkan contoh bahan pangan kacang-kacangan yang sering diolah menjadi produk pangan!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Kedelai",
+                        points: 100,
+                        keywords: ["kedelai", "kacang kedelai", "soybean", "soy", "kedelai hitam", "kedelai kuning"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Kacang Tanah",
+                        points: 80,
+                        keywords: ["kacang tanah", "peanut", "kacang goreng", "kacang oven", "kacang tubruk"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Kacang Hijau",
+                        points: 60,
+                        keywords: ["kacang hijau", "kacang ijo", "mungbean", "mung bean", "kacang hjo"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Kacang Merah",
+                        points: 40,
+                        keywords: ["kacang merah", "red bean", "kacang jago", "kidney bean"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Kacang Mede / Bogor / Edamame",
+                        points: 20,
+                        keywords: ["kacang mede", "kacang mete", "kacang bogor", "edamame", "kacang arab", "cashew"]
+                    }
+                ]
+            },
+            {
+                id: 3,
+                cognitiveLevel: "C1-C2",
+                difficulty: "Mudah",
+                competencyFocus: "Identifikasi bahan pangan umbi",
+                learningObjectiveReference: ["8.1.1", "8.1.4"],
+                learningSummary: "Umbi adalah organ tumbuhan yang mengalami perubahan ukuran dan bentuk sebagai tempat penyimpanan cadangan energi.",
+                question: "Sebutkan contoh bahan pangan umbi yang dapat diolah menjadi makanan atau minuman!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Singkong / Ketela Pohon",
+                        points: 100,
+                        keywords: ["singkong", "ketela pohon", "ubi kayu", "cassava", "ketela"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Ubi Jalar / Ubi Mantang",
+                        points: 80,
+                        keywords: ["ubi jalar", "ubi", "sweet potato", "ubi ungu", "ubi kuning", "ubi cilembu", "ubi mantang"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Kentang",
+                        points: 60,
+                        keywords: ["kentang", "potato", "ubi kentang"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Talas",
+                        points: 40,
+                        keywords: ["talas", "taro", "talas bogor", "keladi"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Ganyong / Garut / Porang",
+                        points: 20,
+                        keywords: ["ganyong", "garut", "porang", "suweg", "ubi garut", "tepung garut"]
+                    }
+                ]
+            },
+            {
+                id: 4,
+                cognitiveLevel: "C2-C3",
+                difficulty: "Sedang",
+                competencyFocus: "Diversifikasi produk olahan pangan lokal",
+                learningObjectiveReference: ["8.1.2", "8.1.5"],
+                learningSummary: "Bahan lokal seperti serealia, kacang, dan umbi dapat ditransformasi menjadi beragam menu olahan bernilai gizi tinggi.",
+                question: "Sebutkan olahan makanan atau minuman populer yang dibuat dari bahan serealia, kacang-kacangan, atau umbi!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Tempe & Tahu",
+                        points: 100,
+                        keywords: ["tempe", "tahu", "tempe goreng", "tahu goreng", "keripik tempe"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Keripik (Singkong / Ubi / Kentang)",
+                        points: 80,
+                        keywords: ["keripik", "kripik", "keripik singkong", "keripik ubi", "keripik kentang", "chips"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Bubur Kacang Hijau",
+                        points: 60,
+                        keywords: ["bubur kacang hijau", "burjo", "bubur kancang ijo", "bubur kacang ijo"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Tape (Singkong / Ketan)",
+                        points: 40,
+                        keywords: ["tape", "tapai", "tape singkong", "tape ketan", "peuyeum"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Susu Kedelai / Perkedel / Getuk",
+                        points: 20,
+                        keywords: ["susu kedelai", "sule", "perkedel", "getuk", "puding jagung", "kolak"]
+                    }
+                ]
+            },
+            {
+                id: 5,
+                cognitiveLevel: "C2-C3",
+                difficulty: "Sedang",
+                competencyFocus: "Kriteria keamanan & kualitas bahan mentah",
+                learningObjectiveReference: ["8.1.3", "8.1.6"],
+                learningSummary: "Pemilihan bahan yang segar, bersih, dan utuh merupakan langkah krusial untuk mencegah keracunan pangan dan menjaga mutu gizi.",
+                question: "Apa saja ciri bahan pangan mentah yang berkualitas baik dan aman untuk diolah?",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Segar & Tidak Layu / Basi",
+                        points: 100,
+                        keywords: ["segar", "bahan segar", "tidak basi", "tidak layu", "masih fresh", "fresh"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Tidak Busuk / Tidak Cacat",
+                        points: 80,
+                        keywords: ["tidak busuk", "bebas busuk", "tidak cacat", "tidak rusak", "utuh", "tidak bertunas busuk"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Tidak Berjamur & Tidak Apek",
+                        points: 60,
+                        keywords: ["tidak berjamur", "bebas jamur", "tidak apek", "bebas bau apek", "tidak tengik", "jamuran"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Bersih dari Kotoran / Hama",
+                        points: 40,
+                        keywords: ["bersih", "bebas kotoran", "bebas kutu", "tidak berulat", "bebas kerikil", "tanpa kotoran"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Belum Kedaluwarsa / Kemasan Utuh",
+                        points: 20,
+                        keywords: ["tidak kedaluwarsa", "belum expired", "tidak expired", "kemasan utuh", "masih belum expired", "belum kadaluarsa"]
+                    }
+                ]
+            },
+            {
+                id: 6,
+                cognitiveLevel: "C2",
+                difficulty: "Mudah",
+                competencyFocus: "Identifikasi alat pengolahan pangan",
+                learningObjectiveReference: ["8.1.5"],
+                learningSummary: "Penggunaan alat pengolahan yang tepat dan sesuai fungsi mempercepat proses pemasakan serta menjaga kerapian produk.",
+                question: "Sebutkan alat dapur yang sering digunakan untuk mengolah bahan pangan serealia, kacang, atau umbi!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Panci / Dandang Kukusan",
+                        points: 100,
+                        keywords: ["panci", "kukusan", "dandang", "steamer", "panci rebus", "panci kukus"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Wajan / Penggorengan",
+                        points: 80,
+                        keywords: ["wajan", "penggorengan", "kuali", "frying pan", "pan"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Pisau & Talenan",
+                        points: 60,
+                        keywords: ["pisau", "talenan", "pisau dapur", "cutting board", "pisau pemotong"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Blender / Cobek / Ulekan",
+                        points: 40,
+                        keywords: ["blender", "cobek", "ulekan", "blender penghalus", "lumpang", "pemasah"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Parutan / Saringan",
+                        points: 20,
+                        keywords: ["parutan", "saringan", "parut", "saring", "ayakan"]
+                    }
+                ]
+            },
+            {
+                id: 7,
+                cognitiveLevel: "C2-C3",
+                difficulty: "Sedang",
+                competencyFocus: "Teknik dasar pengolahan pangan",
+                learningObjectiveReference: ["8.1.5", "8.1.7"],
+                learningSummary: "Teknik pengolahan dibedakan menjadi panas basah (boiling, steaming) dan panas kering (frying, baking) untuk mengubah tekstur dan rasa.",
+                question: "Sebutkan teknik pengolahan makanan yang umum digunakan untuk memasak serealia, kacang, atau umbi!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Merebus (Boiling)",
+                        points: 100,
+                        keywords: ["merebus", "rebus", "boiling", "perebusan", "di rebus"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Mengukus (Steaming)",
+                        points: 80,
+                        keywords: ["mengukus", "kukus", "steaming", "pengukusan", "di kukus"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Menggoreng (Frying)",
+                        points: 60,
+                        keywords: ["menggoreng", "goreng", "frying", "deep frying", "di goreng"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Memanggang / Menyangrai (Baking/Roasting)",
+                        points: 40,
+                        keywords: ["memanggang", "panggang", "sangrai", "menyangrai", "baking", "roasting", "di panggang"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Menumbuk / Menghaluskan / Fermentasi",
+                        points: 20,
+                        keywords: ["menumbuk", "menghaluskan", "tumbuk", "fermentasi", "pemeraman", "di tumbuk"]
+                    }
+                ]
+            },
+            {
+                id: 8,
+                cognitiveLevel: "C3",
+                difficulty: "Sedang",
+                competencyFocus: "Tahapan kerja & keselamatan kerja (Higiene)",
+                learningObjectiveReference: ["8.1.6"],
+                learningSummary: "Persiapan kerja yang matang, termasuk sanitasi diri dan kebersihan bahan, menjamin mutu dan keamanan produk akhir.",
+                question: "Apa saja langkah persiapan atau sanitasi yang WAJIB dilakukan sebelum mulai mengolah bahan pangan?",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Mencuci Tangan Pakai Sabun",
+                        points: 100,
+                        keywords: ["mencuci tangan", "cuci tangan", "cuci tangan pakai sabun", "kebersihan tangan", "sanitasi tangan"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Mencuci & Membersihkan Bahan",
+                        points: 80,
+                        keywords: ["mencuci bahan", "cuci bahan", "membersihkan bahan", "cuci singkong", "cuci beras", "mencuci sayur"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Menyiapkan Alat & Bahan Lengkap",
+                        points: 60,
+                        keywords: ["menyiapkan alat", "siapkan bahan", "menyiapkan bahan", "persiapan alat", "persiapan bahan", "mis en place"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Membersihkan Area Kerja / Meja Dapur",
+                        points: 40,
+                        keywords: ["membersihkan meja", "membersihkan area kerja", "kebersihan dapur", "area kerja bersih", "meja bersih"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Menggunakan Apron / Celemek / Masker",
+                        points: 20,
+                        keywords: ["memakai celemek", "pakai apron", "pakai masker", "sarung tangan", "tutup kepala", "celemek"]
+                    }
+                ]
+            },
+            {
+                id: 9,
+                cognitiveLevel: "C3-C4",
+                difficulty: "Sedang - Tinggi",
+                competencyFocus: "Penyajian, pengemasan, dan daya tarik produk",
+                learningObjectiveReference: ["8.1.7"],
+                learningSummary: "Pengemasan dan penyajian yang higienis serta estetis dapat meningkatkan daya simpan dan nilai jual produk pangan.",
+                question: "Sebutkan hal penting yang perlu diperhatikan saat menyajikan atau mengemas produk makanan!",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Kebersihan & Higiene Kemasan / Wadah",
+                        points: 100,
+                        keywords: ["kebersihan", "higiene", "wadah bersih", "kemasan bersih", "higienis", "bebas kotoran"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Kerapian & Penataan Estetika",
+                        points: 80,
+                        keywords: ["kerapian", "rapi", "penataan", "tampilan rapi", "estetika", "keindahan"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Keamanan Kemasan (Kedap / Food Grade)",
+                        points: 60,
+                        keywords: ["keamanan kemasan", "food grade", "kemasan kedap", "kemasan rapat", "tidak bocor", "aman"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Tampilan Warna & Garnish (Hiasan)",
+                        points: 40,
+                        keywords: ["tampilan menarik", "warna menarik", "garnish", "hiasan", "dekorasi makanan", "garnis"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Kelengkapan Label & Informasi Produk",
+                        points: 20,
+                        keywords: ["label", "informasi produk", "label produk", "merek", "tanggal expired", "stiker label"]
+                    }
+                ]
+            },
+            {
+                id: 10,
+                cognitiveLevel: "C4",
+                difficulty: "Tinggi (Inovasi)",
+                competencyFocus: "Kreativitas, inovasi, dan nilai tambah bahan lokal",
+                learningObjectiveReference: ["8.1.8"],
+                learningSummary: "Inovasi olahan pangan lokal dapat diciptakan melalui kombinasi rasa modern, pemanfaatan tepung buatan, dan kemasan kekinian.",
+                question: "Bagaimana cara berkreasi agar produk olahan pangan dari bahan lokal menjadi lebih modern, bernilai jual, dan disukai?",
+                answers: [
+                    {
+                        rank: 1,
+                        answer: "Membuat Variasi Rasa / Topping Kekinian",
+                        points: 100,
+                        keywords: ["variasi rasa", "topping kekinian", "tambah rasa", "rasa baru", "aneka rasa", "flavor modern"]
+                    },
+                    {
+                        rank: 2,
+                        answer: "Mengubah Bentuk / Tampilan Unik",
+                        points: 80,
+                        keywords: ["bentuk unik", "variasi bentuk", "tampilan unik", "bentuk cetakan", "desain unik", "kreasi bentuk"]
+                    },
+                    {
+                        rank: 3,
+                        answer: "Desain Kemasan Modern & Ramah Lingkungan",
+                        points: 60,
+                        keywords: ["kemasan modern", "kemasan kekinian", "pouch", "box modern", "kemasan ramah lingkungan", "packaging menarik"]
+                    },
+                    {
+                        rank: 4,
+                        answer: "Mengolah Menjadi Tepung Instan (MOCAF/Maizena)",
+                        points: 40,
+                        keywords: ["diolah jadi tepung", "tepung mocaf", "tepung instan", "dibuat tepung", "tepung ubi", "tepung olahan"]
+                    },
+                    {
+                        rank: 5,
+                        answer: "Mengombinasikan Beberapa Bahan Lokal",
+                        points: 20,
+                        keywords: ["kombinasi bahan", "mix bahan", "campuran bahan", "gabungan bahan", "kombinasi serealia dan umbi"]
+                    }
+                ]
+            }
+        ];
+
+        /* ==========================================================================
+           GLOBAL GAME STATE
+           ========================================================================== */
+        let currentScreen = 'welcome';
+        let currentRoundIndex = 0;
+        let teamNames = { team1: 'Tim Alpha', team2: 'Tim Beta' };
+        let teamScores = { team1: 0, team2: 0 };
+        let activeTeam = 1; // 1 or 2
+        let startingTeamForRound = 1;
+        let roundScore = 0;
+        let strikes = 0;
+        const maxStrikes = 3;
+        let revealedAnswers = [false, false, false, false, false];
+        let stealMode = false;
+        let isMuted = false;
+        let isProcessingAnswer = false;
+        let audioCtx = null;
+
+        /* ==========================================================================
+           WEB AUDIO API SOUND SYNTHESIZER
+           ========================================================================== */
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            try {
+                initAudioContext();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    // Upbeat major third chime
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                } else if (type === 'wrong') {
+                    // Buzzing strike sound
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.35);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'reveal') {
+                    // Crisp pop tone
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } else if (type === 'victory') {
+                    // Fanfare flourish
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.type = 'triangle';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.12);
+                        g.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.4);
+                        o.start(now + idx * 0.12);
+                        o.stop(now + idx * 0.12 + 0.4);
+                    });
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                console.debug("Audio play muted or blocked by browser", e);
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('mute-icon');
+            const text = document.getElementById('mute-text');
+            if (isMuted) {
+                icon.textContent = '🔇';
+                text.textContent = 'Suara: Off';
+            } else {
+                icon.textContent = '🔊';
+                text.textContent = 'Suara: On';
+                playSound('click');
+            }
+        }
+
+        /* ==========================================================================
+           FUZZY & SMART KEYWORD MATCHING LOGIC
+           ========================================================================== */
+        function normalizeText(text) {
+            if (!text) return '';
+            return text
+                .toString()
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ') // Replace punctuation with space
+                .replace(/\s+/g, ' ') // Collapse multiple spaces
+                .trim();
+        }
+
+        // Levenshtein distance for typo tolerance
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function calculateSimilarity(str1, str2) {
+            const norm1 = normalizeText(str1);
+            const norm2 = normalizeText(str2);
+            if (!norm1 || !norm2) return 0;
+            if (norm1 === norm2) return 1.0;
+            if (norm1.includes(norm2) || norm2.includes(norm1)) return 0.88;
+
+            const maxLen = Math.max(norm1.length, norm2.length);
+            if (maxLen === 0) return 1.0;
+            const dist = levenshteinDistance(norm1, norm2);
+            return 1 - dist / maxLen;
+        }
+
+        function findBestAnswerMatch(userInput, answerList) {
+            const cleanInput = normalizeText(userInput);
+            if (!cleanInput) return -1;
+
+            let bestIndex = -1;
+            let highestScore = 0;
+
+            answerList.forEach((ansObj, idx) => {
+                if (revealedAnswers[idx]) return; // Skip already revealed
+
+                // Check direct match against main answer
+                const mainSim = calculateSimilarity(cleanInput, ansObj.answer);
+                if (mainSim > highestScore) {
+                    highestScore = mainSim;
+                    bestIndex = idx;
+                }
+
+                // Check against keywords array
+                ansObj.keywords.forEach(kw => {
+                    const cleanKw = normalizeText(kw);
+                    if (cleanInput === cleanKw) {
+                        highestScore = 1.0;
+                        bestIndex = idx;
+                    } else if (cleanInput.length >= 3 && (cleanInput.includes(cleanKw) || cleanKw.includes(cleanInput))) {
+                        const subSim = 0.85;
+                        if (subSim > highestScore) {
+                            highestScore = subSim;
+                            bestIndex = idx;
+                        }
+                    } else {
+                        const kwSim = calculateSimilarity(cleanInput, cleanKw);
+                        if (kwSim > highestScore) {
+                            highestScore = kwSim;
+                            bestIndex = idx;
+                        }
+                    }
+                });
+            });
+
+            // Threshold for valid match
+            if (highestScore >= 0.72) {
+                return bestIndex;
+            }
+            return -1;
+        }
+
+        /* ==========================================================================
+           SCREEN & STATE NAVIGATION
+           ========================================================================== */
+        function showScreen(screenId) {
+            currentScreen = screenId;
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-final').classList.add('hidden');
+
+            const target = document.getElementById(`screen-${screenId}`);
+            if (target) target.classList.remove('hidden');
+        }
+
+        function startGame() {
+            playSound('click');
+            const t1 = document.getElementById('team1-input').value.trim() || 'Tim Alpha';
+            const t2 = document.getElementById('team2-input').value.trim() || 'Tim Beta';
+
+            teamNames.team1 = sanitizeUserInput(t1);
+            teamNames.team2 = sanitizeUserInput(t2);
+
+            teamScores.team1 = 0;
+            teamScores.team2 = 0;
+            currentRoundIndex = 0;
+            startingTeamForRound = 1;
+            activeTeam = 1;
+
+            showScreen('game');
+            startRound(currentRoundIndex);
+        }
+
+        function resetGameToStart() {
+            playSound('click');
+            showScreen('welcome');
+        }
+
+        function confirmReturnHome() {
+            if (currentScreen === 'welcome') return;
+            showScreen('welcome');
+        }
+
+        /* ==========================================================================
+           ROUND LOGIC & RENDERING
+           ========================================================================== */
+        function startRound(roundIdx) {
+            currentRoundIndex = roundIdx;
+            roundScore = 0;
+            strikes = 0;
+            stealMode = false;
+            revealedAnswers = [false, false, false, false, false];
+
+            // Alternate starting team per round
+            activeTeam = (roundIdx % 2 === 0) ? 1 : 2;
+            startingTeamForRound = activeTeam;
+
+            renderScoreboard();
+            renderQuestion();
+            renderAnswerBoard();
+            renderStrikes();
+            clearFeedback();
+        }
+
+        function renderScoreboard() {
+            document.getElementById('label-team1').textContent = teamNames.team1;
+            document.getElementById('label-team2').textContent = teamNames.team2;
+            document.getElementById('score-team1').textContent = teamScores.team1.toLocaleString('id-ID');
+            document.getElementById('score-team2').textContent = teamScores.team2.toLocaleString('id-ID');
+
+            document.getElementById('round-indicator').textContent = `Ronde ${currentRoundIndex + 1} dari ${QUESTION_BANK.length}`;
+            document.getElementById('round-pot-score').textContent = roundScore;
+
+            // Highlight Active Team Card
+            const card1 = document.getElementById('card-team1');
+            const card2 = document.getElementById('card-team2');
+            const badge1 = document.getElementById('turn-badge-1');
+            const badge2 = document.getElementById('turn-badge-2');
+            const activeNameText = document.getElementById('active-team-name-text');
+            const activeTurnBanner = document.getElementById('active-turn-banner');
+            const stealTag = document.getElementById('steal-status-tag');
+
+            activeNameText.textContent = activeTeam === 1 ? teamNames.team1 : teamNames.team2;
+
+            if (activeTeam === 1) {
+                card1.classList.add('shadow-neon-blue', 'border-sky-400');
+                card1.classList.remove('opacity-60');
+                card2.classList.remove('shadow-neon-red', 'border-pink-400');
+                card2.classList.add('opacity-60');
+                badge1.classList.remove('hidden');
+                badge2.classList.add('hidden');
+                activeTurnBanner.className = "mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/30";
+            } else {
+                card2.classList.add('shadow-neon-red', 'border-pink-400');
+                card2.classList.remove('opacity-60');
+                card1.classList.remove('shadow-neon-blue', 'border-sky-400');
+                card1.classList.add('opacity-60');
+                badge2.classList.remove('hidden');
+                badge1.classList.add('hidden');
+                activeTurnBanner.className = "mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-pink-500/20 text-pink-300 border border-pink-500/30";
+            }
+
+            if (stealMode) {
+                stealTag.classList.remove('hidden');
+            } else {
+                stealTag.classList.add('hidden');
+            }
+        }
+
+        function renderQuestion() {
+            const qData = QUESTION_BANK[currentRoundIndex];
+            document.getElementById('question-text').textContent = qData.question;
+            document.getElementById('round-topic-badge').textContent = `${qData.competencyFocus} (${qData.difficulty})`;
+        }
+
+        function renderAnswerBoard() {
+            const qData = QUESTION_BANK[currentRoundIndex];
+            const board = document.getElementById('answer-board');
+            board.innerHTML = '';
+
+            let remaining = 0;
+
+            qData.answers.forEach((ans, idx) => {
+                const isRevealed = revealedAnswers[idx];
+                if (!isRevealed) remaining++;
+
+                const cardHTML = `
+                    <div class="card-perspective h-16 w-full cursor-pointer" onclick="handleCardClick(${idx})">
+                        <div class="card-inner ${isRevealed ? 'is-flipped' : ''}" id="card-inner-${idx}">
+                            <!-- Front Side (Hidden Number) -->
+                            <div class="card-front px-4 flex justify-between items-center text-slate-300 font-black">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-400 font-extrabold text-sm">
+                                        ${ans.rank}
+                                    </span>
+                                    <span class="text-xs sm:text-sm text-slate-400 font-bold uppercase tracking-widest">TERSEMBUNYI</span>
+                                </div>
+                                <span class="text-xs text-amber-400 font-extrabold bg-amber-400/10 px-2.5 py-1 rounded border border-amber-400/20">
+                                    ${ans.points} PTS
+                                </span>
+                            </div>
+
+                            <!-- Back Side (Revealed Answer) -->
+                            <div class="card-back px-4 flex justify-between items-center text-white font-extrabold shadow-lg">
+                                <div class="flex items-center gap-2 truncate pr-2">
+                                    <span class="w-7 h-7 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-black text-xs shrink-0">
+                                        ${ans.rank}
+                                    </span>
+                                    <span class="text-sm sm:text-base font-bold text-white truncate">
+                                        ${ans.answer}
+                                    </span>
+                                </div>
+                                <span class="text-sm sm:text-base font-black text-amber-300 bg-slate-950/40 px-3 py-1 rounded-lg border border-amber-300/30 shrink-0">
+                                    ${ans.points}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                board.innerHTML += cardHTML;
+            });
+
+            document.getElementById('remaining-answers-count').textContent = `Sisa Jawaban: ${remaining}/5`;
+        }
+
+        function renderStrikes() {
+            const container = document.getElementById('strikes-container');
+            container.innerHTML = '';
+
+            for (let i = 0; i < maxStrikes; i++) {
+                if (i < strikes) {
+                    container.innerHTML += `
+                        <span class="w-7 h-7 rounded-lg bg-red-600/20 border border-red-500 text-red-500 flex items-center justify-center font-black text-base animate-strike">
+                            ✖
+                        </span>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <span class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 text-slate-600 flex items-center justify-center font-bold text-xs">
+                            -
+                        </span>
+                    `;
+                }
+            }
+        }
+
+        /* ==========================================================================
+           ANSWER SUBMISSION & TURN GAMEPLAY LOGIC
+           ========================================================================== */
+        function handleAnswerSubmit(e) {
+            e.preventDefault();
+            if (isProcessingAnswer) return;
+
+            const inputElem = document.getElementById('user-answer-input');
+            const rawVal = inputElem.value;
+            if (!rawVal.trim()) return;
+
+            inputElem.value = '';
+            processAnswer(rawVal);
+        }
+
+        function processAnswer(userInput) {
+            isProcessingAnswer = true;
+            const qData = QUESTION_BANK[currentRoundIndex];
+            const matchIndex = findBestAnswerMatch(userInput, qData.answers);
+
+            if (matchIndex !== -1) {
+                // Correct Answer!
+                playSound('correct');
+                const matchedObj = qData.answers[matchIndex];
+                revealAnswer(matchIndex, matchedObj.points);
+
+                showFeedback(`🎉 Mantap! Jawaban "${matchedObj.answer}" BENAR! (+${matchedObj.points} Poin)`, "success");
+
+                // Check if all answers are revealed
+                if (revealedAnswers.every(r => r === true)) {
+                    setTimeout(() => {
+                        awardRoundScore(activeTeam);
+                    }, 1200);
+                } else if (stealMode) {
+                    // Successful Steal!
+                    setTimeout(() => {
+                        awardRoundScore(activeTeam);
+                    }, 1200);
+                }
+            } else {
+                // Incorrect Answer (Strike!)
+                playSound('wrong');
+                strikes++;
+                renderStrikes();
+
+                showFeedback(`❌ Jawaban "${sanitizeUserInput(userInput)}" belum cocok. Strike ${strikes}/${maxStrikes}!`, "error");
+
+                if (!stealMode) {
+                    if (strikes >= maxStrikes) {
+                        // Activate Steal Mode
+                        setTimeout(() => {
+                            activateStealMode();
+                        }, 1000);
+                    }
+                } else {
+                    // Steal Attempt Failed -> Original team wins round pot
+                    setTimeout(() => {
+                        const originalTeam = activeTeam === 1 ? 2 : 1;
+                        showFeedback(`❌ Kesempatan Steal Gagal! Poin ronde kembali ke tim awal.`, "info");
+                        awardRoundScore(originalTeam);
+                    }, 1200);
+                }
+            }
+
+            setTimeout(() => {
+                isProcessingAnswer = false;
+            }, 500);
+        }
+
+        function revealAnswer(index, points) {
+            if (revealedAnswers[index]) return;
+            revealedAnswers[index] = true;
+            roundScore += points;
+
+            playSound('reveal');
+            renderScoreboard();
+            renderAnswerBoard();
+        }
+
+        function activateStealMode() {
+            stealMode = true;
+            strikes = 0; // Reset strikes for steal attempt
+            activeTeam = activeTeam === 1 ? 2 : 1; // Switch turn to opponent team
+
+            renderScoreboard();
+            renderStrikes();
+
+            const defenderName = activeTeam === 1 ? teamNames.team1 : teamNames.team2;
+            showFeedback(`⚠️ 3 STRIKE TERJADI! Kesempatan STEAL diberikan kepada ${defenderName}! Jawab 1 kali dengan benar untuk merebut SELURUH poin!`, "warning");
+        }
+
+        function awardRoundScore(winningTeamIndex) {
+            if (winningTeamIndex === 1) {
+                teamScores.team1 += roundScore;
+            } else {
+                teamScores.team2 += roundScore;
+            }
+
+            renderScoreboard();
+            showRoundCompleteModal(winningTeamIndex);
+        }
+
+        function showRoundCompleteModal(winningTeamIndex) {
+            playSound('victory');
+            const winnerName = winningTeamIndex === 1 ? teamNames.team1 : teamNames.team2;
+            const qData = QUESTION_BANK[currentRoundIndex];
+
+            document.getElementById('round-winner-text').textContent = `${winnerName} memenangkan ${roundScore} poin di ronde ini!`;
+            document.getElementById('round-summary-text').textContent = qData.learningSummary;
+
+            document.getElementById('round-complete-modal').classList.remove('hidden');
+        }
+
+        function proceedToNextRound() {
+            playSound('click');
+            document.getElementById('round-complete-modal').classList.add('hidden');
+
+            if (currentRoundIndex + 1 < QUESTION_BANK.length) {
+                startRound(currentRoundIndex + 1);
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            showScreen('final');
+            playSound('victory');
+            launchConfetti();
+
+            document.getElementById('final-team1-name').textContent = teamNames.team1;
+            document.getElementById('final-team2-name').textContent = teamNames.team2;
+            document.getElementById('final-team1-score').textContent = teamScores.team1.toLocaleString('id-ID');
+            document.getElementById('final-team2-score').textContent = teamScores.team2.toLocaleString('id-ID');
+
+            const winnerTeamText = document.getElementById('winner-team-name');
+            const winnerScoreText = document.getElementById('winner-score-text');
+            const winnerIcon = document.getElementById('winner-icon');
+
+            if (teamScores.team1 > teamScores.team2) {
+                winnerTeamText.textContent = teamNames.team1.toUpperCase();
+                winnerScoreText.textContent = `Total Skor: ${teamScores.team1.toLocaleString('id-ID')} Poin`;
+                winnerIcon.textContent = '🏆';
+            } else if (teamScores.team2 > teamScores.team1) {
+                winnerTeamText.textContent = teamNames.team2.toUpperCase();
+                winnerScoreText.textContent = `Total Skor: ${teamScores.team2.toLocaleString('id-ID')} Poin`;
+                winnerIcon.textContent = '🏆';
+            } else {
+                winnerTeamText.textContent = "PERTANDINGAN SERI!";
+                winnerScoreText.textContent = `Kedua Tim Memperoleh ${teamScores.team1.toLocaleString('id-ID')} Poin`;
+                winnerIcon.textContent = '🤝';
+            }
+        }
+
+        /* ==========================================================================
+           HOST / TEACHER OVERRIDE CONTROLS
+           ========================================================================== */
+        function handleCardClick(index) {
+            // Manual reveal when teacher clicks card directly
+            if (!revealedAnswers[index]) {
+                const ansObj = QUESTION_BANK[currentRoundIndex].answers[index];
+                revealAnswer(index, ansObj.points);
+                showFeedback(`👁️ Panel Guru: Kartu "${ansObj.answer}" dibuka secara manual (+${ansObj.points} Poin)`, "info");
+
+                if (revealedAnswers.every(r => r === true)) {
+                    setTimeout(() => {
+                        awardRoundScore(activeTeam);
+                    }, 1200);
+                }
+            }
+        }
+
+        function manualTriggerStrike() {
+            playSound('wrong');
+            strikes++;
+            renderStrikes();
+            showFeedback(`⚠️ Panel Guru: Strike ditambahkan manual (${strikes}/${maxStrikes})`, "warning");
+
+            if (!stealMode && strikes >= maxStrikes) {
+                activateStealMode();
+            }
+        }
+
+        function switchActiveTeamManual() {
+            playSound('click');
+            activeTeam = activeTeam === 1 ? 2 : 1;
+            renderScoreboard();
+            showFeedback(`🔄 Panel Guru: Giliran berpindah ke ${activeTeam === 1 ? teamNames.team1 : teamNames.team2}`, "info");
+        }
+
+        function forceRevealAllAndFinish() {
+            const qData = QUESTION_BANK[currentRoundIndex];
+            qData.answers.forEach((ans, idx) => {
+                if (!revealedAnswers[idx]) {
+                    revealAnswer(idx, ans.points);
+                }
+            });
+            setTimeout(() => {
+                awardRoundScore(activeTeam);
+            }, 1000);
+        }
+
+        /* ==========================================================================
+           UI UTILITIES & MODALS
+           ========================================================================== */
+        function showFeedback(msg, type) {
+            const fb = document.getElementById('feedback-msg');
+            fb.classList.remove('hidden', 'text-emerald-400', 'text-red-400', 'text-amber-400', 'text-sky-400');
+
+            if (type === 'success') fb.classList.add('text-emerald-400');
+            else if (type === 'error') fb.classList.add('text-red-400');
+            else if (type === 'warning') fb.classList.add('text-amber-400');
+            else fb.classList.add('text-sky-400');
+
+            fb.textContent = msg;
+        }
+
+        function clearFeedback() {
+            const fb = document.getElementById('feedback-msg');
+            fb.textContent = '';
+            fb.classList.add('hidden');
+        }
+
+        function sanitizeUserInput(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        function showInstructionsModal() {
+            playSound('click');
+            document.getElementById('modal-instructions').classList.remove('hidden');
+        }
+
+        function closeInstructionsModal() {
+            playSound('click');
+            document.getElementById('modal-instructions').classList.add('hidden');
+        }
+
+        function showPedagogyModal() {
+            playSound('click');
+            const qData = QUESTION_BANK[currentRoundIndex];
+            const content = document.getElementById('pedagogy-details-content');
+
+            content.innerHTML = `
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                    <span class="text-xs uppercase text-amber-400 font-bold block mb-1">Topik Ronde ${currentRoundIndex + 1}:</span>
+                    <p class="font-bold text-white text-base">${qData.question}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-slate-800/60 p-2.5 rounded border border-slate-700">
+                        <span class="text-slate-400 block font-semibold">Tingkat Kesulitan:</span>
+                        <span class="text-amber-300 font-bold">${qData.difficulty}</span>
+                    </div>
+                    <div class="bg-slate-800/60 p-2.5 rounded border border-slate-700">
+                        <span class="text-slate-400 block font-semibold">Level Kognitif:</span>
+                        <span class="text-sky-300 font-bold">${qData.cognitiveLevel}</span>
+                    </div>
+                    <div class="bg-slate-800/60 p-2.5 rounded border border-slate-700 col-span-2">
+                        <span class="text-slate-400 block font-semibold">Fokus Kompetensi:</span>
+                        <span class="text-emerald-300 font-bold">${qData.competencyFocus}</span>
+                    </div>
+                    <div class="bg-slate-800/60 p-2.5 rounded border border-slate-700 col-span-2">
+                        <span class="text-slate-400 block font-semibold">Referensi Acuan TP (Tujuan Pembelajaran):</span>
+                        <span class="text-indigo-300 font-bold">TP ${qData.learningObjectiveReference.join(', ')}</span>
+                    </div>
+                </div>
+
+                <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-xs text-amber-200">
+                    <strong class="block mb-1 text-amber-400">Rangkuman Materi Akademik:</strong>
+                    ${qData.learningSummary}
+                </div>
+            `;
+
+            document.getElementById('modal-pedagogy').classList.remove('hidden');
+        }
+
+        function closePedagogyModal() {
+            playSound('click');
+            document.getElementById('modal-pedagogy').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           CONFETTI VICTORY ANIMATION (PURE JS)
+           ========================================================================== */
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const particleCount = 120;
+            const colors = ['#fbbf24', '#38bdf8', '#f43f5e', '#10b981', '#a855f7'];
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 3 + 2,
+                    speedX: Math.random() * 2 - 1,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 10 - 5
+                });
+            }
+
+            let animationFrame;
+            const startTime = Date.now();
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.rotation += p.rotationSpeed;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                if (Date.now() - startTime < 4500) {
+                    animationFrame = requestAnimationFrame(animate);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    cancelAnimationFrame(animationFrame);
+                }
+            }
+
+            animate();
+        }
+
+        // Initialize App on DOM Ready
+        window.addEventListener('DOMContentLoaded', () => {
+            showScreen('welcome');
+        });
+    </script>
+</body>
+</html>
