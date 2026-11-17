@@ -3,86 +3,153 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Soal - Edu Family 100</title>
+  <title>Editor Soal BK - Family 100 BK</title>
+  <link rel="stylesheet" href="/src/style.css">
 </head>
-<body>
-  <header>
-    <h1 id="category-title">Editor Soal BK</h1>
-    <p id="category-desc"></p>
-    <div>
-      <a href="/admin/index.html">&larr; Kembali ke Dashboard Kategori</a> |
-      <button type="button" id="btn-export-pkg">Ekspor Paket (.json)</button>
+<body class="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+  <!-- Top Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/admin/index.html" class="flex items-center space-x-2">
+          <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+            F
+          </span>
+          <div class="flex flex-col">
+            <span class="font-bold text-slate-900 text-base leading-tight">
+              Family 100 <span class="text-indigo-600">BK</span>
+            </span>
+            <span class="text-[11px] text-slate-500 font-normal leading-tight">
+              Editor Soal &amp; Jawaban
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button type="button" id="btn-export-pkg" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+          Ekspor Paket (.json)
+        </button>
+        <a href="/admin/index.html" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
+          &larr; Kembali ke Dashboard
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- Indikator Status Simpan -->
-  <div id="status-indicator" style="display: none; padding: 10px; margin: 12px 0; border-radius: 4px; font-family: monospace;"></div>
-
-  <div id="error-container" style="color: #b91c1c; margin: 12px 0;"></div>
-
-  <hr>
-
-  <!-- Form Tambah / Edit Soal -->
-  <section id="form-section">
-    <h2 id="form-heading">Tambah Soal Baru</h2>
-    <form id="question-form">
-      <input type="hidden" id="q-id">
-      <input type="hidden" id="q-sort-order">
-
-      <div>
-        <label for="q-text"><strong>Teks Soal BK (Wajib):</strong></label><br>
-        <textarea id="q-text" rows="3" required placeholder="Contoh: Apa tindakan terbaik saat melihat teman disudutkan atau diejek?" style="width: 100%; max-width: 650px;"></textarea>
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <!-- Category Header Info -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <div class="flex items-center space-x-2 mb-1">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+          Paket Materi BK
+        </span>
       </div>
-      <br>
+      <h1 id="category-title" class="text-2xl font-bold text-slate-900 mb-1 tracking-tight">Memuat Judul Paket...</h1>
+      <p id="category-desc" class="text-xs sm:text-sm text-slate-500 leading-relaxed"></p>
+    </div>
 
-      <div>
-        <label for="q-multiplier"><strong>Multiplier Poin (1 - 3):</strong></label><br>
-        <input type="number" id="q-multiplier" min="1" max="3" value="1" required style="width: 80px;">
+    <!-- Live Status Indicator -->
+    <div id="status-indicator" class="hidden"></div>
+    <div id="error-container"></div>
+
+    <!-- Form Section -->
+    <section id="form-section" class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+      <div class="pb-3 border-b border-slate-100 mb-4 flex items-center justify-between">
+        <div>
+          <h2 id="form-heading" class="text-base font-bold text-slate-900">Tambah Soal Baru</h2>
+          <p class="text-xs text-slate-500">Tentukan teks pertanyaan survei, poin jawaban, dan panduan refleksi BK</p>
+        </div>
       </div>
-      <br>
 
-      <div>
-        <label for="q-reflection"><strong>Catatan Refleksi BK (Reflection Note):</strong></label><br>
-        <textarea id="q-reflection" rows="2" placeholder="Pesan edukatif pembina/guru BK setelah soal selesai..." style="width: 100%; max-width: 650px;"></textarea>
+      <form id="question-form" class="space-y-4">
+        <input type="hidden" id="q-id">
+        <input type="hidden" id="q-sort-order">
+
+        <div>
+          <label for="q-text" class="block text-xs font-semibold text-slate-700 mb-1">
+            Teks Soal BK <span class="text-red-500">*</span>:
+          </label>
+          <textarea id="q-text" rows="2" required placeholder="Contoh: Apa tindakan paling bijak saat melihat teman diejek di grup obrolan?" class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder:text-slate-400"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label for="q-multiplier" class="block text-xs font-semibold text-slate-700 mb-1">
+              Pengali Poin (Multiplier 1-3):
+            </label>
+            <input type="number" id="q-multiplier" min="1" max="3" value="1" required class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          </div>
+          <div class="sm:col-span-2">
+            <label for="q-reflection" class="block text-xs font-semibold text-slate-700 mb-1">
+              Catatan Refleksi Karakter (Tampil di akhir ronde):
+            </label>
+            <textarea id="q-reflection" rows="2" placeholder="Pesan edukatif pembina/guru BK setelah soal selesai..." class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder:text-slate-400"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">
+            Pertanyaan Pemantik Diskusi Kelas (Maksimal 2 Pertanyaan):
+          </label>
+          <div class="space-y-2">
+            <input type="text" id="q-prompt-1" placeholder="1. Mengapa sebagian orang memilih untuk diam saat terjadi perundungan?" class="w-full px-3 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 placeholder:text-slate-400">
+            <input type="text" id="q-prompt-2" placeholder="2. Bagaimana cara kita membela teman tanpa membuat diri sendiri terancam?" class="w-full px-3 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 placeholder:text-slate-400">
+          </div>
+        </div>
+
+        <!-- Answers Section -->
+        <div class="pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="text-xs font-semibold text-slate-700">Daftar Papan Jawaban (Minimal 3, Maksimal 8 Jawaban):</span>
+              <p class="text-[11px] text-slate-400">Poin otomatis diurutkan menurun dari poin terbesar saat disimpan.</p>
+            </div>
+            <button type="button" id="btn-add-answer" class="inline-flex items-center justify-center font-medium px-2.5 py-1 text-xs rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              + Tambah Baris Jawaban
+            </button>
+          </div>
+
+          <div id="answers-container" class="space-y-2 mb-3"></div>
+        </div>
+
+        <div class="flex items-center space-x-3 pt-3 border-t border-slate-100">
+          <button type="submit" id="btn-save-question" class="inline-flex items-center justify-center font-semibold px-5 py-2.5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Simpan Soal
+          </button>
+          <button type="button" id="btn-cancel-question" class="hidden inline-flex items-center justify-center font-medium px-4 py-2.5 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+            Batal Ubah
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Questions List Section -->
+    <section id="questions-list-section" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-slate-900">Daftar Soal dalam Paket Ini</h2>
+        <span class="text-xs text-slate-500">Gunakan panah untuk mengubah urutan</span>
       </div>
-      <br>
 
-      <div>
-        <strong>Pertanyaan Diskusi Kelas (Maksimal 2):</strong><br>
-        <label>1: <input type="text" id="q-prompt-1" placeholder="Pertanyaan diskusi 1..." style="width: 100%; max-width: 500px;"></label><br><br>
-        <label>2: <input type="text" id="q-prompt-2" placeholder="Pertanyaan diskusi 2..." style="width: 100%; max-width: 500px;"></label>
+      <!-- Loading State -->
+      <div id="loading-questions" class="p-8 text-center text-xs text-slate-500 bg-white rounded-xl border border-slate-200">
+        Memuat daftar soal...
       </div>
-      <br>
 
-      <div>
-        <strong>Daftar Jawaban (3 - 8 Jawaban):</strong>
-        <p><em>Urutan jawaban akan otomatis diurutkan dari poin terbesar saat disimpan.</em></p>
-        <div id="answers-container"></div>
-        <button type="button" id="btn-add-answer">+ Tambah Baris Jawaban</button>
+      <!-- Empty State -->
+      <div id="empty-questions" class="hidden p-8 text-center bg-white rounded-xl border border-slate-200">
+        <p class="text-sm text-slate-600 font-medium">Belum ada soal dalam topik pembelajaran ini.</p>
+        <p class="text-xs text-slate-400 mt-1">Buat soal pertama melalui formulir di atas.</p>
       </div>
-      <br>
 
-      <div>
-        <button type="submit" id="btn-save-question">Simpan Soal</button>
-        <button type="button" id="btn-cancel-question" style="display: none;">Batal Edit</button>
-      </div>
-    </form>
-  </section>
+      <!-- Questions List -->
+      <div id="questions-list" class="space-y-4"></div>
+    </section>
+  </main>
 
-  <hr>
-
-  <!-- Daftar Soal Terurut -->
-  <section id="questions-list-section">
-    <h2>Daftar Soal dalam Paket Ini</h2>
-    <div id="loading-questions">Memuat daftar soal...</div>
-    <div id="empty-questions" style="display: none;"><em>Belum ada soal dalam kategori ini. Silakan buat soal pertama melalui form di atas.</em></div>
-    <div id="questions-list"></div>
-  </section>
-
-  <hr>
-  <nav>
-    <a href="/admin/index.html">&larr; Kembali ke Dashboard Kategori</a>
-  </nav>
+  <footer class="py-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500 mt-auto">
+    Family 100 BK &bull; Panel Guru Bimbingan &amp; Konseling SMP/SMA
+  </footer>
 
   <script type="module" src="/src/admin/editor.js"></script>
 </body>

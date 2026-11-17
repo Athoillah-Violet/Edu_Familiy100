@@ -7,17 +7,31 @@ const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const submitBtn = document.getElementById('submit-btn');
 const statusMessage = document.getElementById('status-message');
+const togglePasswordBtn = document.getElementById('toggle-password-btn');
+
+// Toggle show / hide password
+togglePasswordBtn?.addEventListener('click', () => {
+  if (passwordInput) {
+    const isPassword = passwordInput.getAttribute('type') === 'password';
+    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    togglePasswordBtn.textContent = isPassword ? 'Sembunyikan' : 'Lihat';
+  }
+});
 
 // Cek apakah admin sudah login, jika ya langsung alihkan ke dashboard
 redirectIfLoggedIn();
 
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  statusMessage.textContent = '';
-  statusMessage.style.color = '#b91c1c';
+  if (statusMessage) {
+    statusMessage.textContent = '';
+    statusMessage.className = 'mt-3 text-xs text-red-600 font-medium text-center';
+  }
 
   if (isDemoMode) {
-    statusMessage.textContent = 'Mode demo: admin butuh koneksi database.';
+    if (statusMessage) {
+      statusMessage.textContent = 'Mode demo: admin butuh koneksi database.';
+    }
     return;
   }
 
@@ -25,7 +39,9 @@ form?.addEventListener('submit', async (e) => {
   const password = passwordInput.value;
 
   if (!email || !password) {
-    statusMessage.textContent = 'Email dan kata sandi wajib diisi.';
+    if (statusMessage) {
+      statusMessage.textContent = 'Email dan kata sandi wajib diisi.';
+    }
     return;
   }
 
@@ -36,9 +52,11 @@ form?.addEventListener('submit', async (e) => {
   try {
     const loginRes = await login(email, password);
     if (loginRes.error) {
-      statusMessage.textContent = loginRes.error || 'Terjadi kesalahan saat masuk. Silakan coba lagi.';
+      if (statusMessage) {
+        statusMessage.textContent = loginRes.error || 'Terjadi kesalahan saat masuk. Silakan coba lagi.';
+      }
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Masuk';
+      submitBtn.textContent = 'Masuk ke Panel Admin';
       return;
     }
 
@@ -46,19 +64,27 @@ form?.addEventListener('submit', async (e) => {
     const adminCheck = await isAdmin();
     if (!adminCheck.data) {
       await logout();
-      statusMessage.textContent = 'Akun ini tidak memiliki akses admin.';
+      if (statusMessage) {
+        statusMessage.textContent = 'Akun ini tidak memiliki akses admin guru.';
+      }
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Masuk';
+      submitBtn.textContent = 'Masuk ke Panel Admin';
       return;
     }
 
     // Berhasil dan terverifikasi admin
     submitBtn.textContent = 'Berhasil! Mengalihkan...';
+    if (statusMessage) {
+      statusMessage.className = 'mt-3 text-xs text-emerald-600 font-medium text-center';
+      statusMessage.textContent = 'Otentikasi berhasil. Mengalihkan...';
+    }
     window.location.href = '/admin/index.html';
   } catch (err) {
     console.error('Error in login submit:', err);
-    statusMessage.textContent = 'Terjadi kesalahan jaringan atau server.';
+    if (statusMessage) {
+      statusMessage.textContent = 'Terjadi kesalahan jaringan atau server.';
+    }
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Masuk';
+    submitBtn.textContent = 'Masuk ke Panel Admin';
   }
 });

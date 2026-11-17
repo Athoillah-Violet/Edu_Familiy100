@@ -7,7 +7,8 @@ import {
 } from '../lib/dataService.js';
 import { importCategory } from '../lib/portability.js';
 import { validateCategory } from '../lib/validators.js';
-import { escapeHtml, showToast } from '../lib/ui.js';
+import { escapeHtml } from '../lib/ui.js';
+import { showToast, confirmModal, styles } from '../lib/components.js';
 
 // 1. Guard requireAdmin() paling awal
 async function main() {
@@ -43,7 +44,7 @@ function initDashboard(user) {
 
   // Tampilkan email admin
   if (adminEmailEl) {
-    adminEmailEl.textContent = user.email || 'Admin';
+    adminEmailEl.textContent = user.email || 'Admin Guru';
   }
 
   // Tombol Logout
@@ -55,24 +56,28 @@ function initDashboard(user) {
 
   // Muat daftar kategori
   async function loadCategories() {
-    loadingStateEl.style.display = 'block';
-    emptyStateEl.style.display = 'none';
-    categoriesListEl.innerHTML = '';
+    loadingStateEl?.classList.remove('hidden');
+    emptyStateEl?.classList.add('hidden');
+    if (categoriesListEl) categoriesListEl.innerHTML = '';
 
     const res = await getAllCategories();
 
-    loadingStateEl.style.display = 'none';
+    loadingStateEl?.classList.add('hidden');
 
     if (res.error) {
       showToast(res.error, 'error');
-      categoriesListEl.innerHTML = `<p style="color: red;">Error: ${escapeHtml(res.error)}</p>`;
+      if (categoriesListEl) {
+        categoriesListEl.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">Error: ${escapeHtml(
+          res.error
+        )}</div>`;
+      }
       return;
     }
 
     currentCategories = res.data || [];
 
     if (currentCategories.length === 0) {
-      emptyStateEl.style.display = 'block';
+      emptyStateEl?.classList.remove('hidden');
       return;
     }
 
@@ -81,31 +86,66 @@ function initDashboard(user) {
 
   // Render daftar paket
   function renderCategories(categories) {
+    if (!categoriesListEl) return;
     categoriesListEl.innerHTML = '';
 
     categories.forEach((cat) => {
       const card = document.createElement('div');
-      card.style.cssText = 'border: 1px solid #ccc; padding: 12px; margin-bottom: 12px; border-radius: 4px;';
+      card.className = `${styles.card} hover:border-slate-300 transition-colors flex flex-col justify-between`;
 
       const statusBadge = cat.is_published
-        ? '<strong style="color: green;">[Published]</strong>'
-        : '<strong style="color: orange;">[Draft]</strong>';
+        ? `<span class="${styles.badgeGreen}">Published</span>`
+        : `<span class="${styles.badgeSlate}">Draft</span>`;
 
-      const questionCount = cat.questions_count !== undefined ? cat.questions_count : 0;
+      const questionCount =
+        cat.questions_count !== undefined
+          ? cat.questions_count
+          : Array.isArray(cat.questions)
+          ? cat.questions.length
+          : 0;
 
       card.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <h3 style="margin: 0 0 8px 0;">${escapeHtml(cat.title)}</h3>
-          <div>${statusBadge} &bull; <span>${questionCount} Soal</span></div>
-        </div>
-        <p style="margin: 4px 0 12px 0; color: #444;">${escapeHtml(cat.description || '(Tidak ada deskripsi)')}</p>
         <div>
-          <button type="button" class="btn-toggle" data-id="${cat.id}">
-            ${cat.is_published ? 'Ubah ke Draft' : 'Publikasikan'}
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center space-x-2">
+              ${statusBadge}
+              <span class="text-xs text-slate-500 font-medium">${questionCount} Soal</span>
+            </div>
+            <a href="/admin/editor.html?category=${encodeURIComponent(
+              cat.id
+            )}" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+              Buka Editor Soal &rarr;
+            </a>
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 mb-1 leading-snug">${escapeHtml(
+            cat.title
+          )}</h3>
+          <p class="text-xs text-slate-600 leading-relaxed mb-4 line-clamp-2">${escapeHtml(
+            cat.description || '(Belum ada deskripsi materi)'
+          )}</p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center space-x-2">
+            <button type="button" class="btn-toggle text-xs font-medium px-2.5 py-1 rounded border ${
+              cat.is_published
+                ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
+            } transition-colors" data-id="${cat.id}">
+              ${cat.is_published ? 'Jadikan Draft' : 'Publikasikan'}
+            </button>
+            <button type="button" class="btn-edit text-xs font-medium px-2.5 py-1 rounded border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors" data-id="${
+              cat.id
+            }">
+              Ubah Data
+            </button>
+          </div>
+          <button type="button" class="btn-delete text-xs font-medium px-2.5 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 transition-colors" data-id="${
+            cat.id
+          }">
+            Hapus
           </button>
-          <button type="button" class="btn-edit" data-id="${cat.id}">Edit Judul/Deskripsi</button>
-          <button type="button" class="btn-delete" data-id="${cat.id}">Hapus</button>
-          | <a href="/admin/editor.html?category=${encodeURIComponent(cat.id)}">Kelola Soal (Editor) &rarr;</a>
         </div>
       `;
 
@@ -126,47 +166,60 @@ function initDashboard(user) {
   btnDoImport?.addEventListener('click', async () => {
     const file = importFileInput?.files?.[0];
     if (!file) {
-      alert('Pilih berkas .json terlebih dahulu.');
+      showToast('Pilih berkas paket .json terlebih dahulu.', 'warning');
       return;
     }
 
     btnDoImport.disabled = true;
-    importStatusEl.textContent = 'Membaca dan memvalidasi berkas...';
-    importStatusEl.style.color = '#0284c7';
+    if (importStatusEl) {
+      importStatusEl.textContent = 'Membaca dan memvalidasi berkas...';
+      importStatusEl.className = 'text-xs text-indigo-600 font-medium';
+    }
 
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
         const text = e.target.result;
-        importStatusEl.textContent = 'Menyimpan paket hasil impor ke database...';
+        if (importStatusEl) importStatusEl.textContent = 'Menyimpan paket ke database...';
         const res = await importCategory(text);
 
         btnDoImport.disabled = false;
 
         if (res.error) {
-          importStatusEl.textContent = 'Gagal';
-          importStatusEl.style.color = '#dc2626';
-          alert(res.error);
+          if (importStatusEl) {
+            importStatusEl.textContent = 'Gagal impor: ' + res.error;
+            importStatusEl.className = 'text-xs text-red-600 font-medium';
+          }
+          showToast(res.error, 'error');
         } else {
-          importStatusEl.textContent = 'Berhasil diimpor!';
-          importStatusEl.style.color = '#16a34a';
-          showToast(`Paket "${res.data.category.title}" berhasil diimpor sebagai draft (${res.data.totalQuestions} soal).`, 'success');
-          importFileInput.value = '';
+          if (importStatusEl) {
+            importStatusEl.textContent = 'Berhasil diimpor!';
+            importStatusEl.className = 'text-xs text-emerald-600 font-medium';
+          }
+          showToast(
+            `Paket "${res.data.category.title}" berhasil diimpor sebagai draft (${res.data.totalQuestions} soal).`,
+            'success'
+          );
+          if (importFileInput) importFileInput.value = '';
           await loadCategories();
         }
       } catch (err) {
         btnDoImport.disabled = false;
-        importStatusEl.textContent = 'Error';
-        importStatusEl.style.color = '#dc2626';
-        alert('Terjadi kesalahan saat memproses berkas impor.');
+        if (importStatusEl) {
+          importStatusEl.textContent = 'Format berkas rusak atau tidak valid.';
+          importStatusEl.className = 'text-xs text-red-600 font-medium';
+        }
+        showToast('Terjadi kesalahan saat memproses berkas impor.', 'error');
       }
     };
 
     reader.onerror = () => {
       btnDoImport.disabled = false;
-      importStatusEl.textContent = 'Gagal membaca berkas.';
-      importStatusEl.style.color = '#dc2626';
-      alert('Gagal membaca berkas file.');
+      if (importStatusEl) {
+        importStatusEl.textContent = 'Gagal membaca berkas file.';
+        importStatusEl.className = 'text-xs text-red-600 font-medium';
+      }
+      showToast('Gagal membaca berkas file.', 'error');
     };
 
     reader.readAsText(file);
@@ -181,7 +234,7 @@ function initDashboard(user) {
 
     const validation = validateCategory({ title, description });
     if (!validation.ok) {
-      alert(validation.errors.join('\n'));
+      showToast(validation.errors.join(' | '), 'warning');
       return;
     }
 
@@ -198,7 +251,7 @@ function initDashboard(user) {
     createSubmitBtn.textContent = 'Tambah Paket Baru';
 
     if (res.error) {
-      alert(res.error);
+      showToast(res.error, 'error');
     } else {
       showToast('Paket kategori berhasil dibuat.', 'success');
       createForm.reset();
@@ -213,7 +266,7 @@ function initDashboard(user) {
     editDescInput.value = cat.description || '';
     editPublishedInput.checked = Boolean(cat.is_published);
 
-    editSection.style.display = 'block';
+    editSection.classList.remove('hidden');
     editTitleInput.focus();
     editSection.scrollIntoView({ behavior: 'smooth' });
   }
@@ -221,7 +274,7 @@ function initDashboard(user) {
   // Batal edit
   editCancelBtn?.addEventListener('click', () => {
     editForm.reset();
-    editSection.style.display = 'none';
+    editSection.classList.add('hidden');
   });
 
   // Simpan perubahan edit
@@ -234,7 +287,7 @@ function initDashboard(user) {
 
     const validation = validateCategory({ title, description });
     if (!validation.ok) {
-      alert(validation.errors.join('\n'));
+      showToast(validation.errors.join(' | '), 'warning');
       return;
     }
 
@@ -253,11 +306,11 @@ function initDashboard(user) {
     saveBtn.textContent = 'Simpan Perubahan';
 
     if (res.error) {
-      alert(res.error);
+      showToast(res.error, 'error');
     } else {
       showToast('Perubahan kategori berhasil disimpan.', 'success');
       editForm.reset();
-      editSection.style.display = 'none';
+      editSection.classList.add('hidden');
       await loadCategories();
     }
   });
@@ -273,21 +326,31 @@ function initDashboard(user) {
     });
 
     if (res.error) {
-      alert(res.error);
+      showToast(res.error, 'error');
     } else {
-      showToast(`Status paket diubah menjadi ${nextStatus ? 'Published' : 'Draft'}.`, 'info');
+      showToast(
+        `Status paket diubah menjadi ${nextStatus ? 'Published' : 'Draft'}.`,
+        'info'
+      );
       await loadCategories();
     }
   }
 
-  // Aksi: Hapus kategori dengan konfirmasi
+  // Aksi: Hapus kategori dengan konfirmasi modal yang ramah
   async function confirmDelete(cat) {
-    const isConfirmed = window.confirm(`Apakah Anda yakin ingin menghapus paket "${cat.title}"?`);
-    if (!isConfirmed) return;
+    const confirmed = await confirmModal(
+      `Apakah Anda yakin ingin menghapus paket materi "${cat.title}" beserta seluruh soal di dalamnya? Tindakan ini tidak dapat dibatalkan.`,
+      {
+        title: 'Hapus Paket Materi BK',
+        confirmText: 'Hapus Permanen',
+        isDanger: true,
+      }
+    );
+    if (!confirmed) return;
 
     const res = await deleteCategory(cat.id);
     if (res.error) {
-      alert(res.error);
+      showToast(res.error, 'error');
     } else {
       showToast('Paket kategori berhasil dihapus.', 'info');
       await loadCategories();

@@ -4,11 +4,11 @@ import {
   deleteQuestion,
   reorderQuestions,
   saveQuestionWithAnswers,
-  getAllCategories,
 } from '../lib/dataService.js';
 import { exportCategory } from '../lib/portability.js';
 import { validateQuestion, validateAnswers, parseKeywords } from '../lib/validators.js';
-import { escapeHtml, showToast } from '../lib/ui.js';
+import { escapeHtml } from '../lib/ui.js';
+import { showToast, confirmModal, styles } from '../lib/components.js';
 import { isDemoMode, supabase } from '../lib/supabase.js';
 import demoData from '../data/demo.json' with { type: 'json' };
 
@@ -22,11 +22,8 @@ async function main() {
   const urlParams = new URLSearchParams(window.location.search);
   const categoryId = urlParams.get('category');
 
-  const errorContainer = document.getElementById('error-container');
   const categoryTitleEl = document.getElementById('category-title');
   const categoryDescEl = document.getElementById('category-desc');
-  const formSection = document.getElementById('form-section');
-  const questionsListSection = document.getElementById('questions-list-section');
   const btnExport = document.getElementById('btn-export-pkg');
 
   if (!categoryId) {
@@ -41,8 +38,8 @@ async function main() {
     return;
   }
 
-  categoryTitleEl.textContent = `Editor Soal: ${category.title}`;
-  categoryDescEl.textContent = category.description || '(Tidak ada deskripsi)';
+  categoryTitleEl.textContent = category.title;
+  categoryDescEl.textContent = category.description || '(Tidak ada deskripsi materi)';
 
   // Tombol Export
   btnExport?.addEventListener('click', async () => {
@@ -52,9 +49,9 @@ async function main() {
     btnExport.disabled = false;
     btnExport.textContent = 'Ekspor Paket (.json)';
     if (res.error) {
-      alert(`Gagal mengekspor: ${res.error}`);
+      showToast(`Gagal mengekspor: ${res.error}`, 'error');
     } else {
-      showToast('Paket berhasil diekspor!', 'success');
+      showToast('Paket materi berhasil diekspor!', 'success');
     }
   });
 
@@ -65,10 +62,14 @@ function showFatalError(msg) {
   const container = document.getElementById('error-container');
   if (container) {
     container.innerHTML = `
-      <div style="border: 1px solid #dc2626; background: #fee2e2; padding: 16px; border-radius: 4px;">
-        <h3>Perhatian</h3>
-        <p>${escapeHtml(msg)}</p>
-        <p><a href="/admin/index.html">&larr; Kembali ke Dashboard Kategori</a></p>
+      <div class="border border-red-200 bg-red-50 p-6 rounded-xl text-center space-y-3">
+        <h3 class="text-base font-bold text-red-900">Perhatian</h3>
+        <p class="text-xs text-red-700">${escapeHtml(msg)}</p>
+        <div>
+          <a href="/admin/index.html" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+            &larr; Kembali ke Dashboard Kategori
+          </a>
+        </div>
       </div>
     `;
   }
@@ -121,58 +122,70 @@ function initQuestionManager(categoryId) {
   let questions = [];
 
   function setStatus(type, msg) {
-    statusIndicator.style.display = 'block';
+    if (!statusIndicator) return;
+    statusIndicator.classList.remove('hidden');
+
     if (type === 'loading') {
-      statusIndicator.style.background = '#e0f2fe';
-      statusIndicator.style.color = '#0369a1';
-      statusIndicator.style.border = '1px solid #7dd3fc';
-      statusIndicator.textContent = msg || 'Menyimpan...';
+      statusIndicator.className =
+        'p-3 rounded-lg border border-sky-200 bg-sky-50 text-sky-800 text-xs font-medium flex items-center space-x-2';
+      statusIndicator.innerHTML = `<span>⏳</span><span>${escapeHtml(msg || 'Menyimpan...')}</span>`;
     } else if (type === 'success') {
-      statusIndicator.style.background = '#dcfce7';
-      statusIndicator.style.color = '#15803d';
-      statusIndicator.style.border = '1px solid #86efac';
-      statusIndicator.textContent = msg || 'Tersimpan';
+      statusIndicator.className =
+        'p-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 text-xs font-medium flex items-center space-x-2';
+      statusIndicator.innerHTML = `<span>&check;</span><span>${escapeHtml(msg || 'Tersimpan')}</span>`;
       setTimeout(() => {
-        statusIndicator.style.display = 'none';
+        statusIndicator.classList.add('hidden');
       }, 3500);
     } else if (type === 'error') {
-      statusIndicator.style.background = '#fee2e2';
-      statusIndicator.style.color = '#b91c1c';
-      statusIndicator.style.border = '1px solid #fca5a5';
-      statusIndicator.textContent = `Gagal: ${msg}`;
+      statusIndicator.className =
+        'p-3 rounded-lg border border-red-200 bg-red-50 text-red-800 text-xs font-medium flex items-center space-x-2';
+      statusIndicator.innerHTML = `<span>&cross;</span><span>Gagal: ${escapeHtml(msg)}</span>`;
     }
   }
 
   // Answer rows builder
   function renderAnswerRow(text = '', points = 100, keywords = '') {
     const row = document.createElement('div');
-    row.className = 'answer-row';
-    row.style.cssText =
-      'display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; background: #f9fafb; padding: 6px; border: 1px solid #e5e7eb; border-radius: 4px;';
+    row.className =
+      'answer-row p-3 rounded-lg border border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-stretch sm:items-center gap-2';
 
     row.innerHTML = `
-      <label>Jawaban:
-        <input type="text" class="ans-text" required placeholder="Teks jawaban siswa..." value="${escapeHtml(text)}" style="width: 250px;">
-      </label>
-      <label>Poin:
-        <input type="number" class="ans-points" min="0" required value="${points}" style="width: 70px;">
-      </label>
-      <label>Keywords (koma):
-        <input type="text" class="ans-keywords" placeholder="sinonim, dipisah koma..." value="${escapeHtml(keywords)}" style="width: 200px;">
-      </label>
-      <button type="button" class="btn-remove-row">Hapus</button>
+      <div class="flex-1">
+        <input type="text" class="ans-text w-full px-2.5 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500" required placeholder="Teks jawaban siswa..." value="${escapeHtml(
+          text
+        )}">
+      </div>
+      <div class="w-full sm:w-24">
+        <input type="number" class="ans-points w-full px-2.5 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500" min="0" required value="${points}" placeholder="Poin">
+      </div>
+      <div class="w-full sm:w-48">
+        <input type="text" class="ans-keywords w-full px-2.5 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500" placeholder="Sinonim, pisah koma..." value="${escapeHtml(
+          keywords
+        )}">
+      </div>
+      <div>
+        <button type="button" class="btn-remove-row text-xs text-red-600 hover:text-red-800 px-2 py-1.5 font-medium focus:outline-none">Hapus</button>
+      </div>
     `;
 
     row.querySelector('.btn-remove-row')?.addEventListener('click', () => {
       const allRows = answersContainer.querySelectorAll('.answer-row');
       if (allRows.length <= 3) {
-        alert('Minimal harus ada 3 jawaban.');
+        showToast('Minimal harus ada 3 jawaban per soal.', 'warning');
         return;
       }
       row.remove();
+      updateAddButtonState();
     });
 
     answersContainer.appendChild(row);
+    updateAddButtonState();
+  }
+
+  function updateAddButtonState() {
+    if (!btnAddAnswer) return;
+    const allRows = answersContainer.querySelectorAll('.answer-row');
+    btnAddAnswer.disabled = allRows.length >= 8;
   }
 
   function resetAnswerRows(initialAnswers = null) {
@@ -194,7 +207,7 @@ function initQuestionManager(categoryId) {
   btnAddAnswer?.addEventListener('click', () => {
     const allRows = answersContainer.querySelectorAll('.answer-row');
     if (allRows.length >= 8) {
-      alert('Maksimal jawaban per soal adalah 8.');
+      showToast('Maksimal jawaban per soal adalah 8 buah.', 'warning');
       return;
     }
     renderAnswerRow('', 10, '');
@@ -202,12 +215,12 @@ function initQuestionManager(categoryId) {
 
   // Muat daftar soal
   async function loadQuestions() {
-    loadingQuestionsEl.style.display = 'block';
-    emptyQuestionsEl.style.display = 'none';
-    questionsListEl.innerHTML = '';
+    loadingQuestionsEl?.classList.remove('hidden');
+    emptyQuestionsEl?.classList.add('hidden');
+    if (questionsListEl) questionsListEl.innerHTML = '';
 
     const res = await getQuestions(categoryId);
-    loadingQuestionsEl.style.display = 'none';
+    loadingQuestionsEl?.classList.add('hidden');
 
     if (res.error) {
       setStatus('error', res.error);
@@ -217,7 +230,7 @@ function initQuestionManager(categoryId) {
     questions = res.data || [];
 
     if (questions.length === 0) {
-      emptyQuestionsEl.style.display = 'block';
+      emptyQuestionsEl?.classList.remove('hidden');
       return;
     }
 
@@ -225,46 +238,95 @@ function initQuestionManager(categoryId) {
   }
 
   function renderQuestionsList() {
+    if (!questionsListEl) return;
     questionsListEl.innerHTML = '';
 
     questions.forEach((q, index) => {
       const qCard = document.createElement('div');
-      qCard.style.cssText =
-        'border: 1px solid #d1d5db; padding: 14px; margin-bottom: 16px; border-radius: 6px; background: #ffffff;';
+      qCard.className = `${styles.card} hover:border-slate-300 transition-colors`;
 
       const promptsHtml =
         Array.isArray(q.discussion_prompts) && q.discussion_prompts.length > 0
-          ? `<ul>${q.discussion_prompts.map((p) => `<li>${escapeHtml(p)}</li>`).join('')}</ul>`
-          : '<em>(Tidak ada pertanyaan diskusi)</em>';
+          ? `<ul class="list-disc pl-4 space-y-0.5 text-xs text-slate-600 mt-1">${q.discussion_prompts
+              .map((p) => `<li>${escapeHtml(p)}</li>`)
+              .join('')}</ul>`
+          : '<em class="text-xs text-slate-400">(Tidak ada pertanyaan panduan diskusi)</em>';
 
       const answersList = Array.isArray(q.answers) ? q.answers : [];
       const answersHtml = answersList
         .map(
-          (a, i) =>
-            `<li><strong>[#${i + 1} - ${a.points} Poin]</strong> ${escapeHtml(a.answer_text)} <small style="color: #6b7280;">(Keywords: ${escapeHtml((a.keywords || []).join(', ') || '-')})</small></li>`
+          (a, i) => `
+          <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-slate-50 border border-slate-100 text-xs">
+            <div class="flex items-center space-x-2">
+              <span class="w-5 h-5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] flex items-center justify-center border border-indigo-100">#${
+                i + 1
+              }</span>
+              <span class="font-medium text-slate-800">${escapeHtml(a.answer_text)}</span>
+              ${
+                Array.isArray(a.keywords) && a.keywords.length > 0
+                  ? `<span class="text-[11px] text-slate-400 hidden sm:inline">(${escapeHtml(
+                      a.keywords.join(', ')
+                    )})</span>`
+                  : ''
+              }
+            </div>
+            <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] border border-amber-200">${
+              a.points
+            } Poin</span>
+          </div>
+        `
         )
         .join('');
 
       qCard.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <h3 style="margin: 0 0 6px 0;">Soal #${index + 1}: ${escapeHtml(q.question_text)}</h3>
-            <span style="display: inline-block; padding: 2px 6px; background: #e0e7ff; color: #3730a3; border-radius: 4px; font-size: 12px; font-weight: bold;">
-              Multiplier: x${q.multiplier || 1}
-            </span>
+            <div class="flex items-center space-x-2 mb-1">
+              <span class="font-bold text-xs text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                Soal #${index + 1}
+              </span>
+              <span class="${styles.badgeAmber}">
+                Multiplier: x${q.multiplier || 1}
+              </span>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 leading-snug">${escapeHtml(
+              q.question_text
+            )}</h3>
           </div>
-          <div>
-            <button type="button" class="btn-move-up" data-idx="${index}" ${index === 0 ? 'disabled' : ''}>&uarr; Naik</button>
-            <button type="button" class="btn-move-down" data-idx="${index}" ${index === questions.length - 1 ? 'disabled' : ''}>&darr; Turun</button>
-            <button type="button" class="btn-edit-q">Edit</button>
-            <button type="button" class="btn-delete-q" style="color: #b91c1c;">Hapus</button>
+
+          <div class="flex items-center space-x-1 self-end sm:self-auto">
+            <button type="button" class="btn-move-up inline-flex items-center justify-center px-2 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" data-idx="${index}" ${
+        index === 0 ? 'disabled' : ''
+      } title="Naikkan Urutan">&uarr;</button>
+            <button type="button" class="btn-move-down inline-flex items-center justify-center px-2 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" data-idx="${index}" ${
+        index === questions.length - 1 ? 'disabled' : ''
+      } title="Turunkan Urutan">&darr;</button>
+            <button type="button" class="btn-edit-q inline-flex items-center justify-center px-2.5 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50 text-slate-700 transition-colors">Edit</button>
+            <button type="button" class="btn-delete-q inline-flex items-center justify-center px-2.5 py-1 text-xs border border-red-200 rounded hover:bg-red-50 text-red-600 transition-colors">Hapus</button>
           </div>
         </div>
-        <p style="margin: 8px 0 4px 0;"><strong>Catatan Refleksi:</strong> ${escapeHtml(q.reflection_note || '-')}</p>
-        <div><strong>Pertanyaan Diskusi:</strong> ${promptsHtml}</div>
-        <div style="margin-top: 8px;">
-          <strong>Jawaban Terurut Poin (${answersList.length} Jawaban):</strong>
-          <ol style="margin: 4px 0 0 0; padding-left: 20px;">${answersHtml}</ol>
+
+        <div class="py-3 space-y-2">
+          ${
+            q.reflection_note
+              ? `<div class="p-2.5 bg-indigo-50/40 rounded-lg border border-indigo-100/60 text-xs">
+                  <span class="font-semibold text-indigo-900">Catatan Refleksi:</span>
+                  <span class="text-indigo-800 ml-1">${escapeHtml(q.reflection_note)}</span>
+                </div>`
+              : ''
+          }
+          <div>
+            <span class="text-xs font-semibold text-slate-700">Pertanyaan Diskusi Kelas:</span>
+            ${promptsHtml}
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-700">Papan Jawaban (${answersList.length} Jawaban):</span>
+            <span class="text-[11px] text-slate-400">Urut poin terbesar</span>
+          </div>
+          <div class="space-y-1.5">${answersHtml}</div>
         </div>
       `;
 
@@ -303,7 +365,7 @@ function initQuestionManager(categoryId) {
 
   // Aksi Edit Soal
   function startEditQuestion(q) {
-    formHeading.textContent = `Edit Soal #${q.sort_order || ''}`;
+    formHeading.textContent = `Ubah Soal #${q.sort_order || ''}`;
     qIdInput.value = q.id;
     qSortOrderInput.value = q.sort_order || 0;
     qTextInput.value = q.question_text || '';
@@ -316,7 +378,7 @@ function initQuestionManager(categoryId) {
 
     resetAnswerRows(q.answers);
 
-    btnCancel.style.display = 'inline-block';
+    btnCancel.classList.remove('hidden');
     btnSave.textContent = 'Simpan Perubahan Soal';
 
     form.scrollIntoView({ behavior: 'smooth' });
@@ -328,15 +390,22 @@ function initQuestionManager(categoryId) {
     form.reset();
     qIdInput.value = '';
     qSortOrderInput.value = '';
-    btnCancel.style.display = 'none';
+    btnCancel.classList.add('hidden');
     btnSave.textContent = 'Simpan Soal';
     resetAnswerRows();
   });
 
   // Aksi Hapus Soal
   async function confirmDeleteQuestion(q) {
-    const confirmDel = window.confirm(`Apakah Anda yakin ingin menghapus soal:\n"${q.question_text}"?`);
-    if (!confirmDel) return;
+    const confirmed = await confirmModal(
+      `Apakah Anda yakin ingin menghapus soal:\n"${q.question_text}"?\nJawaban yang terkait dengan soal ini juga akan terhapus.`,
+      {
+        title: 'Hapus Soal BK',
+        confirmText: 'Hapus Soal',
+        isDanger: true,
+      }
+    );
+    if (!confirmed) return;
 
     setStatus('loading', 'Menghapus soal...');
     const res = await deleteQuestion(q.id);
@@ -385,7 +454,7 @@ function initQuestionManager(categoryId) {
 
     if (!qValidation.ok || !ansValidation.ok) {
       const combinedErrors = [...qValidation.errors, ...ansValidation.errors];
-      alert(`Validasi gagal:\n- ${combinedErrors.join('\n- ')}`);
+      showToast(combinedErrors.join(' | '), 'warning');
       return;
     }
 
@@ -421,7 +490,7 @@ function initQuestionManager(categoryId) {
       form.reset();
       qIdInput.value = '';
       qSortOrderInput.value = '';
-      btnCancel.style.display = 'none';
+      btnCancel.classList.add('hidden');
       btnSave.textContent = 'Simpan Soal';
       resetAnswerRows();
 

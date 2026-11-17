@@ -3,15 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edu Family 100 - BK</title>
+  <title>Family 100 BK - Pembelajaran Bimbingan Konseling Interaktif</title>
+  <link rel="stylesheet" href="/src/style.css">
 </head>
-<body>
-  <h1>Edu Family 100 - Bimbingan Konseling</h1>
-  <p>Halaman Beranda (Placeholder)</p>
-  <nav>
-    <a href="/setup.html">Mulai Setup Game</a> |
-    <a href="/admin/login.html">Admin</a> |
-    <a href="/test.html">Halaman Uji (Test)</a>
-  </nav>
+<body class="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <!-- Demo Mode Banner -->
+  <div id="demo-banner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-xs text-amber-800 text-center font-medium">
+    💡 Aplikasi sedang berjalan dalam <strong>Mode Demo (Offline)</strong> menggunakan data percontohan lokal.
+  </div>
+
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-12">
+    <!-- Hero Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-12 text-center max-w-3xl mx-auto flex flex-col items-center">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-4">
+        Media Pembelajaran BK SMP &amp; SMA
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+        Family 100 Bimbingan Konseling
+      </h1>
+      <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl">
+        Kuis interaktif berbasis survei untuk memantik diskusi terbuka dan refleksi nilai positif siswa di kelas secara menyenangkan.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center">
+        <a href="/setup.html" class="inline-flex items-center justify-center font-semibold px-6 py-3 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Main Sekarang
+        </a>
+        <a href="/admin/login.html" class="inline-flex items-center justify-center font-semibold px-6 py-3 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Login Admin Guru
+        </a>
+      </div>
+    </section>
+
+    <!-- Cara Bermain (4 Langkah) -->
+    <section>
+      <div class="text-center mb-8">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Cara Bermain di Kelas</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Panduan praktis bagi guru BK saat memandu jalannya permainan</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Langkah 1 -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+            1
+          </div>
+          <h3 class="font-bold text-sm text-slate-900 mb-1">Pilih Topik &amp; Tim</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Guru memilih materi BK (misal: anti-perundungan, empati) lalu membagi kelas ke dalam 2 hingga 4 kelompok.
+          </p>
+        </div>
+
+        <!-- Langkah 2 -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+            2
+          </div>
+          <h3 class="font-bold text-sm text-slate-900 mb-1">Rebut Giliran (Face-Off)</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Perwakilan tim beradu cepat menjawab soal survei pertama untuk mengamankan kontrol giliran bagi timnya.
+          </p>
+        </div>
+
+        <!-- Langkah 3 -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+            3
+          </div>
+          <h3 class="font-bold text-sm text-slate-900 mb-1">Tebak Jawaban Teratas</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Tim menebak jawaban survei papan. Jika gagal 3 kali (strike), tim lawan berkesempatan merebut poin (steal).
+          </p>
+        </div>
+
+        <!-- Langkah 4 -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+            4
+          </div>
+          <h3 class="font-bold text-sm text-slate-900 mb-1">Diskusi &amp; Refleksi</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Setelah ronde berakhir, guru memanfaatkan catatan refleksi dan pertanyaan panduan untuk berdiskusi bersama siswa.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Topik Pilihan -->
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Pilihan Topik Pembelajaran</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Paket materi bimbingan konseling siap pakai</p>
+        </div>
+        <a href="/setup.html" class="text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+          Lihat Semua &rarr;
+        </a>
+      </div>
+
+      <!-- Loading skeleton -->
+      <div id="categories-loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-40"></div>
+        <div class="bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-40"></div>
+        <div class="bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-40"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="categories-empty" class="hidden text-center py-12 bg-white rounded-xl border border-slate-200 p-6">
+        <p class="text-sm text-slate-600 font-medium">Belum ada paket topik bimbingan konseling yang dipublikasikan.</p>
+        <p class="text-xs text-slate-400 mt-1">Silakan masuk ke panel admin untuk membuat atau mempublikasikan topik.</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="categories-error" class="hidden text-center py-6 bg-red-50 rounded-xl border border-red-200 p-4 text-xs text-red-700"></div>
+
+      <!-- Category cards container -->
+      <div id="categories-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <script type="module" src="/src/index.js"></script>
 </body>
 </html>
