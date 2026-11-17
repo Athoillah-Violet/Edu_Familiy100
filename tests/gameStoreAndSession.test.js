@@ -165,7 +165,7 @@ test('5. sessionReport: finishGameSession gagal masuk antrean pendingSessions (m
   assert.equal(pendingMax.length, 5, 'Antrean pending sessions harus dibatasi maksimal 5');
 });
 
-test('6. sessionReport: retryPendingSessions berhasil memproses antrean', async () => {
+test('6. sessionReport: retryPendingSessions berhasil memproses dan mengosongkan antrean', async () => {
   const storage = setupMockStorage();
 
   // Simpan 2 antrean manual
@@ -177,8 +177,15 @@ test('6. sessionReport: retryPendingSessions berhasil memproses antrean', async 
 
   assert.equal(getPendingSessions().length, 2);
 
-  // Panggil retryPendingSessions (di lingkungan demo mode gagal simpan sehingga tetap di antrean tanpa crash)
-  const retryRes = await retryPendingSessions();
-  assert.equal(typeof retryRes.sent, 'number');
-  assert.equal(typeof retryRes.remaining, 'number');
+  // Mock fungsi save berhasil
+  const mockSuccessSave = async () => ({ data: { id: 'session-ok' }, error: null });
+
+  // Panggil retryPendingSessions dengan mockSuccessSave
+  const retryRes = await retryPendingSessions(mockSuccessSave);
+  assert.equal(retryRes.sent, 2);
+  assert.equal(retryRes.remaining, 0);
+
+  // Verifikasi antrean di storage benar-benar kosong
+  assert.equal(getPendingSessions().length, 0);
+  assert.equal(storage.getItem('family100bk:sessions:pending:v1'), null);
 });

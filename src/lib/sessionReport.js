@@ -93,7 +93,7 @@ function queuePendingSession(payload) {
  * @param {object} state
  * @returns {Promise<{ saved: boolean, data?: object|null, error?: string|null, payload: object }>}
  */
-export async function finishGameSession(state) {
+export async function finishGameSession(state, customSaveFn = saveSession) {
   let payload;
   try {
     payload = buildSessionPayload(state);
@@ -105,8 +105,10 @@ export async function finishGameSession(state) {
     };
   }
 
+  const saveFn = typeof customSaveFn === 'function' ? customSaveFn : saveSession;
+
   try {
-    const res = await saveSession(payload.categoryId, payload.teams);
+    const res = await saveFn(payload.categoryId, payload.teams);
 
     if (res.error || !res.data) {
       queuePendingSession(payload);
@@ -135,20 +137,22 @@ export async function finishGameSession(state) {
 /**
  * Retries sending pending session payloads stored in localStorage.
  *
+ * @param {Function} [customSaveFn] - Optional injected save function for testing.
  * @returns {Promise<{ sent: number, remaining: number }>}
  */
-export async function retryPendingSessions() {
+export async function retryPendingSessions(customSaveFn = saveSession) {
   const pending = getPendingSessions();
   if (pending.length === 0) {
     return { sent: 0, remaining: 0 };
   }
 
+  const saveFn = typeof customSaveFn === 'function' ? customSaveFn : saveSession;
   const remaining = [];
   let sentCount = 0;
 
   for (const session of pending) {
     try {
-      const res = await saveSession(session.categoryId, session.teams);
+      const res = await saveFn(session.categoryId, session.teams);
       if (res.error || !res.data) {
         remaining.push(session);
       } else {
