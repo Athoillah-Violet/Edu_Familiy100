@@ -5,7 +5,7 @@ import {
   deleteCategory,
   logout,
 } from '../lib/dataService.js';
-import { importCategory } from '../lib/portability.js';
+import { importCategory, downloadExcelTemplate } from '../lib/portability.js';
 import { validateCategory } from '../lib/validators.js';
 import { escapeHtml } from '../lib/ui.js';
 import { showToast, confirmModal, styles } from '../lib/components.js';
@@ -158,43 +158,56 @@ function initDashboard(user) {
     });
   }
 
-  // Aksi: Impor paket JSON
+  // Aksi: Impor paket Excel (.xlsx) atau JSON
   const importFileInput = document.getElementById('import-file-input');
   const btnDoImport = document.getElementById('btn-do-import');
+  const btnDownloadTemplate = document.getElementById('btn-download-template');
   const importStatusEl = document.getElementById('import-status');
+
+  btnDownloadTemplate?.addEventListener('click', () => {
+    try {
+      downloadExcelTemplate();
+      showToast('Template Excel berhasil diunduh.', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Gagal mengunduh template Excel.', 'error');
+    }
+  });
 
   btnDoImport?.addEventListener('click', async () => {
     const file = importFileInput?.files?.[0];
     if (!file) {
-      showToast('Pilih berkas paket .json terlebih dahulu.', 'warning');
+      showToast('Pilih berkas Excel (.xlsx) terlebih dahulu.', 'warning');
       return;
     }
 
     btnDoImport.disabled = true;
     if (importStatusEl) {
       importStatusEl.textContent = 'Membaca dan memvalidasi berkas...';
-      importStatusEl.className = 'text-xs text-indigo-600 font-medium';
+      importStatusEl.className = 'text-xs text-blue-400 font-medium';
     }
 
     const reader = new FileReader();
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.type.includes('sheet');
+
     reader.onload = async (e) => {
       try {
-        const text = e.target.result;
+        const fileData = e.target.result;
         if (importStatusEl) importStatusEl.textContent = 'Menyimpan paket ke database...';
-        const res = await importCategory(text);
+        const res = await importCategory(fileData);
 
         btnDoImport.disabled = false;
 
         if (res.error) {
           if (importStatusEl) {
             importStatusEl.textContent = 'Gagal impor: ' + res.error;
-            importStatusEl.className = 'text-xs text-red-600 font-medium';
+            importStatusEl.className = 'text-xs text-rose-400 font-medium';
           }
           showToast(res.error, 'error');
         } else {
           if (importStatusEl) {
             importStatusEl.textContent = 'Berhasil diimpor!';
-            importStatusEl.className = 'text-xs text-emerald-600 font-medium';
+            importStatusEl.className = 'text-xs text-emerald-400 font-medium';
           }
           showToast(
             `Paket "${res.data.category.title}" berhasil diimpor sebagai draft (${res.data.totalQuestions} soal).`,
@@ -207,7 +220,7 @@ function initDashboard(user) {
         btnDoImport.disabled = false;
         if (importStatusEl) {
           importStatusEl.textContent = 'Format berkas rusak atau tidak valid.';
-          importStatusEl.className = 'text-xs text-red-600 font-medium';
+          importStatusEl.className = 'text-xs text-rose-400 font-medium';
         }
         showToast('Terjadi kesalahan saat memproses berkas impor.', 'error');
       }
@@ -217,12 +230,16 @@ function initDashboard(user) {
       btnDoImport.disabled = false;
       if (importStatusEl) {
         importStatusEl.textContent = 'Gagal membaca berkas file.';
-        importStatusEl.className = 'text-xs text-red-600 font-medium';
+        importStatusEl.className = 'text-xs text-rose-400 font-medium';
       }
       showToast('Gagal membaca berkas file.', 'error');
     };
 
-    reader.readAsText(file);
+    if (isExcel) {
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.readAsText(file);
+    }
   });
 
   // Aksi: Buat paket baru

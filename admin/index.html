@@ -123,23 +123,61 @@
         </div>
       </section>
 
-      <!-- Import JSON -->
+      <!-- Import Excel -->
       <section class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-sm p-6 flex flex-col justify-between">
         <div>
-          <div class="pb-3 border-b border-[#1e2f5c] mb-4">
-            <h2 class="text-base font-bold text-white">Impor Paket Materi (.json)</h2>
-            <p class="text-xs text-slate-400">Unggah berkas paket hasil ekspor dari guru atau sekolah lain</p>
+          <div class="pb-3 border-b border-[#1e2f5c] mb-4 flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-white">Upload dari Excel (.xlsx)</h2>
+              <p class="text-xs text-slate-400">Unggah berkas soal BK langsung dari Microsoft Excel atau Google Sheets</p>
+            </div>
+            <button type="button" id="btn-download-template" class="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-950/60 border border-emerald-600/40 text-emerald-400 hover:bg-emerald-900/60 transition-colors shadow-sm" title="Unduh format tabel Excel standar">
+              <span>📥</span>
+              <span>Unduh Template</span>
+            </button>
           </div>
           <div class="space-y-4">
             <p class="text-xs text-slate-300 leading-relaxed">
-              Berkas JSON harus memiliki format paket standar Family 100 BK. Paket hasil impor akan otomatis disimpan sebagai <strong>Draft</strong> untuk Anda tinjau terlebih dahulu.
+              Gunakan format Excel standar untuk memasukkan paket soal. Setiap baris mewakili 1 soal beserta hingga 8 jawaban survei. Paket akan otomatis disimpan sebagai <strong>Draft</strong> untuk Anda tinjau terlebih dahulu.
             </p>
+
+            <!-- Petunjuk Kolom Penulisan Excel -->
+            <div class="p-3 bg-[#132247] rounded-xl border border-[#1e2f5c] text-[11px] text-slate-300 space-y-1.5">
+              <span class="font-bold text-blue-400 block mb-1">Contoh Format Kolom Excel:</span>
+              <div class="overflow-x-auto text-[10px] font-mono py-1">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="text-slate-400 border-b border-[#1e2f5c]">
+                      <th class="pr-2 pb-1">Judul Paket</th>
+                      <th class="pr-2 pb-1">Teks Soal</th>
+                      <th class="pr-2 pb-1">Jawaban 1</th>
+                      <th class="pr-2 pb-1">Poin 1</th>
+                      <th class="pr-2 pb-1">Sinonim 1</th>
+                      <th class="pr-2 pb-1">...Jawaban 2-8</th>
+                      <th class="pb-1">Catatan Refleksi BK</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-slate-300">
+                    <tr>
+                      <td class="pr-2 pt-1 truncate max-w-[90px]">Empati Sosial</td>
+                      <td class="pr-2 pt-1 truncate max-w-[120px]">Sikap peduli teman...</td>
+                      <td class="pr-2 pt-1 truncate max-w-[100px]">Mendengarkan curhat</td>
+                      <td class="pr-2 pt-1">100</td>
+                      <td class="pr-2 pt-1">curhat, simak</td>
+                      <td class="pr-2 pt-1 text-slate-500">dst (min. 3)</td>
+                      <td class="pt-1 truncate max-w-[100px]">Empati melatih rasa...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             <div class="p-4 border-2 border-dashed border-[#1e2f5c] rounded-xl bg-[#132247] flex flex-col items-center justify-center text-center">
-              <input type="file" id="import-file-input" accept=".json,application/json" class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-950/60 file:text-blue-400 hover:file:bg-blue-900/60 cursor-pointer">
+              <input type="file" id="import-file-input" accept=".xlsx,.xls,.json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/json" class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-950/60 file:text-blue-400 hover:file:bg-blue-900/60 cursor-pointer">
             </div>
             <div class="flex items-center justify-between pt-2">
-              <button type="button" id="btn-do-import" class="inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1e2f5c] active:bg-[#1e2f5c] transition-colors shadow-sm">
-                Impor Paket JSON
+              <button type="button" id="btn-do-import" class="inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-glowBlue transition-all">
+                Upload &amp; Impor Excel
               </button>
               <span id="import-status" class="text-xs"></span>
             </div>
