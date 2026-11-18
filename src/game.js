@@ -528,12 +528,12 @@ function renderQuestionAndBoard() {
     boardEl.innerHTML = answers
       .map((ans, idx) => {
         return `
-        <div class="answer-card group relative bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between cursor-pointer select-none transition-all duration-150 min-h-[58px]" data-answer-id="${escapeHtml(
+        <div class="answer-card group relative bg-[#0f1a36] border border-[#1e2f5c] rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between cursor-pointer select-none transition-all duration-150 min-h-[58px] hover:border-blue-500/60 hover:bg-[#132247]" data-answer-id="${escapeHtml(
           ans.id
         )}">
           <!-- Closed State -->
           <div class="closed-view w-full flex items-center justify-center">
-            <span class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center border border-slate-200 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+            <span class="w-8 h-8 rounded-full bg-[#132247] text-slate-300 font-bold text-sm flex items-center justify-center border border-[#1e2f5c] group-hover:border-blue-500/50 group-hover:text-blue-400 group-hover:bg-blue-950/40 transition-colors">
               ${idx + 1}
             </span>
           </div>
@@ -542,9 +542,9 @@ function renderQuestionAndBoard() {
           <div class="revealed-view hidden w-full items-center justify-between">
             <div class="flex items-center space-x-2 mr-2">
               <span class="ans-number text-xs font-bold text-slate-400">#${idx + 1}</span>
-              <span class="ans-text font-bold text-sm sm:text-base text-slate-900 leading-tight"></span>
+              <span class="ans-text font-bold text-sm sm:text-base text-white leading-tight"></span>
             </div>
-            <span class="ans-points px-2.5 py-1 rounded-md text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-200"></span>
+            <span class="ans-points px-2.5 py-1 rounded-md text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40"></span>
           </div>
         </div>
       `;
@@ -588,27 +588,27 @@ function renderQuestionAndBoard() {
         if (isAutoRevealed) {
           pointsEl.textContent = '0 Pts';
           pointsEl.className =
-            'ans-points px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-400 border border-slate-200 line-through';
+            'ans-points px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-500 border border-slate-700 line-through';
         } else {
           pointsEl.textContent = `${ans.points} Pts`;
           pointsEl.className =
-            'ans-points px-2.5 py-1 rounded-md text-xs font-extrabold bg-amber-100 text-amber-800 border border-amber-200';
+            'ans-points px-2.5 py-1 rounded-md text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40';
         }
       }
 
       if (isAutoRevealed) {
         card.className =
-          'answer-card bg-slate-50/80 border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between opacity-60';
+          'answer-card bg-[#0b1329]/60 border border-[#1e2f5c]/50 rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between opacity-50';
       } else {
         card.className =
-          'answer-card bg-indigo-50/40 border border-indigo-200 rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between';
+          'answer-card bg-[#132247] border border-blue-500/80 rounded-xl p-3 sm:p-4 shadow-glowBlue flex items-center justify-between transition-all min-h-[58px]';
       }
     } else {
       closedView?.classList.remove('hidden');
       revealedView?.classList.add('hidden');
       revealedView?.classList.remove('flex');
       card.className =
-        'answer-card group relative bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between cursor-pointer hover:border-indigo-300 transition-all min-h-[58px]';
+        'answer-card group relative bg-[#0f1a36] border border-[#1e2f5c] rounded-xl p-3 sm:p-4 shadow-sm flex items-center justify-between cursor-pointer hover:border-blue-500/60 hover:bg-[#132247] transition-all min-h-[58px]';
     }
   });
 }
@@ -683,7 +683,7 @@ function renderTeamsScoreboard() {
       const shortcutKey = keyShortcuts[idx] || '';
 
       let statusBadge = '';
-      let borderHighlight = 'border-slate-200';
+      let borderHighlight = 'border-[#1e2f5c]';
       let buttonHtml = '';
 
       if (isHuntingMode) {
@@ -692,15 +692,15 @@ function renderTeamsScoreboard() {
 
         if (isHuntingActive) {
           statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white animate-pulse">Berburu Poin</span>';
-          borderHighlight = 'border-emerald-600 ring-2 ring-emerald-500/30';
-          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-bold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">Sedang Menebak</div>`;
+          borderHighlight = 'border-emerald-500 ring-2 ring-emerald-500/30';
+          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-bold text-emerald-400 bg-emerald-950/40 rounded border border-emerald-800/50">Sedang Menebak</div>`;
         } else if (hasPlayedThisRound) {
-          statusBadge = '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">Selesai Giliran</span>';
-          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-slate-50 rounded border border-slate-100">Giliran Selesai</div>`;
+          statusBadge = '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#132247] text-slate-400 border border-[#1e2f5c]">Selesai Giliran</span>';
+          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-500 bg-[#080e1e]/60 rounded border border-[#1e2f5c]/50">Giliran Selesai</div>`;
         } else if (state.phase === 'HUNTING_SELECT') {
-          statusBadge = '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">Menunggu</span>';
+          statusBadge = '<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-950/50 text-blue-400 border border-blue-800/50">Menunggu</span>';
           buttonHtml = `<button type="button" class="btn-select-hunting-card mt-2 w-full py-1.5 rounded-lg text-xs font-bold text-white shadow-sm hover:opacity-90 active:scale-95 transition-transform" style="background-color: ${escapeHtml(
-            team.color || '#4f46e5'
+            team.color || '#2563eb'
           )};" data-team-id="${escapeHtml(team.id)}">Pilih Tim Ini</button>`;
         }
       } else {
@@ -709,10 +709,10 @@ function renderTeamsScoreboard() {
         const isTurn = team.id === faceOff.turnTeamId && state.phase === 'FACE_OFF';
 
         if (isControl) {
-          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-indigo-600 text-white">Giliran</span>';
-          borderHighlight = 'border-indigo-600 ring-2 ring-indigo-500/30';
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-600 text-white shadow-glowBlue">Giliran</span>';
+          borderHighlight = 'border-blue-500 ring-2 ring-blue-500/30';
         } else if (isSteal) {
-          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500 text-white">Kesempatan Merebut</span>';
+          statusBadge = '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500 text-white shadow-glowOrange">Kesempatan Merebut</span>';
           borderHighlight = 'border-amber-500 ring-2 ring-amber-400/30';
         } else if (isTurn) {
           if (faceOff.firstAnswer) {
@@ -724,7 +724,7 @@ function renderTeamsScoreboard() {
           }
         } else if (state.phase === 'FACE_OFF' && faceOff.firstAnswer && team.id === faceOff.firstAnswer.teamId) {
           const rankText = faceOff.firstAnswer.valid ? `#${faceOff.firstAnswer.rank} (${faceOff.firstAnswer.points} Poin)` : 'Salah';
-          statusBadge = `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-300">Tebakan: ${rankText}</span>`;
+          statusBadge = `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-[#132247] text-slate-300 border border-[#1e2f5c]">Tebakan: ${rankText}</span>`;
         }
 
         const isActiveFaceOffTeam =
@@ -742,24 +742,24 @@ function renderTeamsScoreboard() {
             Bel [${shortcutKey}]
           </button>`;
         } else if (state.phase === 'FACE_OFF' && !isActiveFaceOffTeam && !faceOff.turnTeamId) {
-          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-slate-50 rounded border border-slate-100">
+          buttonHtml = `<div class="mt-2 py-1 text-center text-[10px] font-medium text-slate-400 bg-[#132247]/50 rounded border border-[#1e2f5c]">
             Menonton Rebutan
           </div>`;
         }
       }
 
       return `
-      <div class="bg-white rounded-xl border p-3 flex flex-col justify-between shadow-sm transition-all relative ${borderHighlight}">
+      <div class="bg-[#0f1a36] rounded-xl border p-3 flex flex-col justify-between shadow-sm transition-all relative ${borderHighlight}">
         <div class="flex items-center justify-between mb-1">
           <div class="flex items-center space-x-2">
             <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${escapeHtml(team.color)};"></span>
-            <span class="text-xs font-bold text-slate-800 truncate max-w-[110px]">${escapeHtml(team.name)}</span>
+            <span class="text-xs font-bold text-white truncate max-w-[110px]">${escapeHtml(team.name)}</span>
           </div>
           ${statusBadge}
         </div>
 
         <div class="flex items-baseline justify-between mt-2">
-          <span class="text-2xl font-extrabold text-slate-900">${scores[team.id] || 0}</span>
+          <span class="text-2xl font-extrabold text-white">${scores[team.id] || 0}</span>
           <span class="text-[11px] text-slate-400 font-semibold">Poin</span>
         </div>
 
@@ -818,9 +818,9 @@ function renderTeacherPanel() {
     peekContainer.innerHTML = unrevealed
       .map(
         (a) => `
-        <div class="text-[11px] py-1 border-b border-slate-100 flex items-center justify-between">
-          <span class="font-medium text-slate-700">${escapeHtml(a.answer_text)}</span>
-          <span class="font-bold text-amber-700">${a.points} Pts</span>
+        <div class="text-[11px] py-1 border-b border-[#1e2f5c] flex items-center justify-between">
+          <span class="font-medium text-slate-200">${escapeHtml(a.answer_text)}</span>
+          <span class="font-bold text-amber-400">${a.points} Pts</span>
         </div>
       `
       )
@@ -851,7 +851,7 @@ function renderReflectionModal() {
         promptsEl.innerHTML = prompts
           .map(
             (p) => `
-            <li class="p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl font-bold text-indigo-950 text-base sm:text-lg leading-relaxed">
+            <li class="p-3 bg-[#132247] border border-[#1e2f5c] rounded-xl font-bold text-white text-base sm:text-lg leading-relaxed shadow-sm">
               &bull; ${escapeHtml(p)}
             </li>
           `
@@ -1041,11 +1041,11 @@ function setupEventListeners() {
       .slice(0, 5)
       .map(
         (m) => `
-        <button type="button" class="btn-select-suggestion w-full text-left p-2 hover:bg-indigo-50 border-b border-slate-100 flex items-center justify-between text-xs transition-colors" data-answer-id="${escapeHtml(
+        <button type="button" class="btn-select-suggestion w-full text-left p-2 hover:bg-[#132247] border-b border-[#1e2f5c] flex items-center justify-between text-xs transition-colors" data-answer-id="${escapeHtml(
           m.answer.id
         )}">
-          <span class="font-bold text-slate-800">${escapeHtml(m.answer.answer_text)}</span>
-          <span class="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] border border-amber-200">${
+          <span class="font-bold text-white">${escapeHtml(m.answer.answer_text)}</span>
+          <span class="font-bold text-amber-300 bg-amber-950/40 px-1.5 py-0.5 rounded text-[10px] border border-amber-600/40">${
             m.answer.points
           } Pts (${m.score}%)</span>
         </button>

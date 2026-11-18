@@ -8,63 +8,63 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/style.css">
 </head>
-<body class="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+<body class="flex flex-col min-h-screen bg-[#080e1e] text-slate-100">
   <!-- Navbar -->
   <div id="navbar-container"></div>
 
   <!-- Main Wizard Container -->
   <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Saved Game Banner (Conditional) -->
-    <div id="saved-game-banner" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div id="saved-game-banner" class="hidden mb-6 bg-amber-950/60 border border-amber-600/40 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
       <div class="flex items-center space-x-3">
-        <span class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+        <span class="w-8 h-8 rounded-full bg-amber-900/80 text-amber-300 flex items-center justify-center font-bold text-sm border border-amber-500/30">
           ⏳
         </span>
         <div>
-          <h4 class="text-sm font-bold text-amber-900">Ada Sesi Permainan Belum Selesai</h4>
-          <p class="text-xs text-amber-700">Ditemukan data permainan aktif yang tersimpan di perangkat ini.</p>
+          <h4 class="text-sm font-bold text-amber-200">Ada Sesi Permainan Belum Selesai</h4>
+          <p class="text-xs text-amber-300/80">Ditemukan data permainan aktif yang tersimpan di perangkat ini.</p>
         </div>
       </div>
       <div class="flex items-center space-x-2 w-full sm:w-auto">
-        <button id="btn-resume-game" type="button" class="inline-flex items-center justify-center font-medium px-3.5 py-1.5 text-xs rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors flex-1 sm:flex-none">
+        <button id="btn-resume-game" type="button" class="inline-flex items-center justify-center font-bold px-3.5 py-1.5 text-xs rounded-xl bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-950/50 hover:scale-[1.02] transition-all flex-1 sm:flex-none">
           Lanjutkan Permainan &rarr;
         </button>
-        <button id="btn-clear-saved" type="button" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors">
+        <button id="btn-clear-saved" type="button" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-xl bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1a2f60] hover:text-white transition-all">
           Mulai Baru
         </button>
       </div>
     </div>
 
     <!-- Wizard Header & Progress -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
+    <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-xl p-6 mb-6">
       <div class="flex items-center justify-between mb-2">
-        <span id="wizard-step-badge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+        <span id="wizard-step-badge" class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold bg-blue-950/80 text-blue-300 border border-blue-500/30">
           Langkah 1 dari 3
         </span>
         <span class="text-xs text-slate-400 font-medium">Persiapan Kelas</span>
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Pengaturan Sesi Permainan BK</h1>
-      <p id="wizard-step-guidance" class="text-xs sm:text-sm text-slate-600">
+      <h1 class="text-xl sm:text-2xl font-bold text-white mb-1">Pengaturan Sesi Permainan BK</h1>
+      <p id="wizard-step-guidance" class="text-xs sm:text-sm text-slate-300">
         Pilih satu materi bimbingan konseling dan tentukan jumlah ronde permainan.
       </p>
 
       <!-- Progress Track -->
-      <div class="w-full bg-slate-100 h-2 rounded-full mt-4 overflow-hidden">
-        <div id="wizard-progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300 w-1/3"></div>
+      <div class="w-full bg-[#0a1226] h-2 rounded-full mt-4 overflow-hidden border border-[#1e2f5c]/50">
+        <div id="wizard-progress-bar" class="bg-gradient-to-r from-blue-600 to-orange-500 h-2 rounded-full transition-all duration-300 w-1/3"></div>
       </div>
     </div>
 
     <!-- Step 1: Pilih Topik -->
     <section id="step-1-section" class="space-y-6">
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#1e2f5c]">
           <div>
-            <h2 class="text-base font-bold text-slate-900">Pilih Materi Pembelajaran BK</h2>
-            <p class="text-xs text-slate-500">Klik salah satu kartu materi di bawah ini</p>
+            <h2 class="text-base font-bold text-white">Pilih Materi Pembelajaran BK</h2>
+            <p class="text-xs text-slate-400">Klik salah satu kartu materi di bawah ini</p>
           </div>
           <div class="flex items-center space-x-2">
-            <label for="round-count-select" class="text-xs font-semibold text-slate-700 whitespace-nowrap">Jumlah Ronde:</label>
-            <select id="round-count-select" class="text-xs font-medium px-3 py-1.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <label for="round-count-select" class="text-xs font-semibold text-slate-300 whitespace-nowrap">Jumlah Ronde:</label>
+            <select id="round-count-select" class="text-xs font-medium px-3 py-1.5 bg-[#0a1226] text-white border border-[#1e2f5c] rounded-xl focus:outline-none focus:border-blue-500 transition-colors">
               <option value="3">3 Ronde</option>
             </select>
           </div>
@@ -72,39 +72,39 @@
 
         <!-- Loading State -->
         <div id="categories-loading" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          <div class="h-32 bg-slate-50 rounded-xl border border-slate-200 animate-pulse"></div>
-          <div class="h-32 bg-slate-50 rounded-xl border border-slate-200 animate-pulse"></div>
+          <div class="h-32 bg-[#132247] rounded-xl border border-[#1e2f5c] animate-pulse"></div>
+          <div class="h-32 bg-[#132247] rounded-xl border border-[#1e2f5c] animate-pulse"></div>
         </div>
 
         <!-- Error State -->
-        <div id="categories-error" class="hidden mt-4 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700"></div>
+        <div id="categories-error" class="hidden mt-4 p-4 rounded-xl bg-red-950/60 border border-red-500/40 text-xs text-red-300"></div>
 
         <!-- Categories List Grid -->
         <div id="categories-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"></div>
 
         <!-- Pilihan Mode Permainan -->
-        <div class="mt-6 pt-5 border-t border-slate-100">
+        <div class="mt-6 pt-5 border-t border-[#1e2f5c]">
           <div class="mb-3">
-            <h3 class="text-sm font-bold text-slate-900">Pilih Mode Permainan:</h3>
-            <p class="text-xs text-slate-500">Tentukan format kompetisi yang paling sesuai untuk kelas Anda</p>
+            <h3 class="text-sm font-bold text-white">Pilih Mode Permainan:</h3>
+            <p class="text-xs text-slate-400">Tentukan format kompetisi yang paling sesuai untuk kelas Anda</p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="game-mode-selector">
             <!-- Mode 1: Family 100 -->
-            <label class="game-mode-card cursor-pointer p-4 rounded-xl border border-indigo-600 bg-indigo-50/30 flex items-start space-x-3 transition-all select-none" data-mode="family100">
-              <input type="radio" name="game-mode" value="family100" class="mt-0.5 text-indigo-600 focus:ring-indigo-500" checked />
+            <label class="game-mode-card cursor-pointer p-4 rounded-xl border border-blue-500 bg-blue-950/40 shadow-glowBlue flex items-start space-x-3 transition-all select-none hover:scale-[1.01]" data-mode="family100">
+              <input type="radio" name="game-mode" value="family100" class="mt-0.5 text-blue-600 focus:ring-blue-500" checked />
               <div>
-                <span class="block text-sm font-bold text-slate-900">1. Mode Family 100 (Klasik)</span>
-                <span class="block text-xs text-slate-600 mt-0.5 leading-relaxed">
-                  Format turnamen TV: adu rebutan bel di awal ronde, pemenang memilih mainkan/oper, pot ronde diperebutkan di akhir, dan ada kesempatan mencuri (steal) saat 3 strike.
+                <span class="block text-sm font-bold text-white">1. Mode Family 100 (Klasik)</span>
+                <span class="block text-xs text-slate-300 mt-0.5 leading-relaxed">
+                  Format turnamen TV: adu rebutan bel di awal ronde, pemenang memilih mainkan/oper, pot ronde diperebutkan di akhir, dan ada kesempatan mencuri (steal) saat batas strike tercapai.
                 </span>
               </div>
             </label>
             <!-- Mode 2: Hunting Poin -->
-            <label class="game-mode-card cursor-pointer p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white flex items-start space-x-3 transition-all select-none" data-mode="hunting">
-              <input type="radio" name="game-mode" value="hunting" class="mt-0.5 text-indigo-600 focus:ring-indigo-500" />
+            <label class="game-mode-card cursor-pointer p-4 rounded-xl border border-[#1e2f5c] hover:border-blue-500/50 bg-[#132247]/60 hover:bg-[#132247] flex items-start space-x-3 transition-all select-none hover:scale-[1.01]" data-mode="hunting">
+              <input type="radio" name="game-mode" value="hunting" class="mt-0.5 text-blue-600 focus:ring-blue-500" />
               <div>
-                <span class="block text-sm font-bold text-slate-900">2. Mode Hunting Poin (Baru)</span>
-                <span class="block text-xs text-slate-600 mt-0.5 leading-relaxed">
+                <span class="block text-sm font-bold text-white">2. Mode Hunting Poin (Cepat)</span>
+                <span class="block text-xs text-slate-300 mt-0.5 leading-relaxed">
                   Format kelas cepat &amp; estafet: dimulai dari tim pilihan guru, poin langsung masuk ke tim, timer/strike mentok langsung oper ke tim berikutnya sampai ronde selesai.
                 </span>
               </div>
@@ -114,37 +114,39 @@
       </div>
 
       <div class="flex justify-end">
-        <button id="btn-step-1-next" type="button" class="inline-flex items-center justify-center font-semibold px-6 py-2.5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          Lanjut ke Atur Tim &rarr;
+        <button id="btn-step-1-next" type="button" class="inline-flex items-center justify-center font-bold px-7 py-3 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-md shadow-blue-950/60 hover:shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all">
+          <span>Lanjut ke Atur Tim</span>
+          <span class="ml-2">&rarr;</span>
         </button>
       </div>
     </section>
 
     <!-- Step 2: Atur Tim -->
     <section id="step-2-section" class="hidden space-y-6">
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-xl p-6">
+        <div class="flex items-center justify-between pb-4 border-b border-[#1e2f5c]">
           <div>
-            <h2 class="text-base font-bold text-slate-900">Kelompok Siswa di Kelas</h2>
-            <p class="text-xs text-slate-500">Atur 2 sampai 4 kelompok untuk bertanding</p>
+            <h2 class="text-base font-bold text-white">Kelompok Siswa di Kelas</h2>
+            <p class="text-xs text-slate-400">Atur 2 sampai 4 kelompok untuk bertanding</p>
           </div>
-          <button id="btn-add-team" type="button" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+          <button id="btn-add-team" type="button" class="inline-flex items-center justify-center font-bold px-3.5 py-1.5 text-xs rounded-xl bg-[#132247] border border-[#1e2f5c] text-white hover:bg-[#1a2f60] hover:border-blue-500/50 shadow-sm hover:scale-[1.02] transition-all">
             + Tambah Tim
           </button>
         </div>
 
-        <div id="step-2-error" class="hidden mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700"></div>
+        <div id="step-2-error" class="hidden mt-4 p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-xs text-red-300"></div>
 
         <!-- Teams List -->
         <div id="teams-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"></div>
       </div>
 
       <div class="flex items-center justify-between">
-        <button id="btn-step-2-back" type="button" class="inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+        <button id="btn-step-2-back" type="button" class="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-xl bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1a2f60] hover:text-white transition-all shadow-sm">
           &larr; Kembali
         </button>
-        <button id="btn-step-2-next" type="button" class="inline-flex items-center justify-center font-semibold px-6 py-2.5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm">
-          Lanjut ke Pengaturan &rarr;
+        <button id="btn-step-2-next" type="button" class="inline-flex items-center justify-center font-bold px-7 py-2.5 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-md shadow-blue-950/60 hover:shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all">
+          <span>Lanjut ke Pengaturan</span>
+          <span class="ml-2">&rarr;</span>
         </button>
       </div>
     </section>
@@ -152,40 +154,40 @@
     <!-- Step 3: Pengaturan & Aturan -->
     <section id="step-3-section" class="hidden space-y-6">
       <!-- Konfigurasi Teknis -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-        <h2 class="text-base font-bold text-slate-900 pb-3 border-b border-slate-100 mb-4">
+      <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-xl p-6">
+        <h2 class="text-base font-bold text-white pb-3 border-b border-[#1e2f5c] mb-4">
           Konfigurasi Game di Kelas
         </h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <!-- Timer -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-2">Batas Waktu Menjawab (Timer):</label>
+            <label class="block text-xs font-bold text-slate-200 mb-2">Batas Waktu Menjawab (Timer):</label>
             <div class="grid grid-cols-2 gap-2 text-xs mb-2">
-              <label class="flex items-center space-x-2 p-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                <input type="radio" name="timer-option" value="0" class="text-indigo-600 focus:ring-indigo-500">
-                <span>Mati (Santai)</span>
+              <label class="flex items-center space-x-2 p-2.5 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                <input type="radio" name="timer-option" value="0" class="text-blue-600 focus:ring-blue-500">
+                <span class="text-slate-200">Mati (Santai)</span>
               </label>
-              <label class="flex items-center space-x-2 p-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                <input type="radio" name="timer-option" value="15" class="text-indigo-600 focus:ring-indigo-500">
-                <span>15 Detik</span>
+              <label class="flex items-center space-x-2 p-2.5 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                <input type="radio" name="timer-option" value="15" class="text-blue-600 focus:ring-blue-500">
+                <span class="text-slate-200">15 Detik</span>
               </label>
-              <label class="flex items-center space-x-2 p-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                <input type="radio" name="timer-option" value="20" checked class="text-indigo-600 focus:ring-indigo-500">
-                <span>20 Detik (Standar)</span>
+              <label class="flex items-center space-x-2 p-2.5 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                <input type="radio" name="timer-option" value="20" checked class="text-blue-600 focus:ring-blue-500">
+                <span class="text-slate-200">20 Detik (Standar)</span>
               </label>
-              <label class="flex items-center space-x-2 p-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                <input type="radio" name="timer-option" value="30" class="text-indigo-600 focus:ring-indigo-500">
-                <span>30 Detik</span>
+              <label class="flex items-center space-x-2 p-2.5 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                <input type="radio" name="timer-option" value="30" class="text-blue-600 focus:ring-blue-500">
+                <span class="text-slate-200">30 Detik</span>
               </label>
-              <label class="col-span-2 flex items-center justify-between p-2.5 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors gap-2">
+              <label class="col-span-2 flex items-center justify-between p-2.5 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all gap-2">
                 <div class="flex items-center space-x-2">
-                  <input type="radio" name="timer-option" value="custom" class="text-indigo-600 focus:ring-indigo-500">
-                  <span class="font-medium text-slate-800">Waktu Kustom:</span>
+                  <input type="radio" name="timer-option" value="custom" class="text-blue-600 focus:ring-blue-500">
+                  <span class="font-medium text-slate-200">Waktu Kustom:</span>
                 </div>
                 <div class="flex items-center space-x-1.5">
-                  <input type="number" id="custom-timer-input" min="5" max="300" placeholder="mis. 45" class="w-20 px-2 py-1 text-xs border border-slate-300 rounded focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-400 font-semibold" disabled>
-                  <span class="text-slate-500 font-medium">Detik</span>
+                  <input type="number" id="custom-timer-input" min="5" max="300" placeholder="mis. 45" class="w-20 px-2 py-1 text-xs border border-[#1e2f5c] bg-[#0a1226] text-white rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-[#0f1a36] disabled:text-slate-500 font-semibold" disabled>
+                  <span class="text-slate-400 font-medium">Detik</span>
                 </div>
               </label>
             </div>
@@ -195,42 +197,42 @@
           <!-- Max Strikes & Multiplier -->
           <div class="space-y-4">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-2">Batas Kesalahan (Max Strikes):</label>
+              <label class="block text-xs font-bold text-slate-200 mb-2">Batas Kesalahan (Max Strikes):</label>
               <div class="flex flex-wrap items-center gap-2 text-xs mb-2">
-                <label class="flex items-center space-x-1.5 p-2 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                  <input type="radio" name="max-strikes" value="0" class="text-indigo-600">
-                  <span class="font-medium text-slate-800">Tanpa Batas</span>
+                <label class="flex items-center space-x-1.5 p-2 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                  <input type="radio" name="max-strikes" value="0" class="text-blue-600 focus:ring-blue-500">
+                  <span class="font-medium text-slate-200">Tanpa Batas</span>
                 </label>
-                <label class="flex items-center space-x-1.5 p-2 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                  <input type="radio" name="max-strikes" value="1" class="text-indigo-600">
-                  <span>1 Strike</span>
+                <label class="flex items-center space-x-1.5 p-2 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                  <input type="radio" name="max-strikes" value="1" class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-slate-200">1 Strike</span>
                 </label>
-                <label class="flex items-center space-x-1.5 p-2 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                  <input type="radio" name="max-strikes" value="2" class="text-indigo-600">
-                  <span>2 Strike</span>
+                <label class="flex items-center space-x-1.5 p-2 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                  <input type="radio" name="max-strikes" value="2" class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-slate-200">2 Strike</span>
                 </label>
-                <label class="flex items-center space-x-1.5 p-2 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                  <input type="radio" name="max-strikes" value="3" checked class="text-indigo-600">
-                  <span>3 Strike (Standar)</span>
+                <label class="flex items-center space-x-1.5 p-2 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                  <input type="radio" name="max-strikes" value="3" checked class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-slate-200">3 Strike (Standar)</span>
                 </label>
-                <label class="flex items-center space-x-1.5 p-2 border rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
-                  <input type="radio" name="max-strikes" value="custom" class="text-indigo-600">
-                  <span class="font-medium text-slate-800">Kustom:</span>
-                  <input type="number" id="custom-strikes-input" min="1" max="10" placeholder="mis. 4" class="w-16 px-2 py-0.5 text-xs border border-slate-300 rounded focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:text-slate-400 font-semibold" disabled>
-                  <span class="text-slate-500">Kali</span>
+                <label class="flex items-center space-x-1.5 p-2 border border-[#1e2f5c] bg-[#132247]/60 rounded-xl cursor-pointer hover:bg-[#132247] hover:border-blue-500/40 transition-all">
+                  <input type="radio" name="max-strikes" value="custom" class="text-blue-600 focus:ring-blue-500">
+                  <span class="font-medium text-slate-200">Kustom:</span>
+                  <input type="number" id="custom-strikes-input" min="1" max="10" placeholder="mis. 4" class="w-16 px-2 py-0.5 text-xs border border-[#1e2f5c] bg-[#0a1226] text-white rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-[#0f1a36] disabled:text-slate-500 font-semibold" disabled>
+                  <span class="text-slate-400">Kali</span>
                 </label>
               </div>
               <p class="text-[11px] text-slate-400">Pilih "Tanpa Batas" atau jumlah kesalahan sebelum giliran berganti (berlaku untuk kedua mode).</p>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
+            <div class="pt-2 border-t border-[#1e2f5c] flex flex-col gap-2">
               <label class="flex items-center space-x-2 cursor-pointer text-xs">
-                <input type="checkbox" id="multiplier-toggle" checked class="rounded text-indigo-600 focus:ring-indigo-500">
-                <span class="text-slate-800 font-medium">Aktifkan Pengali Poin Ronde (1x / 2x / 3x)</span>
+                <input type="checkbox" id="multiplier-toggle" checked class="rounded text-blue-600 focus:ring-blue-500 bg-[#0a1226] border-[#1e2f5c]">
+                <span class="text-slate-200 font-medium">Aktifkan Pengali Poin Ronde (1x / 2x / 3x)</span>
               </label>
               <label class="flex items-center space-x-2 cursor-pointer text-xs">
-                <input type="checkbox" id="sound-toggle" checked class="rounded text-indigo-600 focus:ring-indigo-500">
-                <span class="text-slate-800 font-medium">Efek Suara Permainan (Bel, Benar, Salah)</span>
+                <input type="checkbox" id="sound-toggle" checked class="rounded text-blue-600 focus:ring-blue-500 bg-[#0a1226] border-[#1e2f5c]">
+                <span class="text-slate-200 font-medium">Efek Suara Permainan (Bel, Benar, Salah)</span>
               </label>
             </div>
           </div>
@@ -238,49 +240,49 @@
       </div>
 
       <!-- Ringkasan Aturan (5 Poin) -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-        <h3 id="flow-summary-title" class="text-sm font-bold text-slate-900 mb-3">Ringkasan Alur Permainan</h3>
+      <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-xl p-6">
+        <h3 id="flow-summary-title" class="text-sm font-bold text-white mb-3">Ringkasan Alur Permainan</h3>
         <div id="flow-summary-container" class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-            <span class="font-bold text-indigo-700 mb-1">1. Face-Off</span>
-            <p class="text-slate-600 leading-relaxed">Dua tim merebut giliran pertama. Jawaban poin tertinggi memegang kontrol permainan.</p>
+          <div class="p-3 bg-[#132247]/70 rounded-xl border border-[#1e2f5c] flex flex-col">
+            <span class="font-bold text-blue-400 mb-1">1. Face-Off</span>
+            <p class="text-slate-300 leading-relaxed">Dua tim merebut giliran pertama. Jawaban poin tertinggi memegang kontrol permainan.</p>
           </div>
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-            <span class="font-bold text-indigo-700 mb-1">2. Giliran Tim</span>
-            <p class="text-slate-600 leading-relaxed">Tim berkontrol menebak jawaban survei lain secara bergiliran sebelum waktu habis.</p>
+          <div class="p-3 bg-[#132247]/70 rounded-xl border border-[#1e2f5c] flex flex-col">
+            <span class="font-bold text-blue-400 mb-1">2. Giliran Tim</span>
+            <p class="text-slate-300 leading-relaxed">Tim berkontrol menebak jawaban survei lain secara bergiliran sebelum waktu habis.</p>
           </div>
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-            <span class="font-bold text-indigo-700 mb-1">3. Strike</span>
-            <p class="text-slate-600 leading-relaxed">Jawaban salah menghasilkan strike. Jika mencapai 3 strike, giliran berpindah untuk steal.</p>
+          <div class="p-3 bg-[#132247]/70 rounded-xl border border-[#1e2f5c] flex flex-col">
+            <span class="font-bold text-blue-400 mb-1">3. Strike</span>
+            <p class="text-slate-300 leading-relaxed">Jawaban salah menghasilkan strike. Jika mencapai batas strike, giliran berpindah untuk steal.</p>
           </div>
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-            <span class="font-bold text-indigo-700 mb-1">4. Steal Poin</span>
-            <p class="text-slate-600 leading-relaxed">Tim lawan bermusyawarah 1 tebakan. Jika tepat, seluruh pot poin ronde menjadi milik mereka!</p>
+          <div class="p-3 bg-[#132247]/70 rounded-xl border border-[#1e2f5c] flex flex-col">
+            <span class="font-bold text-blue-400 mb-1">4. Steal Poin</span>
+            <p class="text-slate-300 leading-relaxed">Tim lawan bermusyawarah 1 tebakan. Jika tepat, seluruh pot poin ronde menjadi milik mereka!</p>
           </div>
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-            <span class="font-bold text-indigo-700 mb-1">5. Refleksi BK</span>
-            <p class="text-slate-600 leading-relaxed">Setelah ronde selesai, guru memandu siswa mendiskusikan nilai edukatif dan karakter materi.</p>
+          <div class="p-3 bg-[#132247]/70 rounded-xl border border-[#1e2f5c] flex flex-col">
+            <span class="font-bold text-blue-400 mb-1">5. Refleksi BK</span>
+            <p class="text-slate-300 leading-relaxed">Setelah ronde selesai, guru memandu siswa mendiskusikan nilai edukatif dan karakter materi.</p>
           </div>
         </div>
       </div>
 
       <!-- Catatan untuk Guru BK -->
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start space-x-3 text-xs text-amber-900 leading-relaxed">
+      <div class="bg-blue-950/40 border border-blue-500/30 rounded-2xl p-4 flex items-start space-x-3 text-xs text-blue-200 leading-relaxed">
         <span class="text-base leading-none">🌱</span>
         <div>
-          <strong class="font-semibold block mb-0.5">Catatan untuk Guru BK:</strong>
+          <strong class="font-semibold block mb-0.5 text-white">Catatan untuk Guru BK:</strong>
           Ciptakan ruang kelas yang aman dan menyenangkan. Tujuan utama kuis ini adalah memancing empati, keberanian berpendapat, dan keterbukaan komunikasi antar siswa, bukan semata-mata mencari menang-kalah.
         </div>
       </div>
 
-      <div id="step-3-status" class="hidden text-center text-xs font-medium text-indigo-600"></div>
+      <div id="step-3-status" class="hidden text-center text-xs font-medium text-blue-400"></div>
 
       <!-- Action Buttons -->
       <div class="flex items-center justify-between">
-        <button id="btn-step-3-back" type="button" class="inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+        <button id="btn-step-3-back" type="button" class="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-xl bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1a2f60] hover:text-white transition-all shadow-sm">
           &larr; Kembali
         </button>
-        <button id="btn-start-game" type="button" class="inline-flex items-center justify-center font-bold px-8 py-3 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <button id="btn-start-game" type="button" class="inline-flex items-center justify-center font-extrabold px-8 py-3 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 transition-all shadow-lg shadow-blue-950/70 hover:shadow-blue-600/40 hover:scale-[1.03] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500">
           Mulai Permainan &rarr;
         </button>
       </div>

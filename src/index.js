@@ -43,20 +43,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         .map((cat) => {
           const qCount = cat.question_count ?? (Array.isArray(cat.questions) ? cat.questions.length : 0);
           return `
-          <div class="${styles.card} flex flex-col justify-between hover:border-indigo-300 transition-colors">
+          <div class="${styles.card} flex flex-col justify-between hover:border-blue-500/60 hover:shadow-glowBlue hover:scale-[1.02] transition-all duration-200 group">
             <div>
               <div class="flex items-center justify-between gap-2 mb-2">
                 <span class="${styles.badgeSlate}">${qCount} Soal Tersedia</span>
                 <span class="text-xs text-slate-400 font-medium">SMP / SMA</span>
               </div>
-              <h3 class="text-base font-bold text-slate-900 mb-2 leading-snug">
+              <h3 class="text-base font-bold text-white mb-2 leading-snug group-hover:text-blue-300 transition-colors">
                 ${escapeHtml(cat.title)}
               </h3>
-              <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+              <p class="text-xs text-slate-300 line-clamp-3 leading-relaxed mb-4">
                 ${escapeHtml(cat.description || 'Topik bimbingan konseling untuk membangun karakter dan pemahaman diri.')}
               </p>
             </div>
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <div class="pt-3 border-t border-[#1e2f5c] flex items-center justify-between">
               <a href="/setup.html?category=${encodeURIComponent(cat.id)}" class="${styles.btnSecondary} w-full text-center text-xs">
                 Pilih Topik Ini &rarr;
               </a>

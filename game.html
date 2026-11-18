@@ -8,20 +8,20 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/style.css">
 </head>
-<body class="min-h-screen w-full bg-slate-50 text-slate-900 flex flex-col justify-between select-none overflow-x-hidden md:h-screen md:overflow-hidden">
+<body class="min-h-screen w-full bg-[#080e1e] text-slate-100 flex flex-col justify-between select-none overflow-x-hidden md:h-screen md:overflow-hidden">
 
   <!-- No Saved Game Overlay (Conditional Fallback) -->
-  <div id="no-game-overlay" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-8 text-center space-y-4">
-      <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 font-bold text-2xl mx-auto flex items-center justify-center">
+  <div id="no-game-overlay" class="hidden fixed inset-0 z-50 bg-[#080e1e]/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-2xl max-w-md w-full p-8 text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-blue-950/60 border border-blue-800/50 text-blue-400 font-bold text-2xl mx-auto flex items-center justify-center">
         🎲
       </div>
-      <h2 class="text-xl font-bold text-slate-900">Belum Ada Permainan Aktif</h2>
-      <p class="text-xs text-slate-600 leading-relaxed">
+      <h2 class="text-xl font-bold text-white">Belum Ada Permainan Aktif</h2>
+      <p class="text-xs text-slate-300 leading-relaxed">
         Tidak ditemukan data sesi permainan yang sedang berlangsung. Silakan atur topik dan kelompok di halaman setup terlebih dahulu.
       </p>
       <div class="pt-2">
-        <a href="/setup.html" class="inline-flex items-center justify-center font-bold px-6 py-2.5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition-colors">
+        <a href="/setup.html" class="inline-flex items-center justify-center font-bold px-6 py-2.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-500 shadow-glowBlue transition-all">
           Buka Setup Permainan &rarr;
         </a>
       </div>
@@ -30,52 +30,52 @@
 
   <!-- Strike Animation Overlay (Big Red X in Screen Center) -->
   <div id="strike-overlay" class="hidden fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-red-950/20 backdrop-blur-[1px] transition-opacity duration-200 opacity-0">
-    <div class="text-red-600 font-black text-9xl tracking-tighter drop-shadow-lg transform scale-110">
+    <div class="text-red-500 font-black text-9xl tracking-tighter drop-shadow-lg transform scale-110">
       &times;
     </div>
   </div>
 
   <!-- Game Paused Overlay -->
-  <div id="pause-overlay" class="hidden fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl p-6 text-center max-w-xs w-full space-y-3">
+  <div id="pause-overlay" class="hidden fixed inset-0 z-40 bg-[#080e1e]/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-2xl p-6 text-center max-w-xs w-full space-y-3">
       <div class="text-3xl">⏸</div>
-      <h3 class="text-lg font-bold text-slate-900">Permainan Dijeda</h3>
-      <p class="text-xs text-slate-500">Waktu dan interaksi game dinonaktifkan sementara.</p>
-      <button id="btn-resume-overlay" type="button" class="w-full py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 shadow-sm transition-colors">
+      <h3 class="text-lg font-bold text-white">Permainan Dijeda</h3>
+      <p class="text-xs text-slate-300">Waktu dan interaksi game dinonaktifkan sementara.</p>
+      <button id="btn-resume-overlay" type="button" class="w-full py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-500 shadow-glowBlue transition-all">
         Lanjutkan Permainan
       </button>
     </div>
   </div>
 
   <!-- Reflection Modal Overlay -->
-  <div id="reflection-overlay" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full p-6 sm:p-8 flex flex-col justify-between max-h-[90vh]">
+  <div id="reflection-overlay" class="hidden fixed inset-0 z-50 bg-[#080e1e]/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-2xl max-w-2xl w-full p-6 sm:p-8 flex flex-col justify-between max-h-[90vh]">
       <div>
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#1e2f5c] mb-4">
           <div class="flex items-center space-x-2">
-            <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 font-bold flex items-center justify-center text-sm border border-indigo-100">🌱</span>
+            <span class="w-8 h-8 rounded-lg bg-blue-950/60 text-blue-400 font-bold flex items-center justify-center text-sm border border-blue-800/50">🌱</span>
             <div>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Refleksi Materi Bimbingan Konseling</h2>
-              <span class="text-xs text-slate-500 font-medium">Diskusi Pemahaman Nilai Positif Siswa</span>
+              <h2 class="text-base sm:text-lg font-bold text-white leading-tight">Refleksi Materi Bimbingan Konseling</h2>
+              <span class="text-xs text-slate-400 font-medium">Diskusi Pemahaman Nilai Positif Siswa</span>
             </div>
           </div>
         </div>
 
         <div class="space-y-4 py-2">
-          <div class="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl">
-            <span class="text-xs font-bold text-indigo-900 uppercase tracking-wider block mb-1">Pesan Edukatif Guru BK:</span>
-            <p id="reflection-note-text" class="text-sm sm:text-base text-slate-800 leading-relaxed font-medium"></p>
+          <div class="p-4 bg-[#132247] border border-[#1e2f5c] rounded-xl">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block mb-1">Pesan Edukatif Guru BK:</span>
+            <p id="reflection-note-text" class="text-sm sm:text-base text-slate-200 leading-relaxed font-medium"></p>
           </div>
 
           <div>
-            <span class="text-xs font-bold text-slate-700 block mb-2">Pertanyaan Pemantik Diskusi Kelas:</span>
+            <span class="text-xs font-bold text-slate-300 block mb-2">Pertanyaan Pemantik Diskusi Kelas:</span>
             <ul id="reflection-prompts-list" class="space-y-2"></ul>
           </div>
         </div>
       </div>
 
-      <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
-        <button id="btn-reflection-next" type="button" class="inline-flex items-center justify-center font-bold px-6 py-2.5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <div class="pt-4 border-t border-[#1e2f5c] flex items-center justify-end">
+        <button id="btn-reflection-next" type="button" class="inline-flex items-center justify-center font-bold px-6 py-2.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-500 shadow-glowBlue transition-all focus:outline-none focus:ring-2 focus:ring-blue-500">
           Lanjut ke Ronde Berikutnya &rarr;
         </button>
       </div>
@@ -83,68 +83,68 @@
   </div>
 
   <!-- Help Modal (?) -->
-  <div id="help-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-[1px] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between pb-2 border-b">
-        <h3 class="text-base font-bold text-slate-900">Panduan Ringkas Family 100 BK</h3>
-        <button id="btn-close-help" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
+  <div id="help-modal" class="hidden fixed inset-0 z-50 bg-[#080e1e]/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-[#1e2f5c]">
+        <h3 class="text-base font-bold text-white">Panduan Ringkas Family 100 BK</h3>
+        <button id="btn-close-help" class="text-slate-400 hover:text-white text-lg leading-none">&times;</button>
       </div>
-      <div class="space-y-2 text-xs text-slate-600 leading-relaxed">
-        <p><strong>1. Mode Family 100:</strong> Format klasik TV dengan duel face-off perebutan bel di awal, kontrol tebakan di papan survei, dan 3 kali strike membuka kesempatan merebut (steal) bagi tim lawan.</p>
-        <p><strong>2. Mode Hunting Poin:</strong> Mode kelas cepat tanpa sistem rebutan/pot. Guru memilih tim untuk mulai menebak. Jawaban benar langsung menambah poin tim tersebut. Giliran berakhir saat waktu habis atau 3 strike tercapai, lalu berpindah ke tim berikutnya.</p>
-        <p><strong>3. Refleksi Bersama:</strong> Selesai tiap ronde di kedua mode, guru memandu diskusi pemahaman karakter materi BK.</p>
-        <p><strong>4. Pintasan Bel Guru:</strong> Tombol [A] Tim 1, [L] Tim 2, [S] Tim 3, [K] Tim 4, dan [H] untuk buka/tutup Panel Guru.</p>
+      <div class="space-y-2 text-xs text-slate-300 leading-relaxed">
+        <p><strong class="text-white">1. Mode Family 100:</strong> Format klasik TV dengan duel face-off perebutan bel di awal, kontrol tebakan di papan survei, dan 3 kali strike membuka kesempatan merebut (steal) bagi tim lawan.</p>
+        <p><strong class="text-white">2. Mode Hunting Poin:</strong> Mode kelas cepat tanpa sistem rebutan/pot. Guru memilih tim untuk mulai menebak. Jawaban benar langsung menambah poin tim tersebut. Giliran berakhir saat waktu habis atau batas strike tercapai, lalu berpindah ke tim berikutnya.</p>
+        <p><strong class="text-white">3. Refleksi Bersama:</strong> Selesai tiap ronde di kedua mode, guru memandu diskusi pemahaman karakter materi BK.</p>
+        <p><strong class="text-white">4. Pintasan Bel Guru:</strong> Tombol [A] Tim 1, [L] Tim 2, [S] Tim 3, [K] Tim 4, dan [H] untuk buka/tutup Panel Guru.</p>
       </div>
       <div class="pt-2 text-right">
-        <button onclick="document.getElementById('help-modal').classList.add('hidden')" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Tutup</button>
+        <button onclick="document.getElementById('help-modal').classList.add('hidden')" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-glowBlue transition-all">Tutup</button>
       </div>
     </div>
   </div>
 
   <!-- HEADER TIPIS -->
-  <header class="bg-white border-b border-slate-200 px-3 sm:px-4 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 min-h-14 z-30 shrink-0">
+  <header class="bg-[#0b1329] border-b border-[#1e2f5c] px-3 sm:px-4 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 min-h-14 z-30 shrink-0">
     <div class="flex items-center space-x-2 sm:space-x-3">
-      <a href="/index.html" class="flex items-center space-x-1.5 font-bold text-slate-900 text-sm">
-        <span class="w-6 h-6 rounded bg-indigo-600 text-white flex items-center justify-center text-xs">F</span>
-        <span class="hidden sm:inline">Family 100 <span class="text-indigo-600">BK</span></span>
+      <a href="/index.html" class="flex items-center space-x-1.5 font-bold text-white text-sm">
+        <span class="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center text-xs shadow-glowBlue">F</span>
+        <span class="hidden sm:inline">Family 100 <span class="text-blue-400">BK</span></span>
       </a>
-      <span class="text-slate-300">|</span>
-      <span id="header-round" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">Ronde 1</span>
-      <span id="header-mode-badge" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">Family 100</span>
-      <span id="header-multiplier">x1</span>
+      <span class="text-slate-600">|</span>
+      <span id="header-round" class="text-xs font-bold text-blue-400 bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-800/50">Ronde 1</span>
+      <span id="header-mode-badge" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#132247] text-slate-200 border border-[#1e2f5c]">Family 100</span>
+      <span id="header-multiplier" class="text-xs font-bold text-amber-400">x1</span>
     </div>
 
     <!-- Center Round Pot -->
-    <div class="flex items-center space-x-1.5 sm:space-x-2 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-lg border border-amber-200">
-      <span class="text-[10px] sm:text-[11px] font-bold text-amber-800 uppercase tracking-wider">Pot:</span>
-      <span id="header-pot" class="text-xs sm:text-sm font-extrabold text-amber-900">0 Poin</span>
+    <div class="flex items-center space-x-1.5 sm:space-x-2 bg-amber-950/40 px-2.5 sm:px-3 py-1 rounded-lg border border-amber-600/40 shadow-sm">
+      <span class="text-[10px] sm:text-[11px] font-bold text-amber-400 uppercase tracking-wider">Pot:</span>
+      <span id="header-pot" class="text-xs sm:text-sm font-extrabold text-amber-300">0 Poin</span>
     </div>
 
     <!-- Action Tools -->
     <div class="flex items-center space-x-1 sm:space-x-1.5">
-      <button id="btn-pause" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Jeda Permainan">
+      <button id="btn-pause" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-medium border border-[#1e2f5c] bg-[#132247]/70 text-slate-200 rounded-lg hover:bg-[#132247] hover:border-blue-500/50 transition-colors" title="Jeda Permainan">
         ⏸ <span class="hidden sm:inline">Jeda</span>
       </button>
-      <button id="btn-mute" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors" title="Bisu / Bunyi Suara">
+      <button id="btn-mute" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-medium border border-[#1e2f5c] bg-[#132247]/70 text-slate-200 rounded-lg hover:bg-[#132247] hover:border-blue-500/50 transition-colors" title="Bisu / Bunyi Suara">
         🔊 <span class="hidden sm:inline">Suara</span>
       </button>
-      <button id="btn-fullscreen" type="button" class="p-1.5 px-2 text-xs font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors hidden sm:flex" title="Layar Penuh">
+      <button id="btn-fullscreen" type="button" class="p-1.5 px-2 text-xs font-medium border border-[#1e2f5c] bg-[#132247]/70 text-slate-200 rounded-lg hover:bg-[#132247] hover:border-blue-500/50 transition-colors hidden sm:flex" title="Layar Penuh">
         ⛶
       </button>
-      <button id="btn-help" type="button" class="w-7 h-7 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-50 flex items-center justify-center text-slate-600" title="Cara Bermain">
+      <button id="btn-help" type="button" class="w-7 h-7 text-xs font-bold border border-[#1e2f5c] bg-[#132247]/70 text-slate-300 rounded-lg hover:bg-[#132247] hover:border-blue-500/50 flex items-center justify-center" title="Cara Bermain">
         ?
       </button>
-      <button id="btn-toggle-teacher" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-bold bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors shadow-sm" title="Buka Panel Guru (H)">
+      <button id="btn-toggle-teacher" type="button" class="p-1.5 px-2 sm:px-2.5 text-xs font-bold bg-blue-600 text-white rounded-lg hover:bg-blue-500 shadow-glowBlue transition-all" title="Buka Panel Guru (H)">
         ⚙ <span class="hidden sm:inline">Guru [H]</span>
       </button>
-      <button id="btn-exit" type="button" class="p-1.5 px-2 text-xs font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors" title="Keluar">
+      <button id="btn-exit" type="button" class="p-1.5 px-2 text-xs font-medium text-rose-400 border border-rose-900/50 bg-rose-950/30 rounded-lg hover:bg-rose-950/60 transition-colors" title="Keluar">
         Keluar
       </button>
     </div>
   </header>
 
   <!-- BANNER "SEKARANG APA?" -->
-  <div id="now-what-banner" class="bg-indigo-50/90 border-b border-indigo-100 px-3 sm:px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm text-indigo-950 shadow-sm shrink-0">
+  <div id="now-what-banner" class="bg-[#0f1a36]/90 border-b border-[#1e2f5c] px-3 sm:px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm text-slate-200 shadow-sm shrink-0">
     <div id="now-what-text" class="flex-1 font-medium leading-normal pr-4">
       Menyiapkan arena permainan...
     </div>
@@ -155,17 +155,17 @@
   <main class="flex-1 flex flex-col justify-center max-w-5xl w-full mx-auto px-3 sm:px-6 py-2 overflow-y-auto md:overflow-hidden">
     <!-- Pertanyaan Besar -->
     <div class="text-center mb-2 sm:mb-3 shrink-0">
-      <h1 id="question-text" class="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug line-clamp-3">
+      <h1 id="question-text" class="text-base sm:text-2xl font-extrabold text-white tracking-tight leading-snug line-clamp-3 drop-shadow-sm">
         Memuat pertanyaan...
       </h1>
     </div>
 
     <!-- Timer Bar -->
     <div id="timer-container" class="w-full max-w-md mx-auto flex items-center space-x-2 mb-2 shrink-0">
-      <div class="flex-1 bg-slate-200 h-2 rounded-full overflow-hidden">
-        <div id="timer-bar" class="h-full bg-indigo-600 transition-all duration-300 w-full"></div>
+      <div class="flex-1 bg-slate-800 h-2 rounded-full overflow-hidden border border-[#1e2f5c]/50">
+        <div id="timer-bar" class="h-full bg-blue-500 shadow-glowBlue transition-all duration-300 w-full"></div>
       </div>
-      <span id="timer-text" class="text-xs font-bold text-slate-700 w-8 text-right">20s</span>
+      <span id="timer-text" class="text-xs font-bold text-slate-300 w-8 text-right">20s</span>
     </div>
 
     <!-- Input Tebakan Siswa di Depan (Tanpa Menampilkan Bocoran Kunci Jawaban) -->
@@ -174,7 +174,7 @@
         <input
           type="text"
           id="front-guess-input"
-          class="w-full pl-8 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 text-slate-900 placeholder:text-slate-400 transition-all"
+          class="w-full pl-8 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#0f1a36] border border-[#1e2f5c] rounded-xl shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 text-white placeholder:text-slate-400 transition-all"
           placeholder="Ketik tebakan siswa lalu tekan Enter..."
           autocomplete="off"
           spellcheck="false"
@@ -184,7 +184,7 @@
       <button
         type="submit"
         id="btn-front-guess-submit"
-        class="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition-colors shrink-0 flex items-center space-x-1"
+        class="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-glowBlue transition-all shrink-0 flex items-center space-x-1"
       >
         <span>Cek Tebakan</span>
         <span class="text-xs opacity-75 hidden sm:inline">&crarr;</span>
@@ -192,7 +192,7 @@
       <button
         type="button"
         id="btn-front-wrong"
-        class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-red-100 hover:bg-red-200 active:bg-red-300 text-red-700 text-xs sm:text-sm font-bold rounded-xl transition-colors shrink-0 flex items-center space-x-1"
+        class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-rose-950/60 hover:bg-rose-900/70 border border-rose-800/60 text-rose-300 text-xs sm:text-sm font-bold rounded-xl transition-colors shrink-0 flex items-center space-x-1"
         title="Tandai Jawaban Salah (Tambah Strike)"
       >
         <span>&times; Salah</span>
@@ -204,43 +204,43 @@
   </main>
 
   <!-- PAPAN SKOR TIM (BAWAH) -->
-  <footer class="bg-white border-t border-slate-200 px-4 py-2 shrink-0 z-30">
+  <footer class="bg-[#0b1329] border-t border-[#1e2f5c] px-4 py-2 shrink-0 z-30">
     <div id="teams-scoreboard" class="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
   </footer>
 
   <!-- PANEL GURU (SLIDE-OUT DARI KANAN) -->
-  <aside id="teacher-panel" class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white border-l border-slate-200 shadow-2xl z-50 flex flex-col transform translate-x-full transition-transform duration-200 ease-in-out">
+  <aside id="teacher-panel" class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-[#0b1329] border-l border-[#1e2f5c] shadow-2xl z-50 flex flex-col transform translate-x-full transition-transform duration-200 ease-in-out">
     <!-- Panel Header -->
-    <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+    <div class="p-4 border-b border-[#1e2f5c] flex items-center justify-between bg-[#080e1e]">
       <div>
-        <h3 class="text-sm font-bold text-slate-900">Panel Kendali Guru BK</h3>
+        <h3 class="text-sm font-bold text-white">Panel Kendali Guru BK</h3>
         <span class="text-[11px] text-slate-400">Pintasan [H] untuk sembunyikan</span>
       </div>
-      <button id="btn-close-tp" type="button" class="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">&times;</button>
+      <button id="btn-close-tp" type="button" class="text-slate-400 hover:text-white text-xl font-bold leading-none">&times;</button>
     </div>
 
     <!-- Panel Content -->
-    <div class="flex-1 p-4 overflow-y-auto space-y-4 text-xs">
+    <div class="flex-1 p-4 overflow-y-auto space-y-4 text-xs text-slate-200">
       <!-- Input Jawaban Cepat dengan Saran Matcher -->
       <div class="space-y-1.5">
-        <label for="tp-search-input" class="block font-bold text-slate-700">Cari / Cocokkan Tebakan Siswa:</label>
-        <input type="text" id="tp-search-input" placeholder="Ketik kata kunci jawaban siswa..." class="w-full px-3 py-2 border rounded-lg text-xs bg-white focus:outline-none focus:border-indigo-500">
-        <div id="tp-suggestions-box" class="max-h-36 overflow-y-auto border border-slate-100 rounded-lg bg-slate-50"></div>
+        <label for="tp-search-input" class="block font-bold text-slate-200">Cari / Cocokkan Tebakan Siswa:</label>
+        <input type="text" id="tp-search-input" placeholder="Ketik kata kunci jawaban siswa..." class="w-full px-3 py-2 border border-[#1e2f5c] rounded-lg text-xs bg-[#0f1a36] text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500">
+        <div id="tp-suggestions-box" class="max-h-36 overflow-y-auto border border-[#1e2f5c] rounded-lg bg-[#0f1a36]"></div>
       </div>
 
       <!-- Tombol Jawaban Salah / Strike -->
       <div>
-        <button id="tp-btn-wrong" type="button" class="w-full py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 active:bg-red-800 transition-colors shadow-sm flex items-center justify-center space-x-1.5">
+        <button id="tp-btn-wrong" type="button" class="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold active:bg-rose-700 transition-colors shadow-sm flex items-center justify-center space-x-1.5">
           <span>&times;</span>
           <span>Jawaban Salah / Beri Strike</span>
         </button>
       </div>
 
       <!-- Kunci Jawaban (Blur by default) -->
-      <div class="border rounded-xl p-3 bg-slate-50/70 border-slate-200">
+      <div class="border rounded-xl p-3 bg-[#0f1a36] border-[#1e2f5c]">
         <div class="flex items-center justify-between mb-2">
-          <span class="font-bold text-slate-800">Kunci Jawaban Ronde:</span>
-          <button id="tp-btn-peek" type="button" class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px] font-semibold hover:bg-slate-300 active:bg-slate-400 select-none">
+          <span class="font-bold text-white">Kunci Jawaban Ronde:</span>
+          <button id="tp-btn-peek" type="button" class="px-2 py-0.5 bg-[#132247] border border-[#1e2f5c] text-slate-200 rounded text-[11px] font-semibold hover:bg-[#1e2f5c] active:scale-95 select-none transition-all">
             👁 Tahan untuk Intip
           </button>
         </div>
@@ -248,20 +248,20 @@
       </div>
 
       <!-- Tombol Aksi Tambahan -->
-      <div class="pt-2 border-t border-slate-100 space-y-2">
-        <span class="font-bold text-slate-700 block mb-1">Aksi Darurat / Penyesuaian:</span>
+      <div class="pt-2 border-t border-[#1e2f5c] space-y-2">
+        <span class="font-bold text-slate-300 block mb-1">Aksi Darurat / Penyesuaian:</span>
         <div class="grid grid-cols-2 gap-2">
-          <button id="tp-btn-undo" type="button" class="py-1.5 px-2 border rounded-lg text-slate-700 font-medium hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+          <button id="tp-btn-undo" type="button" class="py-1.5 px-2 border border-[#1e2f5c] bg-[#132247] rounded-lg text-slate-200 font-medium hover:bg-[#1e2f5c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             ↶ Undo Aksi
           </button>
-          <button id="tp-btn-switch-control" type="button" class="py-1.5 px-2 border rounded-lg text-slate-700 font-medium hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+          <button id="tp-btn-switch-control" type="button" class="py-1.5 px-2 border border-[#1e2f5c] bg-[#132247] rounded-lg text-slate-200 font-medium hover:bg-[#1e2f5c] disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
             ⇄ Tukar Giliran
           </button>
         </div>
-        <button id="tp-btn-adjust-score" type="button" class="w-full py-1.5 border border-indigo-200 text-indigo-700 bg-indigo-50/50 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">
+        <button id="tp-btn-adjust-score" type="button" class="w-full py-1.5 border border-blue-500/40 text-blue-400 bg-blue-950/40 rounded-lg font-semibold hover:bg-blue-900/50 transition-colors">
           &plusmn; Ubah Skor Tim Manual
         </button>
-        <button id="tp-btn-force-end" type="button" class="w-full py-1.5 border border-slate-200 text-slate-600 rounded-lg font-medium hover:bg-slate-50 transition-colors">
+        <button id="tp-btn-force-end" type="button" class="w-full py-1.5 border border-rose-900/50 text-rose-400 bg-rose-950/30 rounded-lg font-medium hover:bg-rose-900/40 transition-colors">
           Selesaikan Ronde Sekarang
         </button>
       </div>

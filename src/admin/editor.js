@@ -147,24 +147,24 @@ function initQuestionManager(categoryId) {
   function renderAnswerRow(text = '', points = 100, keywords = '') {
     const row = document.createElement('div');
     row.className =
-      'answer-row p-3 rounded-lg border border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-stretch sm:items-center gap-2';
+      'answer-row p-3 rounded-lg border border-[#1e2f5c] bg-[#132247] flex flex-col sm:flex-row items-stretch sm:items-center gap-2';
 
     row.innerHTML = `
       <div class="flex-1">
-        <input type="text" class="ans-text w-full px-2.5 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500" required placeholder="Teks jawaban siswa..." value="${escapeHtml(
+        <input type="text" class="ans-text w-full px-2.5 py-1.5 text-xs text-white bg-[#0f1a36] border border-[#1e2f5c] rounded-md focus:outline-none focus:border-blue-500 placeholder:text-slate-500" required placeholder="Teks jawaban siswa..." value="${escapeHtml(
           text
         )}">
       </div>
       <div class="w-full sm:w-24">
-        <input type="number" class="ans-points w-full px-2.5 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500" min="0" required value="${points}" placeholder="Poin">
+        <input type="number" class="ans-points w-full px-2.5 py-1.5 text-xs text-white bg-[#0f1a36] border border-[#1e2f5c] rounded-md focus:outline-none focus:border-blue-500" min="0" required value="${points}" placeholder="Poin">
       </div>
       <div class="w-full sm:w-48">
-        <input type="text" class="ans-keywords w-full px-2.5 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500" placeholder="Sinonim, pisah koma..." value="${escapeHtml(
+        <input type="text" class="ans-keywords w-full px-2.5 py-1.5 text-xs text-white bg-[#0f1a36] border border-[#1e2f5c] rounded-md focus:outline-none focus:border-blue-500 placeholder:text-slate-500" placeholder="Sinonim, pisah koma..." value="${escapeHtml(
           keywords
         )}">
       </div>
       <div>
-        <button type="button" class="btn-remove-row text-xs text-red-600 hover:text-red-800 px-2 py-1.5 font-medium focus:outline-none">Hapus</button>
+        <button type="button" class="btn-remove-row text-xs text-rose-400 hover:text-rose-300 px-2 py-1.5 font-medium focus:outline-none transition-colors">Hapus</button>
       </div>
     `;
 
@@ -247,21 +247,21 @@ function initQuestionManager(categoryId) {
 
       const promptsHtml =
         Array.isArray(q.discussion_prompts) && q.discussion_prompts.length > 0
-          ? `<ul class="list-disc pl-4 space-y-0.5 text-xs text-slate-600 mt-1">${q.discussion_prompts
+          ? `<ul class="list-disc pl-4 space-y-0.5 text-xs text-slate-300 mt-1">${q.discussion_prompts
               .map((p) => `<li>${escapeHtml(p)}</li>`)
               .join('')}</ul>`
-          : '<em class="text-xs text-slate-400">(Tidak ada pertanyaan panduan diskusi)</em>';
+          : '<em class="text-xs text-slate-500">(Tidak ada pertanyaan panduan diskusi)</em>';
 
       const answersList = Array.isArray(q.answers) ? q.answers : [];
       const answersHtml = answersList
         .map(
           (a, i) => `
-          <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-slate-50 border border-slate-100 text-xs">
+          <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-[#132247] border border-[#1e2f5c] text-xs">
             <div class="flex items-center space-x-2">
-              <span class="w-5 h-5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] flex items-center justify-center border border-indigo-100">#${
+              <span class="w-5 h-5 rounded-full bg-blue-950/60 text-blue-400 font-bold text-[10px] flex items-center justify-center border border-blue-800/50">#${
                 i + 1
               }</span>
-              <span class="font-medium text-slate-800">${escapeHtml(a.answer_text)}</span>
+              <span class="font-medium text-white">${escapeHtml(a.answer_text)}</span>
               ${
                 Array.isArray(a.keywords) && a.keywords.length > 0
                   ? `<span class="text-[11px] text-slate-400 hidden sm:inline">(${escapeHtml(
@@ -270,7 +270,7 @@ function initQuestionManager(categoryId) {
                   : ''
               }
             </div>
-            <span class="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] border border-amber-200">${
+            <span class="font-bold text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded text-[11px] border border-amber-600/40">${
               a.points
             } Poin</span>
           </div>
@@ -279,51 +279,51 @@ function initQuestionManager(categoryId) {
         .join('');
 
       qCard.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-slate-100">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-[#1e2f5c]">
           <div>
             <div class="flex items-center space-x-2 mb-1">
-              <span class="font-bold text-xs text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+              <span class="font-bold text-xs text-blue-400 bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-800/50">
                 Soal #${index + 1}
               </span>
               <span class="${styles.badgeAmber}">
                 Multiplier: x${q.multiplier || 1}
               </span>
             </div>
-            <h3 class="text-base font-bold text-slate-900 leading-snug">${escapeHtml(
+            <h3 class="text-base font-bold text-white leading-snug">${escapeHtml(
               q.question_text
             )}</h3>
           </div>
 
           <div class="flex items-center space-x-1 self-end sm:self-auto">
-            <button type="button" class="btn-move-up inline-flex items-center justify-center px-2 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" data-idx="${index}" ${
+            <button type="button" class="btn-move-up inline-flex items-center justify-center px-2 py-1 text-xs border border-[#1e2f5c] bg-[#132247] text-slate-200 rounded hover:bg-[#1e2f5c] transition-colors disabled:opacity-30 disabled:cursor-not-allowed" data-idx="${index}" ${
         index === 0 ? 'disabled' : ''
       } title="Naikkan Urutan">&uarr;</button>
-            <button type="button" class="btn-move-down inline-flex items-center justify-center px-2 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" data-idx="${index}" ${
+            <button type="button" class="btn-move-down inline-flex items-center justify-center px-2 py-1 text-xs border border-[#1e2f5c] bg-[#132247] text-slate-200 rounded hover:bg-[#1e2f5c] transition-colors disabled:opacity-30 disabled:cursor-not-allowed" data-idx="${index}" ${
         index === questions.length - 1 ? 'disabled' : ''
       } title="Turunkan Urutan">&darr;</button>
-            <button type="button" class="btn-edit-q inline-flex items-center justify-center px-2.5 py-1 text-xs border border-slate-200 rounded hover:bg-slate-50 text-slate-700 transition-colors">Edit</button>
-            <button type="button" class="btn-delete-q inline-flex items-center justify-center px-2.5 py-1 text-xs border border-red-200 rounded hover:bg-red-50 text-red-600 transition-colors">Hapus</button>
+            <button type="button" class="btn-edit-q inline-flex items-center justify-center px-2.5 py-1 text-xs border border-[#1e2f5c] bg-[#132247] text-slate-200 rounded hover:bg-[#1e2f5c] transition-colors">Edit</button>
+            <button type="button" class="btn-delete-q inline-flex items-center justify-center px-2.5 py-1 text-xs border border-rose-900/50 bg-rose-950/30 text-rose-400 rounded hover:bg-rose-950/60 transition-colors">Hapus</button>
           </div>
         </div>
 
         <div class="py-3 space-y-2">
           ${
             q.reflection_note
-              ? `<div class="p-2.5 bg-indigo-50/40 rounded-lg border border-indigo-100/60 text-xs">
-                  <span class="font-semibold text-indigo-900">Catatan Refleksi:</span>
-                  <span class="text-indigo-800 ml-1">${escapeHtml(q.reflection_note)}</span>
+              ? `<div class="p-2.5 bg-[#132247] rounded-lg border border-[#1e2f5c] text-xs">
+                  <span class="font-semibold text-blue-400">Catatan Refleksi:</span>
+                  <span class="text-slate-200 ml-1">${escapeHtml(q.reflection_note)}</span>
                 </div>`
               : ''
           }
           <div>
-            <span class="text-xs font-semibold text-slate-700">Pertanyaan Diskusi Kelas:</span>
+            <span class="text-xs font-semibold text-slate-300">Pertanyaan Diskusi Kelas:</span>
             ${promptsHtml}
           </div>
         </div>
 
-        <div class="pt-2 border-t border-slate-100">
+        <div class="pt-2 border-t border-[#1e2f5c]">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-slate-700">Papan Jawaban (${answersList.length} Jawaban):</span>
+            <span class="text-xs font-semibold text-slate-300">Papan Jawaban (${answersList.length} Jawaban):</span>
             <span class="text-[11px] text-slate-400">Urut poin terbesar</span>
           </div>
           <div class="space-y-1.5">${answersHtml}</div>

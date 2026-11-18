@@ -132,8 +132,8 @@ function renderCategoryCards() {
       const isSelected = String(cat.id) === String(state.selectedCategoryId);
       const qCount = cat.question_count ?? (Array.isArray(cat.questions) ? cat.questions.length : 0);
       const borderClass = isSelected
-        ? 'border-indigo-600 ring-2 ring-indigo-500/20 bg-indigo-50/20'
-        : 'border-slate-200 hover:border-slate-300 bg-white';
+        ? 'border-blue-500 bg-[#132247] shadow-glowBlue ring-1 ring-blue-500/50'
+        : 'border-[#1e2f5c] hover:border-blue-500/50 bg-[#132247]/60 hover:bg-[#132247]';
 
       return `
         <div data-cat-id="${escapeHtml(cat.id)}" class="category-card cursor-pointer rounded-xl border p-5 transition-all flex flex-col justify-between ${borderClass}">
@@ -141,12 +141,12 @@ function renderCategoryCards() {
             ${
               isSelected
                 ? `<div class="flex items-center justify-end mb-2">
-                     <span class="text-xs font-bold text-indigo-600 flex items-center">&check; Terpilih</span>
+                     <span class="text-xs font-bold text-blue-400 flex items-center">&check; Terpilih</span>
                    </div>`
                 : ''
             }
-            <h3 class="font-bold text-base text-slate-900 mb-1 leading-snug">${escapeHtml(cat.title)}</h3>
-            <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-3">
+            <h3 class="font-bold text-base text-white mb-1 leading-snug">${escapeHtml(cat.title)}</h3>
+            <p class="text-xs text-slate-300 line-clamp-3 leading-relaxed mb-3">
               ${escapeHtml(cat.description || 'Paket pembelajaran bimbingan konseling.')}
             </p>
           </div>
@@ -215,17 +215,17 @@ function renderTeamsUI() {
   listContainer.innerHTML = state.teams
     .map((team, idx) => {
       return `
-      <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col gap-3" data-team-index="${idx}">
+      <div class="bg-[#132247] rounded-xl border border-[#1e2f5c] p-4 shadow-sm flex flex-col gap-3 transition-all hover:border-blue-500/40" data-team-index="${idx}">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color: ${escapeHtml(team.color)};">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm" style="background-color: ${escapeHtml(team.color)};">
               ${idx + 1}
             </span>
-            <span class="text-xs font-bold text-slate-700">Tim ${idx + 1}</span>
+            <span class="text-xs font-bold text-white">Tim ${idx + 1}</span>
           </div>
           ${
             state.teams.length > 2
-              ? `<button type="button" class="btn-remove-team text-xs text-red-600 hover:text-red-700 font-semibold focus:outline-none" data-team-index="${idx}">Hapus</button>`
+              ? `<button type="button" class="btn-remove-team text-xs text-rose-400 hover:text-rose-300 font-semibold focus:outline-none transition-colors" data-team-index="${idx}">Hapus</button>`
               : ''
           }
         </div>
@@ -236,13 +236,13 @@ function renderTeamsUI() {
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1.5">Pilih Warna Tim:</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Pilih Warna Tim:</label>
           <div class="flex items-center space-x-2">
             ${AVAILABLE_COLORS.map((c) => {
               const isSelected = c.id === team.color;
               return `
                 <button type="button" class="team-color-btn w-7 h-7 rounded-full flex items-center justify-center border-2 transition-transform ${
-                  isSelected ? 'border-slate-800 scale-110' : 'border-transparent hover:scale-105'
+                  isSelected ? 'border-white scale-110 shadow-glowBlue' : 'border-transparent hover:scale-105'
                 }" style="background-color: ${c.id};" data-team-index="${idx}" data-color="${c.id}" title="${c.name}">
                   ${isSelected ? '<span class="text-white text-xs font-bold">&check;</span>' : ''}
                 </button>
@@ -351,10 +351,10 @@ function setupEventListeners() {
         const isMatch = card.dataset.mode === state.gameMode;
         if (isMatch) {
           card.className =
-            'game-mode-card cursor-pointer p-4 rounded-xl border border-indigo-600 bg-indigo-50/30 flex items-start space-x-3 transition-all select-none';
+            'game-mode-card cursor-pointer p-4 rounded-xl border border-blue-500 bg-[#132247] shadow-glowBlue flex items-start space-x-3 transition-all select-none';
         } else {
           card.className =
-            'game-mode-card cursor-pointer p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white flex items-start space-x-3 transition-all select-none';
+            'game-mode-card cursor-pointer p-4 rounded-xl border border-[#1e2f5c] hover:border-blue-500/50 bg-[#132247]/60 hover:bg-[#132247] flex items-start space-x-3 transition-all select-none';
         }
       });
       renderFlowSummary();
@@ -553,48 +553,48 @@ function renderFlowSummary() {
 
   if (isHunting) {
     container.innerHTML = `
-      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
-        <span class="font-bold text-emerald-800 mb-1">1. Pilih Tim Mulai</span>
-        <p class="text-slate-600 leading-relaxed">Guru bebas memilih tim mana yang akan mulai berburu poin terlebih dahulu di setiap ronde.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-emerald-500/50 transition-colors">
+        <span class="font-bold text-emerald-400 mb-1 text-sm">1. Pilih Tim Mulai</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Guru bebas memilih tim mana yang akan mulai berburu poin terlebih dahulu di setiap ronde.</p>
       </div>
-      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
-        <span class="font-bold text-emerald-800 mb-1">2. Berburu Poin</span>
-        <p class="text-slate-600 leading-relaxed">Tim aktif menebak kartu di papan survei. Poin jawaban benar langsung masuk ke skor tim (tanpa sistem pot).</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-emerald-500/50 transition-colors">
+        <span class="font-bold text-emerald-400 mb-1 text-sm">2. Berburu Poin</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Tim aktif menebak kartu di papan survei. Poin jawaban benar langsung masuk ke skor tim (tanpa sistem pot).</p>
       </div>
-      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
-        <span class="font-bold text-emerald-800 mb-1">3. Batas Strike</span>
-        <p class="text-slate-600 leading-relaxed">Jawaban salah menghasilkan strike. Jika batas strike tercapai, giliran berburu tim tersebut berakhir.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-emerald-500/50 transition-colors">
+        <span class="font-bold text-emerald-400 mb-1 text-sm">3. Batas Strike</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Jawaban salah menghasilkan strike. Jika batas strike tercapai, giliran berburu tim tersebut berakhir.</p>
       </div>
-      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
-        <span class="font-bold text-emerald-800 mb-1">4. Oper Giliran</span>
-        <p class="text-slate-600 leading-relaxed">Giliran berpindah ke tim berikutnya yang belum bermain, atau dapat dioper oleh guru hingga batas waktu.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-emerald-500/50 transition-colors">
+        <span class="font-bold text-emerald-400 mb-1 text-sm">4. Oper Giliran</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Giliran berpindah ke tim berikutnya yang belum bermain, atau dapat dioper oleh guru hingga batas waktu.</p>
       </div>
-      <div class="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 flex flex-col">
-        <span class="font-bold text-emerald-800 mb-1">5. Refleksi BK</span>
-        <p class="text-slate-600 leading-relaxed">Setelah semua kartu terbuka atau seluruh tim selesai bermain, guru memandu refleksi karakter materi BK.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-emerald-500/50 transition-colors">
+        <span class="font-bold text-emerald-400 mb-1 text-sm">5. Refleksi BK</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Setelah semua kartu terbuka atau seluruh tim selesai bermain, guru memandu refleksi karakter materi BK.</p>
       </div>
     `;
   } else {
     container.innerHTML = `
-      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-        <span class="font-bold text-indigo-700 mb-1">1. Face-Off</span>
-        <p class="text-slate-600 leading-relaxed">Dua tim merebut giliran pertama. Jawaban poin tertinggi memegang kontrol permainan.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-blue-500/50 transition-colors">
+        <span class="font-bold text-blue-400 mb-1 text-sm">1. Face-Off</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Dua tim merebut giliran pertama. Jawaban poin tertinggi memegang kontrol permainan.</p>
       </div>
-      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-        <span class="font-bold text-indigo-700 mb-1">2. Giliran Tim</span>
-        <p class="text-slate-600 leading-relaxed">Tim berkontrol menebak jawaban survei lain secara bergiliran sebelum waktu habis.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-blue-500/50 transition-colors">
+        <span class="font-bold text-blue-400 mb-1 text-sm">2. Giliran Tim</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Tim berkontrol menebak jawaban survei lain secara bergiliran sebelum waktu habis.</p>
       </div>
-      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-        <span class="font-bold text-indigo-700 mb-1">3. Strike</span>
-        <p class="text-slate-600 leading-relaxed">Jawaban salah menghasilkan strike. Jika mencapai batas strike, giliran berpindah untuk steal.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-blue-500/50 transition-colors">
+        <span class="font-bold text-blue-400 mb-1 text-sm">3. Strike</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Jawaban salah menghasilkan strike. Jika mencapai batas strike, giliran berpindah untuk steal.</p>
       </div>
-      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-        <span class="font-bold text-indigo-700 mb-1">4. Steal Poin</span>
-        <p class="text-slate-600 leading-relaxed">Tim lawan bermusyawarah 1 tebakan. Jika tepat, seluruh pot poin ronde menjadi milik mereka!</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-blue-500/50 transition-colors">
+        <span class="font-bold text-blue-400 mb-1 text-sm">4. Steal Poin</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Tim lawan bermusyawarah 1 tebakan. Jika tepat, seluruh pot poin ronde menjadi milik mereka!</p>
       </div>
-      <div class="p-3 bg-slate-50 rounded-lg border border-slate-100 flex flex-col">
-        <span class="font-bold text-indigo-700 mb-1">5. Refleksi BK</span>
-        <p class="text-slate-600 leading-relaxed">Setelah ronde selesai, guru memandu siswa mendiskusikan nilai edukatif dan karakter materi.</p>
+      <div class="p-3 bg-[#132247] rounded-lg border border-[#1e2f5c] flex flex-col hover:border-blue-500/50 transition-colors">
+        <span class="font-bold text-blue-400 mb-1 text-sm">5. Refleksi BK</span>
+        <p class="text-slate-300 text-xs leading-relaxed">Setelah ronde selesai, guru memandu siswa mendiskusikan nilai edukatif dan karakter materi.</p>
       </div>
     `;
   }

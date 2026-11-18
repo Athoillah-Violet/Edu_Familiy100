@@ -91,7 +91,7 @@ function initDashboard(user) {
 
     categories.forEach((cat) => {
       const card = document.createElement('div');
-      card.className = `${styles.card} hover:border-slate-300 transition-colors flex flex-col justify-between`;
+      card.className = `${styles.card} hover:border-blue-500/40 transition-colors flex flex-col justify-between`;
 
       const statusBadge = cat.is_published
         ? `<span class="${styles.badgeGreen}">Published</span>`
@@ -109,39 +109,39 @@ function initDashboard(user) {
           <div class="flex items-center justify-between gap-2 mb-2">
             <div class="flex items-center space-x-2">
               ${statusBadge}
-              <span class="text-xs text-slate-500 font-medium">${questionCount} Soal</span>
+              <span class="text-xs text-slate-400 font-medium">${questionCount} Soal</span>
             </div>
             <a href="/admin/editor.html?category=${encodeURIComponent(
               cat.id
-            )}" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+            )}" class="inline-flex items-center text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors">
               Buka Editor Soal &rarr;
             </a>
           </div>
 
-          <h3 class="text-base font-bold text-slate-900 mb-1 leading-snug">${escapeHtml(
+          <h3 class="text-base font-bold text-white mb-1 leading-snug">${escapeHtml(
             cat.title
           )}</h3>
-          <p class="text-xs text-slate-600 leading-relaxed mb-4 line-clamp-2">${escapeHtml(
+          <p class="text-xs text-slate-300 leading-relaxed mb-4 line-clamp-2">${escapeHtml(
             cat.description || '(Belum ada deskripsi materi)'
           )}</p>
         </div>
 
-        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+        <div class="pt-3 border-t border-[#1e2f5c] flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center space-x-2">
             <button type="button" class="btn-toggle text-xs font-medium px-2.5 py-1 rounded border ${
               cat.is_published
-                ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
-                : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
+                ? 'border-amber-500/40 text-amber-300 hover:bg-amber-950/40'
+                : 'border-emerald-500/40 text-emerald-300 hover:bg-emerald-950/40'
             } transition-colors" data-id="${cat.id}">
               ${cat.is_published ? 'Jadikan Draft' : 'Publikasikan'}
             </button>
-            <button type="button" class="btn-edit text-xs font-medium px-2.5 py-1 rounded border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors" data-id="${
+            <button type="button" class="btn-edit text-xs font-medium px-2.5 py-1 rounded border border-[#1e2f5c] bg-[#132247] text-slate-200 hover:bg-[#1e2f5c] transition-colors" data-id="${
               cat.id
             }">
               Ubah Data
             </button>
           </div>
-          <button type="button" class="btn-delete text-xs font-medium px-2.5 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 transition-colors" data-id="${
+          <button type="button" class="btn-delete text-xs font-medium px-2.5 py-1 rounded border border-rose-900/50 bg-rose-950/30 text-rose-400 hover:bg-rose-950/60 transition-colors" data-id="${
             cat.id
           }">
             Hapus

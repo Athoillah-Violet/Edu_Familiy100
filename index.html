@@ -8,32 +8,37 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/style.css">
 </head>
-<body class="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+<body class="flex flex-col min-h-screen bg-[#080e1e] text-slate-100">
   <!-- Navbar -->
   <div id="navbar-container"></div>
 
   <!-- Demo Mode Banner -->
-  <div id="demo-banner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-xs text-amber-800 text-center font-medium">
+  <div id="demo-banner" class="hidden bg-amber-950/60 border-b border-amber-600/40 px-4 py-2.5 text-xs text-amber-300 text-center font-medium">
     💡 Aplikasi sedang berjalan dalam <strong>Mode Demo (Offline)</strong> menggunakan data percontohan lokal.
   </div>
 
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-12">
     <!-- Hero Section -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-12 text-center max-w-3xl mx-auto flex flex-col items-center">
-      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-4">
+    <section class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-2xl shadow-black/50 p-6 sm:p-12 text-center max-w-3xl mx-auto flex flex-col items-center relative overflow-hidden">
+      <!-- Glow ambient background -->
+      <div class="absolute -top-24 -left-24 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-orange-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-blue-950/80 text-blue-300 border border-blue-500/30 mb-4 shadow-sm relative z-10">
         Media Pembelajaran BK SMP &amp; SMA
       </span>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-        Family 100 Bimbingan Konseling
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 relative z-10">
+        Family 100 <span class="text-orange-500">Bimbingan Konseling</span>.
       </h1>
-      <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-xl">
+      <p class="text-base sm:text-lg text-slate-300 leading-relaxed mb-8 max-w-xl relative z-10">
         Kuis interaktif berbasis survei untuk memantik diskusi terbuka dan refleksi nilai positif siswa di kelas secara menyenangkan.
       </p>
-      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center">
-        <a href="/setup.html" class="inline-flex items-center justify-center font-semibold px-6 py-3 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          Main Sekarang
+      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center relative z-10">
+        <a href="/setup.html" class="inline-flex items-center justify-center font-bold px-7 py-3.5 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 transition-all duration-150 shadow-lg shadow-blue-950/60 hover:shadow-blue-600/30 hover:scale-[1.03] active:scale-[0.98]">
+          <span>Main Sekarang</span>
+          <span class="ml-2.5 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">&rarr;</span>
         </a>
-        <a href="/admin/login.html" class="inline-flex items-center justify-center font-semibold px-6 py-3 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <a href="/admin/login.html" class="inline-flex items-center justify-center font-semibold px-6 py-3.5 text-sm rounded-xl bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1a2f60] hover:text-white hover:border-blue-500/50 active:bg-[#101b38] transition-all duration-150 shadow-sm hover:scale-[1.02] active:scale-[0.98]">
           Login Admin Guru
         </a>
       </div>
@@ -42,50 +47,50 @@
     <!-- Cara Bermain (4 Langkah) -->
     <section>
       <div class="text-center mb-8">
-        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Cara Bermain di Kelas</h2>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">Panduan praktis bagi guru BK saat memandu jalannya permainan</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Cara Bermain di Kelas</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Panduan praktis bagi guru BK saat memandu jalannya permainan</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Langkah 1 -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
-          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-lg shadow-black/20 p-5 flex flex-col hover:border-blue-500/60 hover:shadow-glowBlue hover:scale-[1.02] transition-all duration-200 group">
+          <div class="w-9 h-9 rounded-lg bg-blue-950/80 text-blue-400 font-bold flex items-center justify-center text-sm mb-3 border border-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-colors">
             1
           </div>
-          <h3 class="font-bold text-sm text-slate-900 mb-1">Pilih Topik &amp; Tim</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
+          <h3 class="font-bold text-sm text-white mb-1 group-hover:text-blue-300 transition-colors">Pilih Topik &amp; Tim</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
             Guru memilih materi BK (misal: anti-perundungan, empati) lalu membagi kelas ke dalam 2 hingga 4 kelompok.
           </p>
         </div>
 
         <!-- Langkah 2 -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
-          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-lg shadow-black/20 p-5 flex flex-col hover:border-blue-500/60 hover:shadow-glowBlue hover:scale-[1.02] transition-all duration-200 group">
+          <div class="w-9 h-9 rounded-lg bg-blue-950/80 text-blue-400 font-bold flex items-center justify-center text-sm mb-3 border border-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-colors">
             2
           </div>
-          <h3 class="font-bold text-sm text-slate-900 mb-1">Rebut Giliran (Face-Off)</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
+          <h3 class="font-bold text-sm text-white mb-1 group-hover:text-blue-300 transition-colors">Rebut Giliran (Face-Off)</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
             Perwakilan tim beradu cepat menjawab soal survei pertama untuk mengamankan kontrol giliran bagi timnya.
           </p>
         </div>
 
         <!-- Langkah 3 -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
-          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-lg shadow-black/20 p-5 flex flex-col hover:border-blue-500/60 hover:shadow-glowBlue hover:scale-[1.02] transition-all duration-200 group">
+          <div class="w-9 h-9 rounded-lg bg-blue-950/80 text-blue-400 font-bold flex items-center justify-center text-sm mb-3 border border-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-colors">
             3
           </div>
-          <h3 class="font-bold text-sm text-slate-900 mb-1">Tebak Jawaban Teratas</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Tim menebak jawaban survei papan. Jika gagal 3 kali (strike), tim lawan berkesempatan merebut poin (steal).
+          <h3 class="font-bold text-sm text-white mb-1 group-hover:text-blue-300 transition-colors">Tebak Jawaban Teratas</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Tim menebak jawaban survei papan. Jika gagal mencapai batas strike, tim lawan berkesempatan merebut poin (steal).
           </p>
         </div>
 
         <!-- Langkah 4 -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
-          <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm mb-3 border border-indigo-100">
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-lg shadow-black/20 p-5 flex flex-col hover:border-blue-500/60 hover:shadow-glowBlue hover:scale-[1.02] transition-all duration-200 group">
+          <div class="w-9 h-9 rounded-lg bg-blue-950/80 text-blue-400 font-bold flex items-center justify-center text-sm mb-3 border border-blue-600/40 group-hover:bg-blue-600 group-hover:text-white transition-colors">
             4
           </div>
-          <h3 class="font-bold text-sm text-slate-900 mb-1">Diskusi &amp; Refleksi</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
+          <h3 class="font-bold text-sm text-white mb-1 group-hover:text-blue-300 transition-colors">Diskusi &amp; Refleksi</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
             Setelah ronde berakhir, guru memanfaatkan catatan refleksi dan pertanyaan panduan untuk berdiskusi bersama siswa.
           </p>
         </div>
@@ -96,29 +101,29 @@
     <section>
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Pilihan Topik Pembelajaran</h2>
-          <p class="text-xs sm:text-sm text-slate-500 mt-1">Paket materi bimbingan konseling siap pakai</p>
+          <h2 class="text-xl sm:text-2xl font-bold text-white">Pilihan Topik Pembelajaran</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Paket materi bimbingan konseling siap pakai</p>
         </div>
-        <a href="/setup.html" class="text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+        <a href="/setup.html" class="text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors">
           Lihat Semua &rarr;
         </a>
       </div>
 
       <!-- Loading skeleton -->
       <div id="categories-loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <div class="bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-40"></div>
-        <div class="bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-40"></div>
-        <div class="bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-40"></div>
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] p-6 animate-pulse h-40"></div>
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] p-6 animate-pulse h-40"></div>
+        <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] p-6 animate-pulse h-40"></div>
       </div>
 
       <!-- Empty state -->
-      <div id="categories-empty" class="hidden text-center py-12 bg-white rounded-xl border border-slate-200 p-6">
-        <p class="text-sm text-slate-600 font-medium">Belum ada paket topik bimbingan konseling yang dipublikasikan.</p>
-        <p class="text-xs text-slate-400 mt-1">Silakan masuk ke panel admin untuk membuat atau mempublikasikan topik.</p>
+      <div id="categories-empty" class="hidden text-center py-12 bg-[#0f1a36] rounded-xl border border-[#1e2f5c] p-6">
+        <p class="text-sm text-slate-300 font-medium">Belum ada paket topik bimbingan konseling yang dipublikasikan.</p>
+        <p class="text-xs text-slate-500 mt-1">Silakan masuk ke panel admin untuk membuat atau mempublikasikan topik.</p>
       </div>
 
       <!-- Error state -->
-      <div id="categories-error" class="hidden text-center py-6 bg-red-50 rounded-xl border border-red-200 p-4 text-xs text-red-700"></div>
+      <div id="categories-error" class="hidden text-center py-6 bg-red-950/60 rounded-xl border border-red-500/40 p-4 text-xs text-red-300"></div>
 
       <!-- Category cards container -->
       <div id="categories-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>

@@ -5,23 +5,23 @@ import { escapeHtml } from './ui.js';
  * Reusable styling tokens for consistent UI
  */
 export const styles = {
-  card: 'bg-white rounded-xl border border-slate-200 shadow-sm p-6',
-  cardCompact: 'bg-white rounded-lg border border-slate-200 shadow-sm p-4',
+  card: 'bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-lg shadow-black/30 p-6',
+  cardCompact: 'bg-[#0f1a36] rounded-lg border border-[#1e2f5c] shadow-md shadow-black/30 p-4',
   btnPrimary:
-    'inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
+    'inline-flex items-center justify-center font-bold px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 shadow-md shadow-blue-950/60 hover:shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#080e1e]',
   btnSecondary:
-    'inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
+    'inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-xl bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1a2f60] hover:text-white hover:border-blue-500/50 active:bg-[#101b38] shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#080e1e]',
   btnDanger:
-    'inline-flex items-center justify-center font-medium px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700 active:bg-red-800 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
+    'inline-flex items-center justify-center font-bold px-4 py-2 text-sm rounded-xl bg-red-600 text-white hover:bg-red-500 active:bg-red-700 shadow-md shadow-red-950/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[#080e1e]',
   input:
-    'w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors placeholder:text-slate-400',
-  label: 'block text-sm font-semibold text-slate-700 mb-1',
+    'w-full px-3 py-2 text-sm text-white bg-[#0a1226] border border-[#1e2f5c] rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-500',
+  label: 'block text-sm font-semibold text-slate-200 mb-1',
   badgeAmber:
-    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200',
+    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-950/60 text-amber-300 border border-amber-500/40',
   badgeGreen:
-    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200',
+    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-500/40',
   badgeSlate:
-    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200',
+    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800/80 text-slate-300 border border-slate-700',
 };
 
 /**
@@ -41,40 +41,40 @@ export function renderNavbar(target, options = {}) {
 
   const adminSection = currentAdmin
     ? `<div class="flex items-center space-x-3 text-xs sm:text-sm">
-         <span class="text-slate-600 hidden sm:inline">Admin: <strong class="text-slate-800">${escapeHtml(currentAdmin)}</strong></span>
+         <span class="text-slate-400 hidden sm:inline">Admin: <strong class="text-white">${escapeHtml(currentAdmin)}</strong></span>
          <button id="nav-logout-btn" type="button" class="${styles.btnSecondary} !py-1 !px-2.5 text-xs">Keluar</button>
        </div>`
     : showAdminLink
     ? `<a href="/admin/login.html" class="text-xs sm:text-sm font-medium ${
-        active === 'admin' ? 'text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-900'
+        active === 'admin' ? 'text-blue-400 font-bold border-b-2 border-orange-500 pb-1' : 'text-slate-300 hover:text-white pb-1'
       } transition-colors">Login Admin</a>`
     : '';
 
   const adminSectionMobile = currentAdmin
-    ? `<div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-         <span class="text-xs text-slate-600">Admin: <strong class="text-slate-800">${escapeHtml(currentAdmin)}</strong></span>
+    ? `<div class="pt-2 border-t border-[#1e2f5c] flex items-center justify-between">
+         <span class="text-xs text-slate-400">Admin: <strong class="text-white">${escapeHtml(currentAdmin)}</strong></span>
          <button id="nav-logout-btn-mobile" type="button" class="${styles.btnSecondary} !py-1 !px-2.5 text-xs">Keluar</button>
        </div>`
     : showAdminLink
     ? `<a href="/admin/login.html" class="block py-2 text-sm font-medium ${
-        active === 'admin' ? 'text-indigo-600 font-bold' : 'text-slate-700 hover:text-slate-900'
+        active === 'admin' ? 'text-blue-400 font-bold' : 'text-slate-300 hover:text-white'
       } transition-colors">Login Admin Guru</a>`
     : '';
 
   el.innerHTML = `
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <header class="bg-[#0b1329]/95 backdrop-blur-md border-b border-[#1e2f5c] sticky top-0 z-40">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div class="flex items-center space-x-3">
           <a href="/index.html" class="flex items-center space-x-2 group">
-            <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-base shadow-sm group-hover:bg-indigo-700 transition-colors">
+            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow-md shadow-blue-900/50 group-hover:bg-blue-500 transition-all group-hover:scale-105">
               F
             </span>
             <div class="flex flex-col">
-              <span class="font-bold text-slate-900 text-base leading-tight group-hover:text-indigo-600 transition-colors">
-                Family 100 <span class="text-indigo-600">BK</span>
+              <span class="font-bold text-white text-base leading-tight group-hover:text-blue-400 transition-colors">
+                Family 100 <span class="text-orange-500">BK</span>
               </span>
-              <span class="text-[11px] text-slate-500 font-normal leading-tight hidden xs:inline">
-                Bimbingan & Konseling
+              <span class="text-[11px] text-slate-400 font-normal leading-tight hidden xs:inline">
+                Bimbingan &amp; Konseling
               </span>
             </div>
           </a>
@@ -84,17 +84,17 @@ export function renderNavbar(target, options = {}) {
         <!-- Desktop Navigation -->
         <nav class="hidden sm:flex items-center space-x-6">
           <a href="/index.html" class="text-xs sm:text-sm font-medium ${
-            active === 'home' ? 'text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-900'
-          } transition-colors">Beranda</a>
+            active === 'home' ? 'text-blue-400 font-bold border-b-2 border-orange-500 pb-1' : 'text-slate-300 hover:text-white transition-colors pb-1'
+          }">Beranda</a>
           <a href="/setup.html" class="text-xs sm:text-sm font-medium ${
-            active === 'setup' ? 'text-indigo-600 font-semibold' : 'text-slate-600 hover:text-slate-900'
-          } transition-colors">Main</a>
+            active === 'setup' ? 'text-blue-400 font-bold border-b-2 border-orange-500 pb-1' : 'text-slate-300 hover:text-white transition-colors pb-1'
+          }">Main</a>
           ${adminSection}
         </nav>
 
         <!-- Mobile Hamburger Button -->
         <div class="flex items-center sm:hidden">
-          <button id="nav-hamburger-btn" type="button" class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Buka Menu">
+          <button id="nav-hamburger-btn" type="button" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#132247] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Buka Menu">
             <svg id="hamburger-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
@@ -106,12 +106,12 @@ export function renderNavbar(target, options = {}) {
       </div>
 
       <!-- Mobile Dropdown Menu -->
-      <div id="nav-mobile-menu" class="hidden sm:hidden border-t border-slate-100 bg-white px-4 pt-2 pb-4 space-y-1 shadow-md">
+      <div id="nav-mobile-menu" class="hidden sm:hidden border-t border-[#1e2f5c] bg-[#0b1329] px-4 pt-2 pb-4 space-y-1 shadow-xl">
         <a href="/index.html" class="block py-2 text-sm font-medium ${
-          active === 'home' ? 'text-indigo-600 font-bold' : 'text-slate-700 hover:text-slate-900'
+          active === 'home' ? 'text-blue-400 font-bold' : 'text-slate-300 hover:text-white'
         } transition-colors">Beranda</a>
         <a href="/setup.html" class="block py-2 text-sm font-medium ${
-          active === 'setup' ? 'text-indigo-600 font-bold' : 'text-slate-700 hover:text-slate-900'
+          active === 'setup' ? 'text-blue-400 font-bold' : 'text-slate-300 hover:text-white'
         } transition-colors">Main Permainan</a>
         ${adminSectionMobile}
       </div>
@@ -149,8 +149,8 @@ export function renderFooter(target) {
   if (!el) return;
 
   el.innerHTML = `
-    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-left">
+    <footer class="bg-[#070d1e] border-t border-[#1e2f5c] py-6 mt-auto">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3 text-center sm:text-left">
         <p>Family 100 BK &bull; Media Edukatif Bimbingan &amp; Konseling SMP/SMA</p>
         <p>Didesain untuk dipandu Guru BK di layar proyektor kelas.</p>
       </div>
@@ -175,20 +175,20 @@ export function showToast(message, type = 'info') {
   }
 
   const colorStyles = {
-    info: 'bg-white border-indigo-200 text-indigo-900 shadow-sm border-l-4 border-l-indigo-600',
-    success: 'bg-white border-emerald-200 text-emerald-900 shadow-sm border-l-4 border-l-emerald-600',
-    error: 'bg-white border-red-200 text-red-900 shadow-sm border-l-4 border-l-red-600',
-    warning: 'bg-white border-amber-200 text-amber-900 shadow-sm border-l-4 border-l-amber-500',
+    info: 'bg-[#0f1a36] border-blue-500/50 text-white shadow-xl shadow-black/40 border-l-4 border-l-blue-500',
+    success: 'bg-[#0f1a36] border-emerald-500/50 text-white shadow-xl shadow-black/40 border-l-4 border-l-emerald-500',
+    error: 'bg-[#0f1a36] border-red-500/50 text-white shadow-xl shadow-black/40 border-l-4 border-l-red-500',
+    warning: 'bg-[#0f1a36] border-orange-500/50 text-white shadow-xl shadow-black/40 border-l-4 border-l-orange-500',
   };
 
   const toast = document.createElement('div');
-  toast.className = `p-3 rounded-lg border text-sm flex items-start justify-between shadow pointer-events-auto transition-all duration-200 transform translate-y-2 opacity-0 ${
+  toast.className = `p-3 rounded-xl border text-sm flex items-start justify-between shadow-lg pointer-events-auto transition-all duration-200 transform translate-y-2 opacity-0 ${
     colorStyles[type] || colorStyles.info
   }`;
 
   toast.innerHTML = `
     <div class="flex-1 mr-2 leading-snug">${escapeHtml(message)}</div>
-    <button type="button" class="text-slate-400 hover:text-slate-600 text-base leading-none focus:outline-none">&times;</button>
+    <button type="button" class="text-slate-400 hover:text-white text-base leading-none focus:outline-none">&times;</button>
   `;
 
   const closeBtn = toast.querySelector('button');
@@ -233,22 +233,22 @@ export function createModal({
 }) {
   const backdrop = document.createElement('div');
   backdrop.className =
-    'fixed inset-0 bg-slate-900/40 backdrop-blur-[1px] z-50 flex items-center justify-center p-4 transition-opacity duration-150 opacity-0 pointer-events-none';
+    'fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-150 opacity-0 pointer-events-none';
   backdrop.setAttribute('role', 'dialog');
   backdrop.setAttribute('aria-modal', 'true');
 
   const btnConfirmClass = isDanger ? styles.btnDanger : styles.btnPrimary;
 
   backdrop.innerHTML = `
-    <div class="bg-white rounded-xl border border-slate-200 shadow-xl max-w-md w-full p-6 transform transition-all duration-150 scale-95" id="modal-card">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 class="text-base font-bold text-slate-800">${escapeHtml(title)}</h3>
-        <button type="button" id="modal-close-icon" class="text-slate-400 hover:text-slate-600 text-lg leading-none focus:outline-none">&times;</button>
+    <div class="bg-[#0f1a36] rounded-2xl border border-[#1e2f5c] shadow-2xl max-w-md w-full p-6 transform transition-all duration-150 scale-95" id="modal-card">
+      <div class="flex items-center justify-between pb-3 border-b border-[#1e2f5c]">
+        <h3 class="text-base font-bold text-white">${escapeHtml(title)}</h3>
+        <button type="button" id="modal-close-icon" class="text-slate-400 hover:text-white text-xl leading-none focus:outline-none">&times;</button>
       </div>
-      <div class="py-4 text-sm text-slate-600 leading-relaxed" id="modal-body">
+      <div class="py-4 text-sm text-slate-300 leading-relaxed" id="modal-body">
         ${bodyHtml}
       </div>
-      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-[#1e2f5c]">
         ${
           cancelText
             ? `<button type="button" id="modal-cancel-btn" class="${styles.btnSecondary}">${escapeHtml(

@@ -8,20 +8,20 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/src/style.css">
 </head>
-<body class="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+<body class="flex flex-col min-h-screen bg-[#080e1e] text-slate-100">
   <!-- Top Navbar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+  <header class="bg-[#0b1329] border-b border-[#1e2f5c] sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <a href="/admin/index.html" class="flex items-center space-x-2">
-          <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+          <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow-glowBlue">
             F
           </span>
           <div class="flex flex-col">
-            <span class="font-bold text-slate-900 text-base leading-tight">
-              Family 100 <span class="text-indigo-600">BK</span>
+            <span class="font-bold text-white text-base leading-tight">
+              Family 100 <span class="text-blue-400">BK</span>
             </span>
-            <span class="text-[11px] text-slate-500 font-normal leading-tight">
+            <span class="text-[11px] text-slate-400 font-normal leading-tight">
               Editor Soal &amp; Jawaban
             </span>
           </div>
@@ -29,10 +29,10 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <button type="button" id="btn-export-pkg" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+        <button type="button" id="btn-export-pkg" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1e2f5c] transition-colors shadow-sm">
           Ekspor Paket (.json)
         </button>
-        <a href="/admin/index.html" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors">
+        <a href="/admin/index.html" class="inline-flex items-center justify-center font-medium px-3 py-1.5 text-xs rounded-lg bg-blue-950/60 border border-blue-800/50 text-blue-400 hover:bg-blue-900/60 transition-colors">
           &larr; Kembali ke Dashboard
         </a>
       </div>
@@ -41,14 +41,14 @@
 
   <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
     <!-- Category Header Info -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+    <div class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-sm p-6">
       <div class="flex items-center space-x-2 mb-1">
-        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-950/60 text-blue-400 border border-blue-800/50">
           Paket Materi BK
         </span>
       </div>
-      <h1 id="category-title" class="text-2xl font-bold text-slate-900 mb-1 tracking-tight">Memuat Judul Paket...</h1>
-      <p id="category-desc" class="text-xs sm:text-sm text-slate-500 leading-relaxed"></p>
+      <h1 id="category-title" class="text-2xl font-bold text-white mb-1 tracking-tight">Memuat Judul Paket...</h1>
+      <p id="category-desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed"></p>
     </div>
 
     <!-- Live Status Indicator -->
@@ -56,11 +56,11 @@
     <div id="error-container"></div>
 
     <!-- Form Section -->
-    <section id="form-section" class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-      <div class="pb-3 border-b border-slate-100 mb-4 flex items-center justify-between">
+    <section id="form-section" class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-sm p-6">
+      <div class="pb-3 border-b border-[#1e2f5c] mb-4 flex items-center justify-between">
         <div>
-          <h2 id="form-heading" class="text-base font-bold text-slate-900">Tambah Soal Baru</h2>
-          <p class="text-xs text-slate-500">Tentukan teks pertanyaan survei, poin jawaban, dan panduan refleksi BK</p>
+          <h2 id="form-heading" class="text-base font-bold text-white">Tambah Soal Baru</h2>
+          <p class="text-xs text-slate-400">Tentukan teks pertanyaan survei, poin jawaban, dan panduan refleksi BK</p>
         </div>
       </div>
 
@@ -69,45 +69,45 @@
         <input type="hidden" id="q-sort-order">
 
         <div>
-          <label for="q-text" class="block text-xs font-semibold text-slate-700 mb-1">
-            Teks Soal BK <span class="text-red-500">*</span>:
+          <label for="q-text" class="block text-xs font-semibold text-slate-300 mb-1">
+            Teks Soal BK <span class="text-rose-400">*</span>:
           </label>
-          <textarea id="q-text" rows="2" required placeholder="Contoh: Apa tindakan paling bijak saat melihat teman diejek di grup obrolan?" class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder:text-slate-400"></textarea>
+          <textarea id="q-text" rows="2" required placeholder="Contoh: Apa tindakan paling bijak saat melihat teman diejek di grup obrolan?" class="w-full px-3 py-2 text-sm text-white bg-[#132247] border border-[#1e2f5c] rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-slate-500"></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label for="q-multiplier" class="block text-xs font-semibold text-slate-700 mb-1">
+            <label for="q-multiplier" class="block text-xs font-semibold text-slate-300 mb-1">
               Pengali Poin (Multiplier 1-3):
             </label>
-            <input type="number" id="q-multiplier" min="1" max="3" value="1" required class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            <input type="number" id="q-multiplier" min="1" max="3" value="1" required class="w-full px-3 py-2 text-sm text-white bg-[#132247] border border-[#1e2f5c] rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
           </div>
           <div class="sm:col-span-2">
-            <label for="q-reflection" class="block text-xs font-semibold text-slate-700 mb-1">
+            <label for="q-reflection" class="block text-xs font-semibold text-slate-300 mb-1">
               Catatan Refleksi Karakter (Tampil di akhir ronde):
             </label>
-            <textarea id="q-reflection" rows="2" placeholder="Pesan edukatif pembina/guru BK setelah soal selesai..." class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder:text-slate-400"></textarea>
+            <textarea id="q-reflection" rows="2" placeholder="Pesan edukatif pembina/guru BK setelah soal selesai..." class="w-full px-3 py-2 text-sm text-white bg-[#132247] border border-[#1e2f5c] rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder:text-slate-500"></textarea>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">
+          <label class="block text-xs font-semibold text-slate-300 mb-1">
             Pertanyaan Pemantik Diskusi Kelas (Maksimal 2 Pertanyaan):
           </label>
           <div class="space-y-2">
-            <input type="text" id="q-prompt-1" placeholder="1. Mengapa sebagian orang memilih untuk diam saat terjadi perundungan?" class="w-full px-3 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 placeholder:text-slate-400">
-            <input type="text" id="q-prompt-2" placeholder="2. Bagaimana cara kita membela teman tanpa membuat diri sendiri terancam?" class="w-full px-3 py-1.5 text-xs text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500 placeholder:text-slate-400">
+            <input type="text" id="q-prompt-1" placeholder="1. Mengapa sebagian orang memilih untuk diam saat terjadi perundungan?" class="w-full px-3 py-1.5 text-xs text-white bg-[#132247] border border-[#1e2f5c] rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-slate-500">
+            <input type="text" id="q-prompt-2" placeholder="2. Bagaimana cara kita membela teman tanpa membuat diri sendiri terancam?" class="w-full px-3 py-1.5 text-xs text-white bg-[#132247] border border-[#1e2f5c] rounded-lg focus:outline-none focus:border-blue-500 placeholder:text-slate-500">
           </div>
         </div>
 
         <!-- Answers Section -->
-        <div class="pt-2 border-t border-slate-100">
+        <div class="pt-2 border-t border-[#1e2f5c]">
           <div class="flex items-center justify-between mb-2">
             <div>
-              <span class="text-xs font-semibold text-slate-700">Daftar Papan Jawaban (Minimal 3, Maksimal 8 Jawaban):</span>
+              <span class="text-xs font-semibold text-slate-200">Daftar Papan Jawaban (Minimal 3, Maksimal 8 Jawaban):</span>
               <p class="text-[11px] text-slate-400">Poin otomatis diurutkan menurun dari poin terbesar saat disimpan.</p>
             </div>
-            <button type="button" id="btn-add-answer" class="inline-flex items-center justify-center font-medium px-2.5 py-1 text-xs rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+            <button type="button" id="btn-add-answer" class="inline-flex items-center justify-center font-medium px-2.5 py-1 text-xs rounded-lg bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1e2f5c] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
               + Tambah Baris Jawaban
             </button>
           </div>
@@ -115,11 +115,11 @@
           <div id="answers-container" class="space-y-2 mb-3"></div>
         </div>
 
-        <div class="flex items-center space-x-3 pt-3 border-t border-slate-100">
-          <button type="submit" id="btn-save-question" class="inline-flex items-center justify-center font-semibold px-5 py-2.5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <div class="flex items-center space-x-3 pt-3 border-t border-[#1e2f5c]">
+          <button type="submit" id="btn-save-question" class="inline-flex items-center justify-center font-semibold px-5 py-2.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700 transition-all shadow-glowBlue focus:outline-none focus:ring-2 focus:ring-blue-500">
             Simpan Soal
           </button>
-          <button type="button" id="btn-cancel-question" class="hidden inline-flex items-center justify-center font-medium px-4 py-2.5 text-sm rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
+          <button type="button" id="btn-cancel-question" class="hidden inline-flex items-center justify-center font-medium px-4 py-2.5 text-sm rounded-lg bg-[#132247] border border-[#1e2f5c] text-slate-200 hover:bg-[#1e2f5c] transition-colors shadow-sm">
             Batal Ubah
           </button>
         </div>
@@ -129,18 +129,18 @@
     <!-- Questions List Section -->
     <section id="questions-list-section" class="space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-bold text-slate-900">Daftar Soal dalam Paket Ini</h2>
-        <span class="text-xs text-slate-500">Gunakan panah untuk mengubah urutan</span>
+        <h2 class="text-lg font-bold text-white">Daftar Soal dalam Paket Ini</h2>
+        <span class="text-xs text-slate-400">Gunakan panah untuk mengubah urutan</span>
       </div>
 
       <!-- Loading State -->
-      <div id="loading-questions" class="p-8 text-center text-xs text-slate-500 bg-white rounded-xl border border-slate-200">
+      <div id="loading-questions" class="p-8 text-center text-xs text-slate-400 bg-[#0f1a36] rounded-xl border border-[#1e2f5c]">
         Memuat daftar soal...
       </div>
 
       <!-- Empty State -->
-      <div id="empty-questions" class="hidden p-8 text-center bg-white rounded-xl border border-slate-200">
-        <p class="text-sm text-slate-600 font-medium">Belum ada soal dalam topik pembelajaran ini.</p>
+      <div id="empty-questions" class="hidden p-8 text-center bg-[#0f1a36] rounded-xl border border-[#1e2f5c]">
+        <p class="text-sm text-slate-300 font-medium">Belum ada soal dalam topik pembelajaran ini.</p>
         <p class="text-xs text-slate-400 mt-1">Buat soal pertama melalui formulir di atas.</p>
       </div>
 
@@ -149,7 +149,7 @@
     </section>
   </main>
 
-  <footer class="py-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500 mt-auto">
+  <footer class="py-6 border-t border-[#1e2f5c] bg-[#0b1329] text-center text-xs text-slate-500 mt-auto">
     Family 100 BK &bull; Panel Guru Bimbingan &amp; Konseling SMP/SMA
   </footer>
 

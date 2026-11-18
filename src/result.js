@@ -60,25 +60,29 @@ function renderRankings(state) {
     .map((item) => {
       const isTop = item.rank === 1;
       return `
-      <div class="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm ${
-        isTop ? 'border-amber-300 ring-2 ring-amber-100 bg-amber-50/20' : 'border-slate-200'
+      <div class="rounded-xl border p-4 flex items-center justify-between shadow-sm transition-all ${
+        isTop
+          ? 'border-amber-500/60 ring-2 ring-amber-500/20 bg-[#132247] shadow-glowOrange'
+          : 'border-[#1e2f5c] bg-[#0f1a36]'
       }">
         <div class="flex items-center space-x-3">
           <span class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-            isTop ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-100 text-slate-700'
+            isTop
+              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              : 'bg-[#132247] text-slate-300 border border-[#1e2f5c]'
           }">
             #${item.rank}
           </span>
           <div>
             <div class="flex items-center space-x-2">
               <span class="w-3 h-3 rounded-full" style="background-color: ${escapeHtml(item.team.color)};"></span>
-              <span class="font-bold text-slate-900 text-sm sm:text-base">${escapeHtml(item.team.name)}</span>
+              <span class="font-bold text-white text-sm sm:text-base">${escapeHtml(item.team.name)}</span>
             </div>
             <span class="text-xs text-slate-400">Peringkat ${item.rank}</span>
           </div>
         </div>
         <div class="text-right">
-          <span class="text-xl sm:text-2xl font-extrabold text-slate-900">${item.score}</span>
+          <span class="text-xl sm:text-2xl font-extrabold text-white">${item.score}</span>
           <span class="text-xs text-slate-400 font-semibold block">Poin</span>
         </div>
       </div>
@@ -103,40 +107,40 @@ function renderRoundSummaries(state) {
       const prompts = Array.isArray(sum.discussion_prompts) ? sum.discussion_prompts : [];
       const promptsHtml =
         prompts.length > 0
-          ? `<ul class="list-disc pl-4 space-y-1 mt-1 text-xs text-slate-600">${prompts
+          ? `<ul class="list-disc pl-4 space-y-1 mt-1 text-xs text-slate-300">${prompts
               .map((p) => `<li>${escapeHtml(p)}</li>`)
               .join('')}</ul>`
-          : '<em class="text-xs text-slate-400">Tidak ada pertanyaan panduan.</em>';
+          : '<em class="text-xs text-slate-500">Tidak ada pertanyaan panduan.</em>';
 
       return `
-      <details class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden group mb-3">
-        <summary class="p-4 cursor-pointer flex items-center justify-between hover:bg-slate-50 transition-colors list-none">
+      <details class="bg-[#0f1a36] rounded-xl border border-[#1e2f5c] shadow-sm overflow-hidden group mb-3 transition-colors hover:border-blue-500/50">
+        <summary class="p-4 cursor-pointer flex items-center justify-between hover:bg-[#132247]/50 transition-colors list-none">
           <div class="flex items-center space-x-3 pr-2">
-            <span class="w-6 h-6 rounded bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center border border-indigo-100 shrink-0">
+            <span class="w-6 h-6 rounded bg-blue-950/60 text-blue-400 font-bold text-xs flex items-center justify-center border border-blue-800/50 shrink-0">
               ${idx + 1}
             </span>
             <div>
-              <h4 class="font-bold text-sm text-slate-900 leading-snug">${escapeHtml(sum.question_text)}</h4>
-              <span class="text-xs text-slate-500">${
+              <h4 class="font-bold text-sm text-white leading-snug">${escapeHtml(sum.question_text)}</h4>
+              <span class="text-xs text-slate-400">${
                 state.config?.gameMode === 'hunting'
-                  ? 'Mode: <strong>Hunting Poin</strong> (Skor Akumulatif Langsung)'
-                  : `Pemenang: <strong>${winner ? escapeHtml(winner.name) : 'Tidak ada'}</strong> (${sum.awardedPoints} Pts)`
+                  ? 'Mode: <strong class="text-emerald-400">Hunting Poin</strong> (Skor Akumulatif Langsung)'
+                  : `Pemenang: <strong class="text-blue-400">${winner ? escapeHtml(winner.name) : 'Tidak ada'}</strong> (${sum.awardedPoints} Pts)`
               }</span>
             </div>
           </div>
           <span class="text-xs text-slate-400 group-open:rotate-180 transition-transform">&darr;</span>
         </summary>
-        <div class="px-4 pb-4 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3">
+        <div class="px-4 pb-4 pt-2 border-t border-[#1e2f5c] bg-[#0b1329]/60 space-y-3">
           ${
             sum.reflection_note
-              ? `<div class="p-3 bg-indigo-50/50 border border-indigo-100/60 rounded-lg text-xs">
-                  <span class="font-bold text-indigo-900 block mb-0.5">Catatan Refleksi:</span>
-                  <p class="text-slate-700 leading-relaxed">${escapeHtml(sum.reflection_note)}</p>
+              ? `<div class="p-3 bg-[#132247] border border-[#1e2f5c] rounded-lg text-xs">
+                  <span class="font-bold text-blue-400 block mb-0.5">Catatan Refleksi:</span>
+                  <p class="text-slate-200 leading-relaxed">${escapeHtml(sum.reflection_note)}</p>
                 </div>`
               : ''
           }
           <div>
-            <span class="text-xs font-bold text-slate-700">Pertanyaan Diskusi:</span>
+            <span class="text-xs font-bold text-slate-300">Pertanyaan Diskusi:</span>
             ${promptsHtml}
           </div>
         </div>
