@@ -10,6 +10,7 @@ export const neon = hasValidConfig
       auth: {
         url: neonAuthUrl,
         adapter: SupabaseAuthAdapter(),
+        allowAnonymous: true,
       },
       dataApi: {
         url: neonDataApiUrl,
