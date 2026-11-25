@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { getCategories, getAllCategories, upsertCategory } from '../src/lib/dataService.js';
-import { isDemoMode } from '../src/lib/supabase.js';
+import { isDemoMode } from '../src/lib/neon.js';
 
 test('1. Demo Mode: getAllCategories() mengembalikan error ramah, bukan data demo', async () => {
   // Dalam lingkungan node murni tanpa Vite (isDemoMode = true)

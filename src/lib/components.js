@@ -1,4 +1,4 @@
-import { isDemoMode } from './supabase.js';
+import { isDemoMode } from './neon.js';
 import { escapeHtml } from './ui.js';
 
 /**

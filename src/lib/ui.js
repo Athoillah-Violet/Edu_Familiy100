@@ -1,4 +1,4 @@
-import { isDemoMode } from './supabase.js';
+import { isDemoMode } from './neon.js';
 
 /**
  * Escapes HTML characters without double-escaping already escaped entities.

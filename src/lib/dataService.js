@@ -1,4 +1,4 @@
-import { supabase, isDemoMode } from './supabase.js';
+import { neon, isDemoMode } from './neon.js';
 import demoData from '../data/demo.json' with { type: 'json' };
 import { validateCategory, validateQuestion, validateAnswers } from './validators.js';
 
@@ -47,12 +47,12 @@ function getDemoQuestionsWithAnswers(categoryId) {
  * @returns {Promise<{ data: Array|null, error: string|null, error_detail?: string }>}
  */
 export async function getCategories() {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: getDemoCategories(true), error: null };
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('categories')
       .select(`
         id, title, description, is_published, created_at,
@@ -96,12 +96,12 @@ export async function getQuestions(categoryId) {
     return { data: null, error: 'ID kategori wajib disertakan.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: getDemoQuestionsWithAnswers(categoryId), error: null };
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('questions')
       .select(`
         id, category_id, question_text, reflection_note, discussion_prompts, multiplier, sort_order, created_at,
@@ -151,12 +151,12 @@ export async function saveSession(categoryId, teams) {
     return { data: null, error: 'Data tim sesi permainan tidak boleh kosong.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('game_sessions')
       .insert([
         {
@@ -204,12 +204,12 @@ export async function login(email, password) {
     return { data: null, error: 'Kata sandi tidak boleh kosong.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await neon.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
@@ -237,12 +237,12 @@ export async function login(email, password) {
  * @returns {Promise<{ data: boolean|null, error: string|null, error_detail?: string }>}
  */
 export async function logout() {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: true, error: null };
   }
 
   try {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await neon.auth.signOut();
     if (error) {
       return {
         data: null,
@@ -265,12 +265,12 @@ export async function logout() {
  * @returns {Promise<{ data: object|null, error: string|null, error_detail?: string }>}
  */
 export async function getSession() {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: null };
   }
 
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await neon.auth.getSession();
     if (error) {
       return {
         data: null,
@@ -293,12 +293,12 @@ export async function getSession() {
  * @returns {Promise<{ data: boolean, error: string|null, error_detail?: string }>}
  */
 export async function isAdmin() {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: false, error: null };
   }
 
   try {
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } = await neon.auth.getSession();
     if (sessionError) {
       return {
         data: false,
@@ -312,7 +312,7 @@ export async function isAdmin() {
     }
 
     const userId = sessionData.session.user.id;
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('admins')
       .select('user_id')
       .eq('user_id', userId)
@@ -342,7 +342,7 @@ export async function isAdmin() {
  * @returns {{ data: { subscription: { unsubscribe: Function } } }}
  */
 export function onAuthChange(callback) {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return {
       data: {
         subscription: {
@@ -352,7 +352,7 @@ export function onAuthChange(callback) {
     };
   }
 
-  return supabase.auth.onAuthStateChange(callback);
+  return neon.auth.onAuthStateChange(callback);
 }
 
 /* ==========================================================================
@@ -365,12 +365,12 @@ export function onAuthChange(callback) {
  * @returns {Promise<{ data: Array|null, error: string|null, error_detail?: string }>}
  */
 export async function getAllCategories() {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('categories')
       .select(`
         id, title, description, is_published, created_at,
@@ -416,7 +416,7 @@ export async function upsertCategory(category) {
     return { data: null, error: validation.errors.join(' ') };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
@@ -430,7 +430,7 @@ export async function upsertCategory(category) {
       payload.id = category.id;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('categories')
       .upsert(payload)
       .select()
@@ -464,12 +464,12 @@ export async function deleteCategory(id) {
     return { data: null, error: 'ID kategori wajib diisi.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
-    const { error } = await supabase
+    const { error } = await neon
       .from('categories')
       .delete()
       .eq('id', id);
@@ -510,7 +510,7 @@ export async function upsertQuestion(question) {
     return { data: null, error: 'Multiplier harus berupa angka antara 1 sampai 3.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
@@ -529,7 +529,7 @@ export async function upsertQuestion(question) {
       payload.id = question.id;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('questions')
       .upsert(payload)
       .select()
@@ -563,12 +563,12 @@ export async function deleteQuestion(id) {
     return { data: null, error: 'ID soal wajib diisi.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
-    const { error } = await supabase
+    const { error } = await neon
       .from('questions')
       .delete()
       .eq('id', id);
@@ -616,13 +616,13 @@ export async function replaceAnswers(questionId, answers) {
     }
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
     // 1. Delete existing answers for this question
-    const { error: delError } = await supabase
+    const { error: delError } = await neon
       .from('answers')
       .delete()
       .eq('question_id', questionId);
@@ -646,7 +646,7 @@ export async function replaceAnswers(questionId, answers) {
       sort_order: ans.sort_order !== undefined ? Number(ans.sort_order) : idx + 1,
     }));
 
-    const { data, error: insError } = await supabase
+    const { data, error: insError } = await neon
       .from('answers')
       .insert(payload)
       .select();
@@ -690,7 +690,7 @@ export async function saveQuestionWithAnswers(question, answers) {
     return { data: null, error: errorList.join(' ') };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
@@ -709,7 +709,7 @@ export async function saveQuestionWithAnswers(question, answers) {
   // 2. Ambil salinan jawaban lama jika sebelumnya sudah ada
   let oldAnswers = [];
   try {
-    const { data: fetchedOld, error: fetchErr } = await supabase
+    const { data: fetchedOld, error: fetchErr } = await neon
       .from('answers')
       .select('answer_text, points, keywords, sort_order')
       .eq('question_id', questionId);
@@ -736,8 +736,8 @@ export async function saveQuestionWithAnswers(question, answers) {
   if (replaceRes.error) {
     if (oldAnswers.length > 0) {
       try {
-        await supabase.from('answers').delete().eq('question_id', questionId);
-        await supabase.from('answers').insert(
+        await neon.from('answers').delete().eq('question_id', questionId);
+        await neon.from('answers').insert(
           oldAnswers.map((oa, idx) => ({
             question_id: questionId,
             answer_text: oa.answer_text,
@@ -781,13 +781,13 @@ export async function reorderQuestions(categoryId, orderedIds) {
     return { data: null, error: 'Daftar ID urutan soal tidak boleh kosong.' };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 
   try {
     const updates = orderedIds.map((id, index) =>
-      supabase
+      neon
         .from('questions')
         .update({ sort_order: index + 1 })
         .eq('id', id)

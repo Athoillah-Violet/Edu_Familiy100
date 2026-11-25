@@ -9,7 +9,7 @@ import { exportCategory } from '../lib/portability.js';
 import { validateQuestion, validateAnswers, parseKeywords } from '../lib/validators.js';
 import { escapeHtml } from '../lib/ui.js';
 import { showToast, confirmModal, styles } from '../lib/components.js';
-import { isDemoMode, supabase } from '../lib/supabase.js';
+import { isDemoMode, neon } from '../lib/neon.js';
 import demoData from '../data/demo.json' with { type: 'json' };
 
 async function main() {
@@ -80,12 +80,12 @@ function showFatalError(msg) {
 }
 
 async function fetchCategoryInfo(categoryId) {
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return (demoData.categories || []).find((c) => c.id === categoryId);
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await neon
       .from('categories')
       .select('id, title, description, is_published')
       .eq('id', categoryId)

@@ -1,4 +1,4 @@
-import { supabase, isDemoMode } from './supabase.js';
+import { neon, isDemoMode } from './neon.js';
 import { getQuestions, upsertCategory, saveQuestionWithAnswers, getAllCategories } from './dataService.js';
 import { validateImportPackage } from './validators.js';
 import demoData from '../data/demo.json' with { type: 'json' };
@@ -222,11 +222,11 @@ export async function exportCategory(categoryId) {
 
   let category = null;
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     category = (demoData.categories || []).find((c) => c.id === categoryId);
   } else {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await neon
         .from('categories')
         .select('id, title, description, is_published')
         .eq('id', categoryId)
@@ -346,7 +346,7 @@ export async function importCategory(input) {
     };
   }
 
-  if (isDemoMode || !supabase) {
+  if (isDemoMode || !neon) {
     return { data: null, error: DEMO_MODE_ERROR };
   }
 

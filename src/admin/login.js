@@ -1,6 +1,6 @@
 import { login, logout, isAdmin } from '../lib/dataService.js';
 import { redirectIfLoggedIn } from '../lib/guard.js';
-import { isDemoMode } from '../lib/supabase.js';
+import { isDemoMode } from '../lib/neon.js';
 
 const form = document.getElementById('login-form');
 const emailInput = document.getElementById('email');

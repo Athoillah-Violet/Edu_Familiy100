@@ -9,7 +9,7 @@ import {
   saveQuestionWithAnswers,
 } from '../src/lib/dataService.js';
 import { exportCategory, importCategory } from '../src/lib/portability.js';
-import { isDemoMode } from '../src/lib/supabase.js';
+import { isDemoMode } from '../src/lib/neon.js';
 
 test('Alur Lengkap: Buka/Buat Paket -> Tambah Soal (5 Jawaban) -> Reorder -> Export -> Import -> Hapus', async () => {
   // Jika di demo mode, verifikasi struktur fallback ekspor dan penolakan fungsi tulis

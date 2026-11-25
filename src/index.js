@@ -1,5 +1,5 @@
 import { getCategories } from './lib/dataService.js';
-import { isDemoMode } from './lib/supabase.js';
+import { isDemoMode } from './lib/neon.js';
 import { renderNavbar, renderFooter, styles } from './lib/components.js';
 import { escapeHtml } from './lib/ui.js';
 

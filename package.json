@@ -10,7 +10,7 @@
     "test": "node --test tests/matcher.test.js tests/validators.test.js tests/dataServiceFallback.test.js tests/workflowIntegration.test.js tests/gameEngine.test.js tests/gameStoreAndSession.test.js tests/full3TeamsSimulation.test.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
+    "@neondatabase/neon-js": "^0.9.0-beta",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

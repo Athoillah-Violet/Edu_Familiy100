@@ -7,7 +7,7 @@
  * hak akses admin mutlak berada di Row Level Security (RLS) database Supabase.
  */
 
-import { isDemoMode } from './supabase.js';
+import { isDemoMode } from './neon.js';
 import { getSession, isAdmin } from './dataService.js';
 
 let demoNoticeRendered = false;
